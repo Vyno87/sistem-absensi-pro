@@ -1,0 +1,79 @@
+import React from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { LayoutDashboard, Users, CalendarCheck, LogOut } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+
+const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { user, logout } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
+    const navItems = [
+        { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
+        { label: 'Employees', path: '/employees', icon: <Users size={20} /> },
+        { label: 'Attendance', path: '/attendance', icon: <CalendarCheck size={20} /> },
+    ];
+
+    return (
+        <div className="flex h-screen bg-transparent overflow-hidden">
+            {/* Sidebar */}
+            <aside className="w-72 glass-panel m-4 rounded-3xl flex flex-col border-r-0 relative z-20">
+                <div className="p-8">
+                    <h2 className="text-2xl font-bold tracking-tighter">
+                        <span className="text-gradient">Absensi PRO</span>
+                    </h2>
+                </div>
+
+                <nav className="flex-1 px-4 space-y-2">
+                    {navItems.map((item) => (
+                        <Link
+                            key={item.path}
+                            to={item.path}
+                            className={`
+                flex items-center px-6 py-4 rounded-2xl transition-all duration-300 group
+                ${location.pathname === item.path
+                                    ? 'bg-primary/20 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)]'
+                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                }
+              `}
+                        >
+                            <span className={`mr-4 ${location.pathname === item.path ? 'text-primary' : 'group-hover:text-primary transition-colors'}`}>
+                                {item.icon}
+                            </span>
+                            <span className="font-medium">{item.label}</span>
+                        </Link>
+                    ))}
+                </nav>
+
+                <div className="p-4 mt-auto">
+                    <div className="glass-morphism p-4 rounded-2xl mb-4">
+                        <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Logged in as</p>
+                        <p className="font-bold text-white truncate">{user?.username}</p>
+                        <p className="text-xs text-primary">{user?.role}</p>
+                    </div>
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center w-full px-6 py-4 text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-2xl transition-all"
+                    >
+                        <LogOut size={20} className="mr-4" />
+                        <span className="font-medium">Logout</span>
+                    </button>
+                </div>
+            </aside>
+
+            {/* Main Content */}
+            <main className="flex-1 overflow-auto relative">
+                <div className="p-8 min-h-full">
+                    {children}
+                </div>
+            </main>
+        </div>
+    );
+};
+
+export default MainLayout;

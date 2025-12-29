@@ -1,0 +1,13 @@
+{
+    "name": "sistem-absensi-root",
+    "version": "1.0.0",
+    "description": "Root orchestrator for Sistem Absensi",
+    "private": true,
+    "scripts": {
+        "start": "concurrently \"npm run start --prefix backend\" \"npm run start --prefix frontend\"",
+        "install-all": "npm install && npm install --prefix backend && npm install --prefix frontend"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}
