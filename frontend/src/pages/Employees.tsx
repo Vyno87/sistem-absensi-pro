@@ -5,24 +5,73 @@ import api from '../services/api';
 import { UserPlus, Search, MoreVertical } from 'lucide-react';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
+import Modal from '../components/UI/Modal';
 
 const Employees = () => {
     const [employees, setEmployees] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        employeeId: '',
+        name: '',
+        position: '',
+        email: '',
+        phone: '',
+        department: '',
+        salary: '',
+        status: 'Kontrak'
+    });
+    const [formLoading, setFormLoading] = useState(false);
 
     useEffect(() => {
-        const fetchEmployees = async () => {
-            try {
-                const res = await api.get('/employees');
-                setEmployees(res.data);
-            } catch (error) {
-                console.error("Fetch Error", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchEmployees();
     }, []);
+
+    const fetchEmployees = async () => {
+        try {
+            const res = await api.get('/employees');
+            setEmployees(res.data);
+        } catch (error) {
+            console.error("Fetch Error", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setFormLoading(true);
+
+        try {
+            await api.post('/employees', {
+                ...formData,
+                salary: parseFloat(formData.salary) || 0,
+                joinDate: new Date(),
+                performanceScore: 0,
+                attendanceCount: { present: 0, absent: 0, late: 0 }
+            });
+
+            // Reset form and close modal
+            setFormData({
+                employeeId: '',
+                name: '',
+                position: '',
+                email: '',
+                phone: '',
+                department: '',
+                salary: '',
+                status: 'Kontrak'
+            });
+            setIsModalOpen(false);
+
+            // Refresh employee list
+            fetchEmployees();
+        } catch (error: any) {
+            alert(error.response?.data?.msg || 'Failed to add employee');
+        } finally {
+            setFormLoading(false);
+        }
+    };
 
     return (
         <MainLayout>
@@ -33,7 +82,7 @@ const Employees = () => {
                 </div>
                 <div className="flex gap-3 w-full md:w-auto">
                     <Input placeholder="Search employee..." icon={<Search className="w-4 h-4" />} className="md:w-64" />
-                    <Button icon={<UserPlus className="w-4 h-4" />}>Add New</Button>
+                    <Button icon={<UserPlus className="w-4 h-4" />} onClick={() => setIsModalOpen(true)}>Add New</Button>
                 </div>
             </div>
 
@@ -79,6 +128,67 @@ const Employees = () => {
                     ))
                 )}
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add New Employee">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <Input
+                        placeholder="Employee ID (e.g., EMP001)"
+                        value={formData.employeeId}
+                        onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
+                        required
+                    />
+                    <Input
+                        placeholder="Full Name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        required
+                    />
+                    <Input
+                        placeholder="Position"
+                        value={formData.position}
+                        onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                        required
+                    />
+                    <Input
+                        placeholder="Email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required
+                    />
+                    <Input
+                        placeholder="Phone"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        required
+                    />
+                    <Input
+                        placeholder="Department"
+                        value={formData.department}
+                        onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                        required
+                    />
+                    <Input
+                        placeholder="Salary"
+                        type="number"
+                        value={formData.salary}
+                        onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+                        required
+                    />
+                    <select
+                        value={formData.status}
+                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
+                        required
+                    >
+                        <option value="Kontrak">Kontrak</option>
+                        <option value="Tetap">Tetap</option>
+                    </select>
+                    <Button type="submit" isLoading={formLoading} className="w-full">
+                        Add Employee
+                    </Button>
+                </form>
+            </Modal>
         </MainLayout>
     );
 };

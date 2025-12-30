@@ -4,13 +4,51 @@ const Attendance = require('../models/Attendance');
 const Employee = require('../models/Employee');
 const auth = require('../middleware/auth');
 
+// Haversine formula to calculate distance between two GPS coordinates
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371e3; // Earth's radius in meters
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // Distance in meters
+}
+
 // @route    POST api/attendance  
 // @desc     Record attendance  
 // @access   Private  
 router.post('/', auth, async (req, res) => {
-  const { employeeId, checkIn, status } = req.body;
+  const { employeeId, checkIn, status, latitude, longitude } = req.body;
 
   try {
+    // GPS Validation
+    if (latitude && longitude) {
+      const officeLatitude = parseFloat(process.env.OFFICE_LATITUDE) || -6.188696059432105;
+      const officeLongitude = parseFloat(process.env.OFFICE_LONGITUDE) || 106.33081285722146;
+      const maxRadius = parseFloat(process.env.OFFICE_RADIUS_METERS) || 100;
+
+      const distance = calculateDistance(
+        officeLatitude,
+        officeLongitude,
+        latitude,
+        longitude
+      );
+
+      if (distance > maxRadius) {
+        return res.status(403).json({
+          msg: 'You are outside the office area',
+          distance: Math.round(distance),
+          maxRadius
+        });
+      }
+    }
+
     // Check if employee exists  
     const employee = await Employee.findOne({ employeeId });
     if (!employee) {
@@ -21,7 +59,9 @@ router.post('/', auth, async (req, res) => {
     const newAttendance = new Attendance({
       employeeId,
       checkIn,
-      status
+      status,
+      latitude: latitude || null,
+      longitude: longitude || null
     });
 
     const attendance = await newAttendance.save();

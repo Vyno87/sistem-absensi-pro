@@ -69,7 +69,7 @@ const Dashboard = () => {
         datasets: [
             {
                 label: 'Attendance Rate',
-                data: [85, 88, 92, 90, 85, 95, 98], // Dummy data for visual
+                data: [85, 88, 92, 90, 85, 95, 98],
                 borderColor: '#6366f1',
                 backgroundColor: 'rgba(99, 102, 241, 0.5)',
                 tension: 0.4,
@@ -78,16 +78,15 @@ const Dashboard = () => {
     };
 
     const doughnutData = {
-        labels: stats?.employeesByStatus.map((s: any) => s._id) || [],
+        labels: stats?.employeesByStatus?.map((s: any) => s._id) || ['Active', 'Inactive'],
         datasets: [
             {
-                data: stats?.employeesByStatus.map((s: any) => s.count) || [],
+                data: stats?.employeesByStatus?.map((s: any) => s.count) || [10, 5],
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.8)',
-                    'rgba(54, 162, 235, 0.8)',
-                    'rgba(255, 206, 86, 0.8)',
-                    'rgba(75, 192, 192, 0.8)',
-                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(99, 102, 241, 0.8)',
+                    'rgba(239, 68, 68, 0.8)',
+                    'rgba(34, 197, 94, 0.8)',
+                    'rgba(234, 179, 8, 0.8)',
                 ],
                 borderColor: 'transparent',
             },
@@ -104,13 +103,12 @@ const Dashboard = () => {
         <MainLayout>
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-white mb-2">Dashboard Overview</h1>
-                <p className="text-gray-400">Welcome back, here's what's happening today.</p>
+                <p className="text-gray-400">Real-time attendance monitoring</p>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {[
-                    { label: 'Total Employess', value: stats?.totalEmployees || 0, icon: <Users className="text-blue-400" />, color: 'from-blue-500/20 to-blue-600/5' },
+                    { label: 'Total Employees', value: stats?.totalEmployees || 0, icon: <Users className="text-blue-400" />, color: 'from-blue-500/20 to-blue-600/5' },
                     { label: 'Avg Performance', value: `${stats?.averagePerformance || 0}%`, icon: <TrendingUp className="text-green-400" />, color: 'from-green-500/20 to-green-600/5' },
                     { label: 'Promotion Ready', value: stats?.promotionRecommended || 0, icon: <Award className="text-yellow-400" />, color: 'from-yellow-500/20 to-yellow-600/5' },
                     { label: 'Active Status', value: stats?.employeesByStatus?.length || 0, icon: <UserCheck className="text-purple-400" />, color: 'from-purple-500/20 to-purple-600/5' },
@@ -129,7 +127,6 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            {/* Charts Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <GlassCard className="lg:col-span-2">
                     <h3 className="text-xl font-bold text-white mb-6">Weekly Attendance</h3>

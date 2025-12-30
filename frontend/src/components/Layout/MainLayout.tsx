@@ -1,10 +1,12 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Users, CalendarCheck, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar, Globe } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user, logout } = useAuth();
+    const { language, setLanguage, t } = useLanguage();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -14,9 +16,11 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     };
 
     const navItems = [
-        { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
-        { label: 'Employees', path: '/employees', icon: <Users size={20} /> },
-        { label: 'Attendance', path: '/attendance', icon: <CalendarCheck size={20} /> },
+        { label: t('nav.dashboard'), path: '/dashboard', icon: <LayoutDashboard size={20} /> },
+        { label: t('nav.employees'), path: '/employees', icon: <Users size={20} /> },
+        { label: t('nav.attendance'), path: '/attendance', icon: <CalendarCheck size={20} /> },
+        { label: t('nav.shifts'), path: '/shifts', icon: <Clock size={20} /> },
+        { label: t('nav.leaves'), path: '/leaves', icon: <Calendar size={20} /> },
     ];
 
     return (
@@ -25,7 +29,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <aside className="w-72 glass-panel m-4 rounded-3xl flex flex-col border-r-0 relative z-20">
                 <div className="p-8">
                     <h2 className="text-2xl font-bold tracking-tighter">
-                        <span className="text-gradient">Absensi PRO</span>
+                        <span className="text-gradient">SISTEM ABSENSI PRO</span>
                     </h2>
                 </div>
 
@@ -52,6 +56,26 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
                 <div className="p-4 mt-auto">
                     <div className="glass-morphism p-4 rounded-2xl mb-4">
+                        <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
+                            <div className="flex items-center text-gray-400">
+                                <Globe size={16} className="mr-2" />
+                                <span className="text-xs font-semibold uppercase">Language</span>
+                            </div>
+                            <div className="flex bg-white/5 rounded-lg p-1">
+                                <button
+                                    onClick={() => setLanguage('en')}
+                                    className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all ${language === 'en' ? 'bg-primary text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}
+                                >
+                                    EN
+                                </button>
+                                <button
+                                    onClick={() => setLanguage('id')}
+                                    className={`ml-1 px-2 py-1 text-[10px] font-bold rounded-md transition-all ${language === 'id' ? 'bg-primary text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}
+                                >
+                                    ID
+                                </button>
+                            </div>
+                        </div>
                         <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Logged in as</p>
                         <p className="font-bold text-white truncate">{user?.username}</p>
                         <p className="text-xs text-primary">{user?.role}</p>
@@ -61,7 +85,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         className="flex items-center w-full px-6 py-4 text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-2xl transition-all"
                     >
                         <LogOut size={20} className="mr-4" />
-                        <span className="font-medium">Logout</span>
+                        <span className="font-medium">{t('nav.logout')}</span>
                     </button>
                 </div>
             </aside>

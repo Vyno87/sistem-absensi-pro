@@ -5,6 +5,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Employees from './pages/Employees';
 import Attendance from './pages/Attendance';
+import Shifts from './pages/Shifts';
+import Leaves from './pages/Leaves';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { token, isLoading } = useAuth();
@@ -36,6 +38,18 @@ function App() {
           <Route path="/attendance" element={
             <PrivateRoute>
               <Attendance />
+            </PrivateRoute>
+          } />
+
+          <Route path="/shifts" element={
+            <PrivateRoute>
+              <Shifts />
+            </PrivateRoute>
+          } />
+
+          <Route path="/leaves" element={
+            <PrivateRoute>
+              <Leaves />
             </PrivateRoute>
           } />
 

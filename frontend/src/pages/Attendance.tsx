@@ -22,16 +22,46 @@ const Attendance = () => {
 
         setLoading(true);
         setMessage(null);
+
         try {
+            // Request GPS Location
+            const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation not supported'));
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                });
+            });
+
+            const { latitude, longitude } = position.coords;
+
             await api.post('/attendance', {
                 employeeId,
-                type: type === 'Check In' ? 'PRESENT' : 'OUT', // Mapping to likely backend enum if needed, or just string
-                timestamp: new Date()
+                checkIn: new Date(),
+                status: 'present',
+                latitude,
+                longitude
             });
-            setMessage({ type: 'success', text: `Successfully Record: ${type}` });
+
+            setMessage({ type: 'success', text: `Successfully Recorded: ${type}` });
             setEmployeeId('');
         } catch (err: any) {
-            setMessage({ type: 'error', text: err.response?.data?.message || 'Attendance failed' });
+            if (err.message === 'Geolocation not supported') {
+                setMessage({ type: 'error', text: 'Your browser does not support location access' });
+            } else if (err.code === 1) {
+                setMessage({ type: 'error', text: 'Location permission denied. Please allow location access.' });
+            } else if (err.response?.data?.msg === 'You are outside the office area') {
+                setMessage({
+                    type: 'error',
+                    text: `You are ${err.response.data.distance}m away from office (max: ${err.response.data.maxRadius}m)`
+                });
+            } else {
+                setMessage({ type: 'error', text: err.response?.data?.msg || 'Attendance failed' });
+            }
         } finally {
             setLoading(false);
         }

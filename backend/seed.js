@@ -19,7 +19,12 @@ const seedAdmin = async () => {
         let admin = await User.findOne({ username: 'admin' });
 
         if (admin) {
-            console.log('⚠️ Admin user already exists.');
+            console.log('⚠️ Admin user exists. Updating password...');
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash('admin123', salt);
+            admin.password = hashedPassword;
+            await admin.save();
+            console.log('✅ Admin password reset to: admin123');
         } else {
             // Create new admin
             const salt = await bcrypt.genSalt(10);
