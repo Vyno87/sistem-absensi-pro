@@ -26,14 +26,14 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
         <div className="flex h-screen bg-transparent overflow-hidden">
             {/* Sidebar */}
-            <aside className="w-72 glass-panel m-4 rounded-3xl flex flex-col border-r-0 relative z-20">
-                <div className="p-8">
+            <aside className="w-72 glass-panel m-4 rounded-3xl flex flex-col border-r-0 relative z-20 overflow-hidden">
+                <div className="p-8 flex-shrink-0">
                     <h2 className="text-2xl font-bold tracking-tighter">
                         <span className="text-gradient">SISTEM ABSENSI PRO</span>
                     </h2>
                 </div>
 
-                <nav className="flex-1 px-4 space-y-2">
+                <nav className="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar">
                     {navItems.map((item) => (
                         <Link
                             key={item.path}
@@ -54,8 +54,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     ))}
                 </nav>
 
-                <div className="p-4 mt-auto">
-                    <div className="glass-morphism p-4 rounded-2xl mb-4">
+                <div className="p-4 mt-auto flex-shrink-0 border-t border-white/5 bg-white/5 backdrop-blur-md rounded-b-3xl">
+                    <div className="glass-morphism p-4 rounded-2xl mb-2">
                         <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
                             <div className="flex items-center text-gray-400">
                                 <Globe size={16} className="mr-2" />
@@ -76,17 +76,21 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                                 </button>
                             </div>
                         </div>
-                        <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Logged in as</p>
-                        <p className="font-bold text-white truncate">{user?.username}</p>
-                        <p className="text-xs text-primary">{user?.role}</p>
+                        <div className="flex items-center justify-between">
+                            <div className="truncate mr-2">
+                                <p className="text-[10px] text-gray-500 uppercase font-semibold">Logged in as</p>
+                                <p className="font-bold text-white truncate text-sm">{user?.username || 'Admin'}</p>
+                                <p className="text-[10px] text-primary font-bold uppercase">{user?.role}</p>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="p-3 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-xl transition-all group title='Logout'"
+                                title={t('nav.logout')}
+                            >
+                                <LogOut size={18} />
+                            </button>
+                        </div>
                     </div>
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center w-full px-6 py-4 text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-2xl transition-all"
-                    >
-                        <LogOut size={20} className="mr-4" />
-                        <span className="font-medium">{t('nav.logout')}</span>
-                    </button>
                 </div>
             </aside>
 

@@ -18,7 +18,8 @@ const allowedOrigins = [
 ];
 
 app.use(cors({ origin: allowedOrigins, credentials: true }));
-app.use(express.json({ extended: false }));
+app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ limit: '5mb', extended: true }));
 
 // Define Routes with Rate Limiting
 app.use('/api/auth', authLimiter, require('./routes/auth'));

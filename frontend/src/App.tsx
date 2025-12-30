@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Employees from './pages/Employees';
@@ -18,45 +19,47 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
+    <LanguageProvider>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
 
-          <Route path="/dashboard" element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          } />
+            <Route path="/dashboard" element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            } />
 
-          <Route path="/employees" element={
-            <PrivateRoute>
-              <Employees />
-            </PrivateRoute>
-          } />
+            <Route path="/employees" element={
+              <PrivateRoute>
+                <Employees />
+              </PrivateRoute>
+            } />
 
-          <Route path="/attendance" element={
-            <PrivateRoute>
-              <Attendance />
-            </PrivateRoute>
-          } />
+            <Route path="/attendance" element={
+              <PrivateRoute>
+                <Attendance />
+              </PrivateRoute>
+            } />
 
-          <Route path="/shifts" element={
-            <PrivateRoute>
-              <Shifts />
-            </PrivateRoute>
-          } />
+            <Route path="/shifts" element={
+              <PrivateRoute>
+                <Shifts />
+              </PrivateRoute>
+            } />
 
-          <Route path="/leaves" element={
-            <PrivateRoute>
-              <Leaves />
-            </PrivateRoute>
-          } />
+            <Route path="/leaves" element={
+              <PrivateRoute>
+                <Leaves />
+              </PrivateRoute>
+            } />
 
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
 

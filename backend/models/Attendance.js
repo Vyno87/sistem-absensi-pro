@@ -30,6 +30,10 @@ const attendanceSchema = new mongoose.Schema({
     type: Number,
     required: false
   },
+  facePhoto: {
+    type: String,
+    required: false
+  },
   notes: String
 }, {
   timestamps: true

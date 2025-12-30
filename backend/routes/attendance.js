@@ -24,7 +24,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 // @desc     Record attendance  
 // @access   Private  
 router.post('/', auth, async (req, res) => {
-  const { employeeId, checkIn, status, latitude, longitude } = req.body;
+  const { employeeId, checkIn, status, latitude, longitude, facePhoto } = req.body;
 
   try {
     // GPS Validation
@@ -61,7 +61,8 @@ router.post('/', auth, async (req, res) => {
       checkIn,
       status,
       latitude: latitude || null,
-      longitude: longitude || null
+      longitude: longitude || null,
+      facePhoto: facePhoto || null
     });
 
     const attendance = await newAttendance.save();
