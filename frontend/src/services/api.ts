@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://sistem-absensi-pro.vercel.app/api',
+    baseURL: '/api',
     headers: {
         'Content-Type': 'application/json'
     }
