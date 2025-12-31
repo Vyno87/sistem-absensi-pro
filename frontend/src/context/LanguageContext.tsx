@@ -166,6 +166,16 @@ const translations: Translation = {
     'reports.showingFirst': { en: 'Showing first', id: 'Menampilkan' },
     'reports.of': { en: 'of', id: 'dari' },
     'reports.records': { en: 'records', id: 'data' },
+    'reports.summaryTable': { en: 'Employee Summary Table (Pivot)', id: 'Tabel Ringkasan Karyawan (Pivot)' },
+    'reports.promotionRecommendation': { en: 'Promotion Recommendations', id: 'Rekomendasi Pengangkatan Status' },
+    'reports.attendanceRate': { en: 'Att. Rate', id: '% Hadir' },
+    'reports.punctualityRate': { en: 'Punctuality', id: '% Tepat Waktu' },
+    'reports.performanceScore': { en: 'Perf. Score', id: 'Skor Performa' },
+    'reports.promotionScore': { en: 'Promo Score', id: 'Skor Promosi' },
+    'reports.recommendation': { en: 'Recommendation', id: 'Rekomendasi' },
+    'reports.eligible': { en: 'ELIGIBLE', id: 'LAYAK' },
+    'reports.promotionCriteria': { en: 'Criteria: Attendance >= 90%, Performance >= 80%, Not Permanent', id: 'Kriteria: Kehadiran >= 90%, Performa >= 80%, Bukan Tetap' },
+    'reports.noPromotion': { en: 'No employees meet the promotion criteria at this time.', id: 'Tidak ada karyawan yang memenuhi kriteria pengangkatan saat ini.' },
 
     // Common
     'common.loading': { en: 'Loading...', id: 'Memuat...' },

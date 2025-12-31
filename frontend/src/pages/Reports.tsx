@@ -13,6 +13,7 @@ const Reports = () => {
     const [endDate, setEndDate] = useState('');
     const [loading, setLoading] = useState({ excel: false, pdf: false });
     const [previewData, setPreviewData] = useState<any[]>([]);
+    const [statsData, setStatsData] = useState<any[]>([]);
     const [previewLoading, setPreviewLoading] = useState(false);
 
     // Set default date range (current month)
@@ -24,15 +25,22 @@ const Reports = () => {
         setEndDate(lastDay.toISOString().split('T')[0]);
     }, []);
 
-    const fetchPreview = async () => {
+    const fetchData = async () => {
         setPreviewLoading(true);
         try {
-            const res = await api.get('/reports/attendance', {
+            // Fetch detailed attendance
+            const resPreview = await api.get('/reports/attendance', {
                 params: { startDate, endDate }
             });
-            setPreviewData(res.data);
+            setPreviewData(resPreview.data);
+
+            // Fetch summary stats
+            const resStats = await api.get('/reports/stats', {
+                params: { startDate, endDate }
+            });
+            setStatsData(resStats.data);
         } catch (error) {
-            console.error('Error fetching preview:', error);
+            console.error('Error fetching data:', error);
         } finally {
             setPreviewLoading(false);
         }
@@ -40,7 +48,7 @@ const Reports = () => {
 
     useEffect(() => {
         if (startDate && endDate) {
-            fetchPreview();
+            fetchData();
         }
     }, [startDate, endDate]);
 
@@ -101,6 +109,8 @@ const Reports = () => {
         }
     };
 
+    const eligibleForPromotion = statsData.filter(s => s.isEligibleForPromotion);
+
     return (
         <MainLayout>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -132,7 +142,7 @@ const Reports = () => {
                         />
                     </div>
                     <Button
-                        onClick={fetchPreview}
+                        onClick={fetchData}
                         icon={<RefreshCw className="w-4 h-4" />}
                         variant="secondary"
                     >
@@ -142,99 +152,169 @@ const Reports = () => {
             </GlassCard>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <GlassCard className="text-center">
-                    <div className="flex items-center justify-center mb-2">
-                        <Users className="w-8 h-8 text-indigo-400" />
-                    </div>
-                    <p className="text-3xl font-bold text-white">{previewData.length}</p>
-                    <p className="text-gray-400 text-sm">{t('reports.totalRecords')}</p>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <GlassCard className="text-center py-4">
+                    <p className="text-2xl font-bold text-white">{previewData.length}</p>
+                    <p className="text-gray-400 text-[10px] uppercase font-bold">{t('reports.totalRecords')}</p>
                 </GlassCard>
-                <GlassCard className="text-center">
-                    <div className="flex items-center justify-center mb-2">
-                        <Clock className="w-8 h-8 text-green-400" />
-                    </div>
-                    <p className="text-3xl font-bold text-white">
-                        {previewData.filter(d => d.status === 'present').length}
+                <GlassCard className="text-center py-4 border-l-4 border-l-green-500">
+                    <p className="text-2xl font-bold text-white">
+                        {previewData.filter(d => d.attendanceStatus === 'present').length}
                     </p>
-                    <p className="text-gray-400 text-sm">{t('reports.present')}</p>
+                    <p className="text-gray-400 text-[10px] uppercase font-bold">{t('reports.present')}</p>
                 </GlassCard>
-                <GlassCard className="text-center">
-                    <div className="flex items-center justify-center mb-2">
-                        <Clock className="w-8 h-8 text-yellow-400" />
-                    </div>
-                    <p className="text-3xl font-bold text-white">
-                        {previewData.filter(d => d.status === 'late').length}
+                <GlassCard className="text-center py-4 border-l-4 border-l-yellow-500">
+                    <p className="text-2xl font-bold text-white">
+                        {previewData.filter(d => d.attendanceStatus === 'late').length}
                     </p>
-                    <p className="text-gray-400 text-sm">{t('reports.late')}</p>
+                    <p className="text-gray-400 text-[10px] uppercase font-bold">{t('reports.late')}</p>
+                </GlassCard>
+                <GlassCard className="text-center py-4 border-l-4 border-l-indigo-500">
+                    <p className="text-2xl font-bold text-white">{eligibleForPromotion.length}</p>
+                    <p className="text-indigo-400 text-[10px] uppercase font-bold">{t('reports.eligible')}</p>
                 </GlassCard>
             </div>
 
-            {/* Download Buttons */}
+            {/* Pivot Table Section */}
             <GlassCard className="mb-6">
-                <h3 className="text-lg font-bold text-white mb-4">{t('reports.downloadReport')}</h3>
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <Button
-                        onClick={downloadExcel}
-                        isLoading={loading.excel}
-                        icon={<FileSpreadsheet className="w-5 h-5" />}
-                        className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-none"
-                    >
-                        {t('reports.downloadExcel')}
-                    </Button>
-                    <Button
-                        onClick={downloadPDF}
-                        isLoading={loading.pdf}
-                        icon={<FileText className="w-5 h-5" />}
-                        className="flex-1 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 border-none"
-                    >
-                        {t('reports.downloadPDF')}
-                    </Button>
+                <div className="flex items-center gap-2 mb-4">
+                    <Users className="w-5 h-5 text-indigo-400" />
+                    <h3 className="text-lg font-bold text-white">{t('reports.summaryTable')}</h3>
                 </div>
-            </GlassCard>
-
-            {/* Preview Table */}
-            <GlassCard>
-                <h3 className="text-lg font-bold text-white mb-4">{t('reports.preview')}</h3>
                 {previewLoading ? (
                     <p className="text-gray-400">{t('common.loading')}</p>
-                ) : previewData.length === 0 ? (
-                    <p className="text-gray-400">{t('reports.noData')}</p>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full text-xs">
                             <thead>
-                                <tr className="border-b border-white/10">
-                                    <th className="py-3 px-2 text-left text-gray-400">No</th>
-                                    <th className="py-3 px-2 text-left text-gray-400">ID</th>
-                                    <th className="py-3 px-2 text-left text-gray-400">{t('reports.name')}</th>
-                                    <th className="py-3 px-2 text-left text-gray-400">{t('reports.date')}</th>
-                                    <th className="py-3 px-2 text-left text-gray-400">{t('reports.checkIn')}</th>
-                                    <th className="py-3 px-2 text-left text-gray-400">{t('reports.checkOut')}</th>
-                                    <th className="py-3 px-2 text-left text-gray-400">{t('reports.status')}</th>
+                                <tr className="border-b border-white/10 text-gray-400 uppercase">
+                                    <th className="py-3 px-2 text-left font-semibold">{t('reports.name')}</th>
+                                    <th className="py-3 px-2 text-center font-semibold">{t('reports.attendanceRate')}</th>
+                                    <th className="py-3 px-2 text-center font-semibold">{t('reports.punctualityRate')}</th>
+                                    <th className="py-3 px-2 text-center font-semibold">{t('reports.performanceScore')}</th>
+                                    <th className="py-3 px-2 text-center font-semibold">{t('reports.promotionScore')}</th>
+                                    <th className="py-3 px-2 text-center font-semibold">{t('reports.status')}</th>
+                                    <th className="py-3 px-2 text-right font-semibold">{t('reports.recommendation')}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {previewData.slice(0, 10).map((record, index) => (
-                                    <tr key={index} className="border-b border-white/5 hover:bg-white/5">
-                                        <td className="py-3 px-2 text-white">{index + 1}</td>
-                                        <td className="py-3 px-2 text-white font-mono">{record.employeeId}</td>
-                                        <td className="py-3 px-2 text-white">{record.name}</td>
-                                        <td className="py-3 px-2 text-gray-400">{record.date}</td>
-                                        <td className="py-3 px-2 text-green-400">{record.checkIn}</td>
-                                        <td className="py-3 px-2 text-red-400">{record.checkOut}</td>
-                                        <td className={`py-3 px-2 font-bold ${getStatusColor(record.status)}`}>
-                                            {record.status.toUpperCase()}
+                                {statsData.map((stat, index) => (
+                                    <tr key={index} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                        <td className="py-3 px-2">
+                                            <p className="text-white font-medium">{stat.name}</p>
+                                            <p className="text-gray-500 text-[10px]">{stat.position}</p>
+                                        </td>
+                                        <td className="py-3 px-2 text-center font-bold text-white">{stat.attendanceRate}%</td>
+                                        <td className="py-3 px-2 text-center text-gray-300">{stat.punctualityRate}%</td>
+                                        <td className="py-3 px-2 text-center text-gray-300">{stat.performanceScore}%</td>
+                                        <td className="py-3 px-2 text-center text-indigo-400 font-bold">{stat.promotionScore}</td>
+                                        <td className="py-3 px-2 text-center text-gray-500 font-mono text-[10px]">{stat.currentStatus}</td>
+                                        <td className="py-3 px-2 text-right">
+                                            {stat.isEligibleForPromotion ? (
+                                                <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-[9px] font-bold border border-green-500/30">
+                                                    {t('reports.eligible')}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-600">-</span>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                        {previewData.length > 10 && (
-                            <p className="text-center text-gray-400 mt-4">
-                                {t('reports.showingFirst')} 10 {t('reports.of')} {previewData.length} {t('reports.records')}
-                            </p>
-                        )}
+                    </div>
+                )}
+            </GlassCard>
+
+            {/* Promotion Recommendations */}
+            {eligibleForPromotion.length > 0 && (
+                <GlassCard className="mb-6 border-indigo-500/30 bg-indigo-500/5">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Users className="w-5 h-5 text-green-400" />
+                        <h3 className="text-lg font-bold text-white">{t('reports.promotionRecommendation')}</h3>
+                    </div>
+                    <p className="text-xs text-gray-400 mb-4">{t('reports.promotionCriteria')}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {eligibleForPromotion.map((emp, i) => (
+                            <div key={i} className="bg-white/5 rounded-xl p-4 border border-white/10 hover:border-indigo-500/50 transition-all">
+                                <div className="flex justify-between items-start mb-2">
+                                    <h4 className="text-white font-bold">{emp.name}</h4>
+                                    <span className="text-indigo-400 font-bold text-xs">#{emp.promotionScore}</span>
+                                </div>
+                                <p className="text-gray-400 text-[10px] mb-3">{emp.position}</p>
+                                <div className="space-y-1 text-[10px]">
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">{t('reports.attendanceRate')}</span>
+                                        <span className="text-white">{emp.attendanceRate}%</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">{t('reports.performanceScore')}</span>
+                                        <span className="text-white">{emp.performanceScore}%</span>
+                                    </div>
+                                </div>
+                                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+                                    <span className="text-[9px] font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded">{emp.currentStatus} → TERAP</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </GlassCard>
+            )}
+
+            {/* Download Buttons */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <Button
+                    onClick={downloadExcel}
+                    isLoading={loading.excel}
+                    icon={<FileSpreadsheet className="w-5 h-5" />}
+                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 border-none h-14"
+                >
+                    {t('reports.downloadExcel')}
+                </Button>
+                <Button
+                    onClick={downloadPDF}
+                    isLoading={loading.pdf}
+                    icon={<FileText className="w-5 h-5" />}
+                    className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 border-none h-14"
+                >
+                    {t('reports.downloadPDF')}
+                </Button>
+            </div>
+
+            {/* Detailed Data Preview - Collapsible or simpler */}
+            <GlassCard>
+                <div className="flex items-center gap-2 mb-4">
+                    <FileText className="w-5 h-5 text-gray-400" />
+                    <h3 className="text-lg font-bold text-white">{t('reports.preview')} (10 {t('reports.records')})</h3>
+                </div>
+                {previewLoading ? (
+                    <p className="text-gray-400">{t('common.loading')}</p>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-[11px]">
+                            <thead>
+                                <tr className="border-b border-white/10 text-gray-500 uppercase">
+                                    <th className="py-2 px-2 text-left">No</th>
+                                    <th className="py-2 px-2 text-left">{t('reports.name')}</th>
+                                    <th className="py-2 px-2 text-left">{t('reports.date')}</th>
+                                    <th className="py-2 px-2 text-left">{t('reports.status')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {previewData.slice(0, 10).map((record, index) => (
+                                    <tr key={index} className="border-b border-white/5 hover:bg-white/5">
+                                        <td className="py-2 px-2 text-gray-500">{index + 1}</td>
+                                        <td className="py-2 px-2">
+                                            <p className="text-white">{record.name}</p>
+                                        </td>
+                                        <td className="py-2 px-2 text-gray-400">{record.date}</td>
+                                        <td className={`py-2 px-2 font-bold ${getStatusColor(record.attendanceStatus)}`}>
+                                            {record.attendanceStatus.toUpperCase()}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
             </GlassCard>
