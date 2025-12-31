@@ -27,6 +27,40 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
 
+// Database Connection - MUST BE BEFORE ROUTES
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/employee_attendance';
+let cachedDb = null;
+
+async function connectToDatabase() {
+  if (cachedDb && mongoose.connection.readyState === 1) {
+    return cachedDb;
+  }
+  console.log('=> Connecting to MongoDB...');
+  console.log('=> URI prefix:', MONGODB_URI.substring(0, 30) + '...');
+  cachedDb = await mongoose.connect(MONGODB_URI);
+  console.log('=> MongoDB Connected');
+  return cachedDb;
+}
+
+// Middleware to ensure DB connection for ALL requests
+app.use(async (req, res, next) => {
+  try {
+    const start = Date.now();
+    await connectToDatabase();
+    const duration = Date.now() - start;
+    if (duration > 100) {
+      console.log(`=> DB Connection took ${duration}ms for ${req.url}`);
+    }
+    next();
+  } catch (err) {
+    console.error('CRITICAL DB CONNECTION ERROR:', err.message);
+    res.status(500).json({
+      error: 'Database connection failed',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
+});
+
 // Define Routes with Rate Limiting
 app.use('/api/auth', authLimiter, require('./routes/auth'));
 app.use('/api/employees', require('./routes/employees'));
@@ -53,39 +87,6 @@ app.get('/api/health', (req, res) => {
 
 app.get('/api/test', (req, res) => {
   res.send('API is working');
-});
-
-// Database Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/employee_attendance';
-let cachedDb = null;
-
-async function connectToDatabase() {
-  if (cachedDb && mongoose.connection.readyState === 1) {
-    return cachedDb;
-  }
-  console.log('=> Connecting to MongoDB...');
-  cachedDb = await mongoose.connect(MONGODB_URI);
-  console.log('=> MongoDB Connected');
-  return cachedDb;
-}
-
-// Middleware to ensure DB connection
-app.use(async (req, res, next) => {
-  try {
-    const start = Date.now();
-    await connectToDatabase();
-    const duration = Date.now() - start;
-    if (duration > 100) {
-      console.log(`=> DB Connection took ${duration}ms for ${req.url}`);
-    }
-    next();
-  } catch (err) {
-    console.error('CRITICAL DB CONNECTION ERROR:', err);
-    res.status(500).json({
-      error: 'Database connection failed',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
-  }
 });
 
 // Global Error Handler
