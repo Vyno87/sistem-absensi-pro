@@ -4,10 +4,12 @@ import GlassCard from '../components/UI/GlassCard';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import api from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import { Clock, CheckCircle, XCircle, Camera, RefreshCw } from 'lucide-react';
 import Webcam from 'react-webcam';
 
 const Attendance = () => {
+    const { t } = useLanguage();
     const [employeeId, setEmployeeId] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -28,8 +30,8 @@ const Attendance = () => {
     }, [webcamRef]);
 
     const handleAttendance = async (type: 'Check In' | 'Check Out') => {
-        if (!employeeId) return setMessage({ type: 'error', text: 'Please enter Employee ID' });
-        if (!imgSrc) return setMessage({ type: 'error', text: 'Please capture your face photo first' });
+        if (!employeeId) return setMessage({ type: 'error', text: t('attendance.pleaseEnterEmployeeId') });
+        if (!imgSrc) return setMessage({ type: 'error', text: t('attendance.pleaseCapturePhoto') });
 
         setLoading(true);
         setMessage(null);
@@ -59,21 +61,22 @@ const Attendance = () => {
                 facePhoto: imgSrc
             });
 
-            setMessage({ type: 'success', text: `Successfully Recorded: ${type}` });
+            const successType = type === 'Check In' ? t('attendance.checkIn') : t('attendance.checkOut');
+            setMessage({ type: 'success', text: `${t('attendance.success')}: ${successType}` });
             setEmployeeId('');
             setImgSrc(null);
         } catch (err: any) {
             if (err.message === 'Geolocation not supported') {
-                setMessage({ type: 'error', text: 'Your browser does not support location access' });
+                setMessage({ type: 'error', text: t('attendance.browserNoLocation') });
             } else if (err.code === 1) {
-                setMessage({ type: 'error', text: 'Location permission denied. Please allow location access.' });
+                setMessage({ type: 'error', text: t('attendance.locationDenied') });
             } else if (err.response?.data?.msg === 'You are outside the office area') {
                 setMessage({
                     type: 'error',
-                    text: `You are ${err.response.data.distance}m away from office (max: ${err.response.data.maxRadius}m)`
+                    text: `${t('attendance.outsideOffice')}: ${err.response.data.distance}m`
                 });
             } else {
-                setMessage({ type: 'error', text: err.response?.data?.msg || 'Attendance failed' });
+                setMessage({ type: 'error', text: err.response?.data?.msg || t('attendance.failed') });
             }
         } finally {
             setLoading(false);
@@ -93,7 +96,7 @@ const Attendance = () => {
                     </div>
 
                     <GlassCard className="p-6 border-indigo-500/30">
-                        <h3 className="text-2xl font-bold text-white mb-6 text-center">Face Verification</h3>
+                        <h3 className="text-2xl font-bold text-white mb-6 text-center">{t('attendance.faceVerification')}</h3>
 
                         <div className="relative mb-6 rounded-2xl overflow-hidden bg-slate-900 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center aspect-video">
                             {!imgSrc ? (
@@ -127,7 +130,7 @@ const Attendance = () => {
 
                         <div className="space-y-4">
                             <Input
-                                placeholder="Enter Your Employee ID"
+                                placeholder={t('attendance.employeeId')}
                                 value={employeeId}
                                 onChange={(e) => setEmployeeId(e.target.value)}
                                 className="text-center text-xl tracking-widest"
@@ -140,7 +143,7 @@ const Attendance = () => {
                                     isLoading={loading}
                                     className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-none"
                                 >
-                                    CHECK IN
+                                    {t('attendance.checkIn')}
                                 </Button>
                                 <Button
                                     onClick={() => handleAttendance('Check Out')}
@@ -148,7 +151,7 @@ const Attendance = () => {
                                     isLoading={loading}
                                     className="w-full"
                                 >
-                                    CHECK OUT
+                                    {t('attendance.checkOut')}
                                 </Button>
                             </div>
 
@@ -164,7 +167,7 @@ const Attendance = () => {
 
                 {/* Right Side - Recent Activity (Placeholder) */}
                 <GlassCard>
-                    <h3 className="text-xl font-bold text-white mb-6">Recent Activity</h3>
+                    <h3 className="text-xl font-bold text-white mb-6">{t('attendance.recentActivity')}</h3>
                     <div className="space-y-4">
                         {[1, 2, 3, 4].map((_, i) => (
                             <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
@@ -179,7 +182,7 @@ const Attendance = () => {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-green-400 font-bold">08:00 AM</p>
-                                    <p className="text-xs text-gray-400">On Time</p>
+                                    <p className="text-xs text-gray-400">{t('attendance.onTime')}</p>
                                 </div>
                             </div>
                         ))}
@@ -191,3 +194,4 @@ const Attendance = () => {
 };
 
 export default Attendance;
+

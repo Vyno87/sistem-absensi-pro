@@ -61,7 +61,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
                             <div className="flex items-center text-gray-400">
                                 <Globe size={16} className="mr-2" />
-                                <span className="text-xs font-semibold uppercase">Language</span>
+                                <span className="text-xs font-semibold uppercase">{t('nav.language')}</span>
                             </div>
                             <div className="flex bg-white/5 rounded-lg p-1">
                                 <button
@@ -80,7 +80,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         </div>
                         <div className="flex items-center justify-between">
                             <div className="truncate mr-2">
-                                <p className="text-[10px] text-gray-500 uppercase font-semibold">Logged in as</p>
+                                <p className="text-[10px] text-gray-500 uppercase font-semibold">{t('nav.loggedInAs')}</p>
                                 <p className="font-bold text-white truncate text-sm">{user?.username || 'Admin'}</p>
                                 <p className="text-[10px] text-primary font-bold uppercase">{user?.role}</p>
                             </div>

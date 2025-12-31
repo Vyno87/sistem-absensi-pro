@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import MainLayout from '../components/Layout/MainLayout';
 import GlassCard from '../components/UI/GlassCard';
 import api from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import { UserPlus, Search, MoreVertical } from 'lucide-react';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import Modal from '../components/UI/Modal';
 
 const Employees = () => {
+    const { t } = useLanguage();
     const [employees, setEmployees] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,7 +69,7 @@ const Employees = () => {
             // Refresh employee list
             fetchEmployees();
         } catch (error: any) {
-            alert(error.response?.data?.msg || 'Failed to add employee');
+            alert(error.response?.data?.msg || t('employees.failedToAdd'));
         } finally {
             setFormLoading(false);
         }
@@ -77,18 +79,18 @@ const Employees = () => {
         <MainLayout>
             <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">Employee Management</h1>
-                    <p className="text-gray-400">Manage your workforce efficiently.</p>
+                    <h1 className="text-3xl font-bold text-white mb-2">{t('employees.title')}</h1>
+                    <p className="text-gray-400">{t('employees.subtitle')}</p>
                 </div>
                 <div className="flex gap-3 w-full md:w-auto">
-                    <Input placeholder="Search employee..." icon={<Search className="w-4 h-4" />} className="md:w-64" />
-                    <Button icon={<UserPlus className="w-4 h-4" />} onClick={() => setIsModalOpen(true)}>Add New</Button>
+                    <Input placeholder={t('employees.search')} icon={<Search className="w-4 h-4" />} className="md:w-64" />
+                    <Button icon={<UserPlus className="w-4 h-4" />} onClick={() => setIsModalOpen(true)}>{t('employees.addNew')}</Button>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {loading ? (
-                    <p className="text-white">Loading...</p>
+                    <p className="text-white">{t('common.loading')}</p>
                 ) : (
                     employees.map((emp) => (
                         <GlassCard key={emp._id} className="group relative hover:border-indigo-500/50">
@@ -109,17 +111,17 @@ const Employees = () => {
                                 <div className="w-full bg-white/5 rounded-xl p-3 flex justify-between items-center text-sm">
                                     <div className="text-gray-400">ID: <span className="text-white font-mono">{emp.employeeId}</span></div>
                                     <div className={`px-2 py-1 rounded text-xs font-bold ${emp.status === 'Tetap' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
-                                        {emp.status}
+                                        {emp.status === 'Tetap' ? t('employees.permanent') : t('employees.contract')}
                                     </div>
                                 </div>
 
                                 <div className="mt-4 w-full grid grid-cols-2 gap-2 text-center text-xs">
                                     <div className="p-2 rounded bg-white/5">
-                                        <p className="text-gray-400">Present</p>
+                                        <p className="text-gray-400">{t('employees.present')}</p>
                                         <p className="text-white font-bold text-lg">{emp.attendanceCount?.present || 0}</p>
                                     </div>
                                     <div className="p-2 rounded bg-white/5">
-                                        <p className="text-gray-400">Performance</p>
+                                        <p className="text-gray-400">{t('employees.performance')}</p>
                                         <p className="text-white font-bold text-lg">{emp.performanceScore || 0}%</p>
                                     </div>
                                 </div>
@@ -129,47 +131,47 @@ const Employees = () => {
                 )}
             </div>
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add New Employee">
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('employees.addTitle')}>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input
-                        placeholder="Employee ID (e.g., EMP001)"
+                        placeholder={t('employees.employeeIdPlaceholder')}
                         value={formData.employeeId}
                         onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
                         required
                     />
                     <Input
-                        placeholder="Full Name"
+                        placeholder={t('employees.fullName')}
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
                     />
                     <Input
-                        placeholder="Position"
+                        placeholder={t('employees.position')}
                         value={formData.position}
                         onChange={(e) => setFormData({ ...formData, position: e.target.value })}
                         required
                     />
                     <Input
-                        placeholder="Email"
+                        placeholder={t('employees.email')}
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         required
                     />
                     <Input
-                        placeholder="Phone"
+                        placeholder={t('employees.phone')}
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         required
                     />
                     <Input
-                        placeholder="Department"
+                        placeholder={t('employees.department')}
                         value={formData.department}
                         onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                         required
                     />
                     <Input
-                        placeholder="Salary"
+                        placeholder={t('employees.salary')}
                         type="number"
                         value={formData.salary}
                         onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
@@ -181,11 +183,11 @@ const Employees = () => {
                         className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
                         required
                     >
-                        <option value="Kontrak">Kontrak</option>
-                        <option value="Tetap">Tetap</option>
+                        <option value="Kontrak">{t('employees.contract')}</option>
+                        <option value="Tetap">{t('employees.permanent')}</option>
                     </select>
                     <Button type="submit" isLoading={formLoading} className="w-full">
-                        Add Employee
+                        {t('employees.addEmployee')}
                     </Button>
                 </form>
             </Modal>
@@ -194,3 +196,4 @@ const Employees = () => {
 };
 
 export default Employees;
+

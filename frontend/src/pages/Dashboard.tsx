@@ -3,6 +3,7 @@ import MainLayout from '../components/Layout/MainLayout';
 import GlassCard from '../components/UI/GlassCard';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { Users, UserCheck, TrendingUp, Award, CalendarCheck, Calendar } from 'lucide-react';
 import {
@@ -31,6 +32,7 @@ ChartJS.register(
 
 const Dashboard = () => {
     const { user } = useAuth();
+    const { t } = useLanguage();
     const navigate = useNavigate();
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -69,10 +71,10 @@ const Dashboard = () => {
     };
 
     const lineData = {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        labels: [t('days.mon'), t('days.tue'), t('days.wed'), t('days.thu'), t('days.fri'), t('days.sat'), t('days.sun')],
         datasets: [
             {
-                label: 'Attendance Rate',
+                label: t('dashboard.attendanceRate'),
                 data: [85, 88, 92, 90, 85, 95, 98],
                 borderColor: '#6366f1',
                 backgroundColor: 'rgba(99, 102, 241, 0.5)',
@@ -82,7 +84,7 @@ const Dashboard = () => {
     };
 
     const doughnutData = {
-        labels: stats?.employeesByStatus?.map((s: any) => s._id) || ['Active', 'Inactive'],
+        labels: stats?.employeesByStatus?.map((s: any) => s._id) || [t('common.active'), t('common.inactive')],
         datasets: [
             {
                 data: stats?.employeesByStatus?.map((s: any) => s.count) || [10, 5],
@@ -99,7 +101,7 @@ const Dashboard = () => {
 
     if (loading) return (
         <MainLayout>
-            <div className="flex items-center justify-center h-full text-white">Loading Dashboard...</div>
+            <div className="flex items-center justify-center h-full text-white">{t('common.loadingDashboard')}</div>
         </MainLayout>
     );
 
@@ -107,10 +109,10 @@ const Dashboard = () => {
         <MainLayout>
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-white mb-2">
-                    {user?.role === 'admin' ? 'Dashboard Overview' : `Welcome, ${user?.username}`}
+                    {user?.role === 'admin' ? t('dashboard.overview') : `${t('dashboard.welcome')}, ${user?.username}`}
                 </h1>
                 <p className="text-gray-400">
-                    {user?.role === 'admin' ? 'Real-time attendance monitoring' : 'Keep track of your performance and attendance'}
+                    {user?.role === 'admin' ? t('dashboard.monitoring') : t('dashboard.userSubtitle')}
                 </p>
             </div>
 
@@ -118,10 +120,10 @@ const Dashboard = () => {
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         {[
-                            { label: 'Total Employees', value: stats?.totalEmployees || 0, icon: <Users className="text-blue-400" />, color: 'from-blue-500/20 to-blue-600/5' },
-                            { label: 'Avg Performance', value: `${stats?.averagePerformance || 0}%`, icon: <TrendingUp className="text-green-400" />, color: 'from-green-500/20 to-green-600/5' },
-                            { label: 'Promotion Ready', value: stats?.promotionRecommended || 0, icon: <Award className="text-yellow-400" />, color: 'from-yellow-500/20 to-yellow-600/5' },
-                            { label: 'Active Status', value: stats?.employeesByStatus?.length || 0, icon: <UserCheck className="text-purple-400" />, color: 'from-purple-500/20 to-purple-600/5' },
+                            { label: t('dashboard.totalEmployees'), value: stats?.totalEmployees || 0, icon: <Users className="text-blue-400" />, color: 'from-blue-500/20 to-blue-600/5' },
+                            { label: t('dashboard.avgPerformance'), value: `${stats?.averagePerformance || 0}%`, icon: <TrendingUp className="text-green-400" />, color: 'from-green-500/20 to-green-600/5' },
+                            { label: t('dashboard.promotionReady'), value: stats?.promotionRecommended || 0, icon: <Award className="text-yellow-400" />, color: 'from-yellow-500/20 to-yellow-600/5' },
+                            { label: t('dashboard.activeStatus'), value: stats?.employeesByStatus?.length || 0, icon: <UserCheck className="text-purple-400" />, color: 'from-purple-500/20 to-purple-600/5' },
                         ].map((stat, idx) => (
                             <GlassCard key={idx} className={`relative overflow-hidden bg-gradient-to-br ${stat.color} border-white/5`}>
                                 <div className="flex justify-between items-start z-10 relative">
@@ -139,14 +141,14 @@ const Dashboard = () => {
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <GlassCard className="lg:col-span-2">
-                            <h3 className="text-xl font-bold text-white mb-6">Weekly Attendance</h3>
+                            <h3 className="text-xl font-bold text-white mb-6">{t('dashboard.weeklyAttendance')}</h3>
                             <div className="h-[300px] w-full">
                                 <Line options={chartOptions} data={lineData} />
                             </div>
                         </GlassCard>
 
                         <GlassCard>
-                            <h3 className="text-xl font-bold text-white mb-6">Employee Status</h3>
+                            <h3 className="text-xl font-bold text-white mb-6">{t('dashboard.employeeStatus')}</h3>
                             <div className="h-[300px] flex items-center justify-center">
                                 <Doughnut data={doughnutData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }} />
                             </div>
@@ -159,13 +161,13 @@ const Dashboard = () => {
                         <div className="p-4 bg-primary/20 rounded-full mb-6 text-primary">
                             <CalendarCheck size={48} />
                         </div>
-                        <h2 className="text-2xl font-bold text-white mb-2">Ready to Check In?</h2>
-                        <p className="text-gray-400 mb-6">Make sure to mark your attendance for today.</p>
+                        <h2 className="text-2xl font-bold text-white mb-2">{t('dashboard.readyCheckIn')}</h2>
+                        <p className="text-gray-400 mb-6">{t('dashboard.markAttendance')}</p>
                         <button
                             onClick={() => navigate('/attendance')}
                             className="px-8 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/30 hover:scale-105 transition-all"
                         >
-                            Go to Attendance
+                            {t('dashboard.goToAttendance')}
                         </button>
                     </GlassCard>
 
@@ -173,13 +175,13 @@ const Dashboard = () => {
                         <div className="p-4 bg-green-500/20 rounded-full mb-6 text-green-400">
                             <Calendar size={48} />
                         </div>
-                        <h2 className="text-2xl font-bold text-white mb-2">Need a Leave?</h2>
-                        <p className="text-gray-400 mb-6">Submit your leave request easily from here.</p>
+                        <h2 className="text-2xl font-bold text-white mb-2">{t('dashboard.needLeave')}</h2>
+                        <p className="text-gray-400 mb-6">{t('dashboard.submitLeave')}</p>
                         <button
                             onClick={() => navigate('/leaves')}
                             className="px-8 py-3 bg-green-500 text-white rounded-xl font-bold shadow-lg shadow-green-500/30 hover:scale-105 transition-all"
                         >
-                            Request Leave
+                            {t('dashboard.requestLeave')}
                         </button>
                     </GlassCard>
                 </div>
@@ -189,3 +191,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
