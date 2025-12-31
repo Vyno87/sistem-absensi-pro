@@ -5,6 +5,7 @@ import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import Modal from '../components/UI/Modal';
 import api from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import { Clock, Plus, Edit, Trash2 } from 'lucide-react';
 
 interface Shift {
@@ -17,6 +18,7 @@ interface Shift {
 }
 
 const Shifts = () => {
+    const { t } = useLanguage();
     const [shifts, setShifts] = useState<Shift[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,7 +62,7 @@ const Shifts = () => {
             setEditingId(null);
             fetchShifts();
         } catch (error: any) {
-            alert(error.response?.data?.msg || 'Failed to save shift');
+            alert(error.response?.data?.msg || t('shifts.failedSave'));
         } finally {
             setFormLoading(false);
         }
@@ -78,13 +80,13 @@ const Shifts = () => {
     };
 
     const handleDelete = async (id: string) => {
-        if (!window.confirm('Are you sure you want to delete this shift?')) return;
+        if (!window.confirm(t('shifts.confirmDelete'))) return;
 
         try {
             await api.delete(`/shifts/${id}`);
             fetchShifts();
         } catch (error: any) {
-            alert(error.response?.data?.msg || 'Failed to delete shift');
+            alert(error.response?.data?.msg || t('shifts.failedDelete'));
         }
     };
 
@@ -92,8 +94,8 @@ const Shifts = () => {
         <MainLayout>
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">Shift Management</h1>
-                    <p className="text-gray-400">Manage employee work shifts</p>
+                    <h1 className="text-3xl font-bold text-white mb-2">{t('shifts.title')}</h1>
+                    <p className="text-gray-400">{t('shifts.subtitle')}</p>
                 </div>
                 <Button
                     onClick={() => {
@@ -103,15 +105,15 @@ const Shifts = () => {
                     }}
                     icon={<Plus className="w-4 h-4" />}
                 >
-                    Add Shift
+                    {t('shifts.addShift')}
                 </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
-                    <p className="text-white">Loading...</p>
+                    <p className="text-white">{t('common.loading')}</p>
                 ) : shifts.length === 0 ? (
-                    <p className="text-gray-400">No shifts created yet.</p>
+                    <p className="text-gray-400">{t('shifts.noShifts')}</p>
                 ) : (
                     shifts.map((shift) => (
                         <GlassCard key={shift._id} className="relative">
@@ -121,18 +123,18 @@ const Shifts = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold text-white">{shift.name}</h3>
-                                    <p className="text-sm text-gray-400">{shift.description || 'No description'}</p>
+                                    <p className="text-sm text-gray-400">{shift.description || t('shifts.noDescription')}</p>
                                 </div>
                             </div>
 
                             <div className="flex items-center justify-between bg-white/5 rounded-xl p-4 mb-4">
                                 <div className="text-center">
-                                    <p className="text-xs text-gray-400">Start</p>
+                                    <p className="text-xs text-gray-400">{t('shifts.start')}</p>
                                     <p className="text-xl font-bold text-green-400">{shift.startTime}</p>
                                 </div>
                                 <div className="text-gray-500">→</div>
                                 <div className="text-center">
-                                    <p className="text-xs text-gray-400">End</p>
+                                    <p className="text-xs text-gray-400">{t('shifts.end')}</p>
                                     <p className="text-xl font-bold text-red-400">{shift.endTime}</p>
                                 </div>
                             </div>
@@ -144,7 +146,7 @@ const Shifts = () => {
                                     icon={<Edit className="w-4 h-4" />}
                                     className="flex-1"
                                 >
-                                    Edit
+                                    {t('common.edit')}
                                 </Button>
                                 <Button
                                     onClick={() => handleDelete(shift._id)}
@@ -152,7 +154,7 @@ const Shifts = () => {
                                     icon={<Trash2 className="w-4 h-4" />}
                                     className="flex-1 hover:bg-red-500/20 hover:text-red-400"
                                 >
-                                    Delete
+                                    {t('common.delete')}
                                 </Button>
                             </div>
                         </GlassCard>
@@ -163,36 +165,36 @@ const Shifts = () => {
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                title={editingId ? 'Edit Shift' : 'Add New Shift'}
+                title={editingId ? t('shifts.editShift') : t('shifts.addNewShift')}
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input
-                        placeholder="Shift Name (e.g., Morning Shift)"
+                        placeholder={t('shifts.shiftName')}
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
                     />
                     <Input
                         type="time"
-                        placeholder="Start Time"
+                        placeholder={t('shifts.startTime')}
                         value={formData.startTime}
                         onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                         required
                     />
                     <Input
                         type="time"
-                        placeholder="End Time"
+                        placeholder={t('shifts.endTime')}
                         value={formData.endTime}
                         onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                         required
                     />
                     <Input
-                        placeholder="Description (optional)"
+                        placeholder={t('shifts.description')}
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     />
                     <Button type="submit" isLoading={formLoading} className="w-full">
-                        {editingId ? 'Update Shift' : 'Add Shift'}
+                        {editingId ? t('shifts.updateShift') : t('shifts.addShift')}
                     </Button>
                 </form>
             </Modal>
@@ -201,3 +203,4 @@ const Shifts = () => {
 };
 
 export default Shifts;
+

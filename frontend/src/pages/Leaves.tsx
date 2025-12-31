@@ -5,6 +5,7 @@ import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import Modal from '../components/UI/Modal';
 import api from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import { Calendar, Plus, Check, X, Clock } from 'lucide-react';
 
 interface Leave {
@@ -20,6 +21,7 @@ interface Leave {
 }
 
 const Leaves = () => {
+    const { t } = useLanguage();
     const [leaves, setLeaves] = useState<Leave[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,7 +59,7 @@ const Leaves = () => {
             setIsModalOpen(false);
             fetchLeaves();
         } catch (error: any) {
-            alert(error.response?.data?.msg || 'Failed to submit leave request');
+            alert(error.response?.data?.msg || t('leaves.failedSubmit'));
         } finally {
             setFormLoading(false);
         }
@@ -68,7 +70,7 @@ const Leaves = () => {
             await api.put(`/leaves/${id}/approve`);
             fetchLeaves();
         } catch (error: any) {
-            alert(error.response?.data?.msg || 'Failed to approve');
+            alert(error.response?.data?.msg || t('leaves.failedApprove'));
         }
     };
 
@@ -77,7 +79,7 @@ const Leaves = () => {
             await api.put(`/leaves/${id}/reject`);
             fetchLeaves();
         } catch (error: any) {
-            alert(error.response?.data?.msg || 'Failed to reject');
+            alert(error.response?.data?.msg || t('leaves.failedReject'));
         }
     };
 
@@ -89,12 +91,20 @@ const Leaves = () => {
         }
     };
 
+    const getStatusLabel = (status: string) => {
+        switch (status) {
+            case 'approved': return t('leaves.approved');
+            case 'rejected': return t('leaves.rejected');
+            default: return t('leaves.pending');
+        }
+    };
+
     const getTypeLabel = (type: string) => {
         switch (type) {
-            case 'annual': return 'Annual Leave';
-            case 'sick': return 'Sick Leave';
-            case 'personal': return 'Personal Leave';
-            case 'unpaid': return 'Unpaid Leave';
+            case 'annual': return t('leaves.annualLeave');
+            case 'sick': return t('leaves.sickLeave');
+            case 'personal': return t('leaves.personalLeave');
+            case 'unpaid': return t('leaves.unpaidLeave');
             default: return type;
         }
     };
@@ -103,19 +113,19 @@ const Leaves = () => {
         <MainLayout>
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">Leave Management</h1>
-                    <p className="text-gray-400">Request and manage employee leaves</p>
+                    <h1 className="text-3xl font-bold text-white mb-2">{t('leaves.title')}</h1>
+                    <p className="text-gray-400">{t('leaves.subtitle')}</p>
                 </div>
                 <Button onClick={() => setIsModalOpen(true)} icon={<Plus className="w-4 h-4" />}>
-                    Request Leave
+                    {t('leaves.requestLeave')}
                 </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
-                    <p className="text-white">Loading...</p>
+                    <p className="text-white">{t('common.loading')}</p>
                 ) : leaves.length === 0 ? (
-                    <p className="text-gray-400">No leave requests yet.</p>
+                    <p className="text-gray-400">{t('leaves.noLeaves')}</p>
                 ) : (
                     leaves.map((leave) => (
                         <GlassCard key={leave._id}>
@@ -130,7 +140,7 @@ const Leaves = () => {
                                     </div>
                                 </div>
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(leave.status)}`}>
-                                    {leave.status.toUpperCase()}
+                                    {getStatusLabel(leave.status)}
                                 </span>
                             </div>
 
@@ -149,14 +159,14 @@ const Leaves = () => {
                                         icon={<Check className="w-4 h-4" />}
                                         className="flex-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 border-green-500/30"
                                     >
-                                        Approve
+                                        {t('leaves.approve')}
                                     </Button>
                                     <Button
                                         onClick={() => handleReject(leave._id)}
                                         icon={<X className="w-4 h-4" />}
                                         className="flex-1 bg-red-500/20 text-red-400 hover:bg-red-500/30 border-red-500/30"
                                     >
-                                        Reject
+                                        {t('leaves.reject')}
                                     </Button>
                                 </div>
                             )}
@@ -165,10 +175,10 @@ const Leaves = () => {
                 )}
             </div>
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Request Leave">
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('leaves.requestLeave')}>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input
-                        placeholder="Employee ID"
+                        placeholder={t('leaves.employeeId')}
                         value={formData.employeeId}
                         onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
                         required
@@ -179,27 +189,27 @@ const Leaves = () => {
                         className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
                         required
                     >
-                        <option value="annual">Annual Leave</option>
-                        <option value="sick">Sick Leave</option>
-                        <option value="personal">Personal Leave</option>
-                        <option value="unpaid">Unpaid Leave</option>
+                        <option value="annual">{t('leaves.annualLeave')}</option>
+                        <option value="sick">{t('leaves.sickLeave')}</option>
+                        <option value="personal">{t('leaves.personalLeave')}</option>
+                        <option value="unpaid">{t('leaves.unpaidLeave')}</option>
                     </select>
                     <Input
                         type="date"
-                        placeholder="Start Date"
+                        placeholder={t('leaves.startDate')}
                         value={formData.startDate}
                         onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                         required
                     />
                     <Input
                         type="date"
-                        placeholder="End Date"
+                        placeholder={t('leaves.endDate')}
                         value={formData.endDate}
                         onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                         required
                     />
                     <textarea
-                        placeholder="Reason for leave"
+                        placeholder={t('leaves.reason')}
                         value={formData.reason}
                         onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                         className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none resize-none"
@@ -207,7 +217,7 @@ const Leaves = () => {
                         required
                     />
                     <Button type="submit" isLoading={formLoading} className="w-full">
-                        Submit Request
+                        {t('leaves.submitRequest')}
                     </Button>
                 </form>
             </Modal>
@@ -216,3 +226,4 @@ const Leaves = () => {
 };
 
 export default Leaves;
+
