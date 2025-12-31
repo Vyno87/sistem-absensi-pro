@@ -28,6 +28,10 @@ const translations: Translation = {
     'login.password': { en: 'Password', id: 'Kata Sandi' },
     'login.btn': { en: 'Sign In', id: 'Masuk' },
     'login.failed': { en: 'Invalid credentials', id: 'Login gagal' },
+    'login.downloadApp': { en: 'Download App', id: 'Unduh Aplikasi' },
+    'login.installInstruction': { en: 'Install app for faster and easier access.', id: 'Pasang aplikasi untuk akses yang lebih cepat dan mudah.' },
+    'login.installBtn': { en: 'Install Now', id: 'Pasang Sekarang' },
+    'login.iosInstruction': { en: 'Tap the "Share" icon and then "Add to Home Screen" to install.', id: 'Ketuk ikon "Bagikan" lalu "Tambahkan ke Layar Utama" untuk memasang.' },
 
     // Dashboard - Admin
     'dashboard.overview': { en: 'Dashboard Overview', id: 'Ringkasan Dashboard' },
