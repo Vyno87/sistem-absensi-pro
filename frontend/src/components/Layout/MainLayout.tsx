@@ -18,7 +18,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const allNavItems = [
         { label: t('nav.dashboard'), path: '/dashboard', icon: <LayoutDashboard size={20} />, roles: ['admin', 'user'] },
         { label: t('nav.employees'), path: '/employees', icon: <Users size={20} />, roles: ['admin'] },
-        { label: t('nav.attendance'), path: '/attendance', icon: <CalendarCheck size={20} />, roles: ['admin', 'user'] },
+        { label: t('nav.attendance'), path: '/attendance', icon: <CalendarCheck size={20} />, roles: ['user'] },
         { label: t('nav.shifts'), path: '/shifts', icon: <Clock size={20} />, roles: ['admin'] },
         { label: t('nav.leaves'), path: '/leaves', icon: <Calendar size={20} />, roles: ['admin', 'user'] },
         { label: t('nav.reports'), path: '/reports', icon: <FileSpreadsheet size={20} />, roles: ['admin'] },
