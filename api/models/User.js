@@ -15,6 +15,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['admin', 'employee', 'user'],
     default: 'employee'
+  },
+  currentSessionToken: {
+    type: String
   }
 }, {
   timestamps: true

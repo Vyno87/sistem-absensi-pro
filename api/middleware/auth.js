@@ -14,6 +14,15 @@ const auth = async (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
     req.user = decoded.user;
+
+    // RBAC: Single Device Login for Admin
+    if (req.user.role === 'admin') {
+      const user = await User.findById(req.user.id);
+      if (!user || user.currentSessionToken !== token) {
+        return res.status(401).json({ msg: 'Session expired. Login detected on another device.' });
+      }
+    }
+
     next();
   } catch (err) {
     res.status(401).json({ msg: 'Token is not valid' });

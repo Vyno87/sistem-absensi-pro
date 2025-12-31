@@ -54,6 +54,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
     };
 
+    useEffect(() => {
+        let idleTimer: NodeJS.Timeout;
+
+        const resetTimer = () => {
+            if (idleTimer) clearTimeout(idleTimer);
+            // 15 minutes timeout (900,000 ms)
+            idleTimer = setTimeout(() => {
+                if (token) {
+                    console.log('Idle timeout reached. Logging out.');
+                    logout();
+                }
+            }, 15 * 60 * 1000);
+        };
+
+        const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+
+        if (token) {
+            events.forEach(event => window.addEventListener(event, resetTimer));
+            resetTimer(); // Start the timer initialy
+        }
+
+        return () => {
+            if (idleTimer) clearTimeout(idleTimer);
+            events.forEach(event => window.removeEventListener(event, resetTimer));
+        };
+    }, [token]);
+
     return (
         <AuthContext.Provider value={{ user, token, isLoading, login, logout }}>
             {children}

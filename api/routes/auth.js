@@ -55,8 +55,15 @@ router.post('/', async (req, res) => {
             payload,
             process.env.JWT_SECRET || 'secret',
             { expiresIn: 360000 },
-            (err, token) => {
+            async (err, token) => {
                 if (err) throw err;
+
+                // If user is admin, save this token as the current active session
+                if (user.role === 'admin') {
+                    user.currentSessionToken = token;
+                    await user.save();
+                }
+
                 res.json({ token });
             }
         );
