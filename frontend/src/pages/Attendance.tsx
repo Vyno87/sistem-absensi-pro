@@ -9,7 +9,7 @@ import { Clock, CheckCircle, XCircle, Camera, RefreshCw } from 'lucide-react';
 import Webcam from 'react-webcam';
 
 const Attendance = () => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const [employeeId, setEmployeeId] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -92,7 +92,9 @@ const Attendance = () => {
                         <h2 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 mb-4 animate-pulse">
                             {currentTime.toLocaleTimeString()}
                         </h2>
-                        <p className="text-xl text-gray-400">{currentTime.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        <p className="text-xl text-gray-400">
+                            {currentTime.toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                        </p>
                     </div>
 
                     <GlassCard className="p-6 border-indigo-500/30">
@@ -176,8 +178,8 @@ const Attendance = () => {
                                         ID
                                     </div>
                                     <div>
-                                        <p className="font-bold text-white">Employee {100 + i}</p>
-                                        <p className="text-xs text-gray-400">Software Engineer</p>
+                                        <p className="font-bold text-white">{t('attendance.employee')} {100 + i}</p>
+                                        <p className="text-xs text-gray-400">{t('attendance.position')}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">

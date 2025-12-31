@@ -65,6 +65,8 @@ const translations: Translation = {
     'attendance.failed': { en: 'Attendance failed', id: 'Absensi gagal' },
     'attendance.recentActivity': { en: 'Recent Activity', id: 'Aktivitas Terbaru' },
     'attendance.onTime': { en: 'On Time', id: 'Tepat Waktu' },
+    'attendance.employee': { en: 'Employee', id: 'Karyawan' },
+    'attendance.position': { en: 'Software Engineer', id: 'Pengembang Perangkat Lunak' },
 
     // Employees
     'employees.title': { en: 'Employee Management', id: 'Manajemen Karyawan' },
