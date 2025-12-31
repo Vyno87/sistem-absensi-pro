@@ -15,13 +15,15 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         navigate('/login');
     };
 
-    const navItems = [
-        { label: t('nav.dashboard'), path: '/dashboard', icon: <LayoutDashboard size={20} /> },
-        { label: t('nav.employees'), path: '/employees', icon: <Users size={20} /> },
-        { label: t('nav.attendance'), path: '/attendance', icon: <CalendarCheck size={20} /> },
-        { label: t('nav.shifts'), path: '/shifts', icon: <Clock size={20} /> },
-        { label: t('nav.leaves'), path: '/leaves', icon: <Calendar size={20} /> },
+    const allNavItems = [
+        { label: t('nav.dashboard'), path: '/dashboard', icon: <LayoutDashboard size={20} />, roles: ['admin', 'user'] },
+        { label: t('nav.employees'), path: '/employees', icon: <Users size={20} />, roles: ['admin'] },
+        { label: t('nav.attendance'), path: '/attendance', icon: <CalendarCheck size={20} />, roles: ['admin', 'user'] },
+        { label: t('nav.shifts'), path: '/shifts', icon: <Clock size={20} />, roles: ['admin'] },
+        { label: t('nav.leaves'), path: '/leaves', icon: <Calendar size={20} />, roles: ['admin', 'user'] },
     ];
+
+    const navItems = allNavItems.filter(item => item.roles.includes(user?.role || 'user'));
 
     return (
         <div className="flex h-screen bg-transparent overflow-hidden">

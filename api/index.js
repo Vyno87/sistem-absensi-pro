@@ -72,11 +72,19 @@ async function connectToDatabase() {
 // Middleware to ensure DB connection
 app.use(async (req, res, next) => {
   try {
+    const start = Date.now();
     await connectToDatabase();
+    const duration = Date.now() - start;
+    if (duration > 100) {
+      console.log(`=> DB Connection took ${duration}ms for ${req.url}`);
+    }
     next();
   } catch (err) {
-    console.error('DB Connection Error:', err);
-    res.status(500).json({ error: 'Database connection failed' });
+    console.error('CRITICAL DB CONNECTION ERROR:', err);
+    res.status(500).json({
+      error: 'Database connection failed',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 
