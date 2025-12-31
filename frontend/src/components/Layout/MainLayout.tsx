@@ -1,12 +1,12 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar, Globe } from 'lucide-react';
+import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user, logout } = useAuth();
-    const { language, setLanguage, t } = useLanguage();
+    const { t } = useLanguage();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -58,26 +58,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
                 <div className="p-4 mt-auto flex-shrink-0 border-t border-white/5 bg-white/5 backdrop-blur-md rounded-b-3xl">
                     <div className="glass-morphism p-4 rounded-2xl mb-2">
-                        <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
-                            <div className="flex items-center text-gray-400">
-                                <Globe size={16} className="mr-2" />
-                                <span className="text-xs font-semibold uppercase">{t('nav.language')}</span>
-                            </div>
-                            <div className="flex bg-white/5 rounded-lg p-1">
-                                <button
-                                    onClick={() => setLanguage('en')}
-                                    className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all ${language === 'en' ? 'bg-primary text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}
-                                >
-                                    EN
-                                </button>
-                                <button
-                                    onClick={() => setLanguage('id')}
-                                    className={`ml-1 px-2 py-1 text-[10px] font-bold rounded-md transition-all ${language === 'id' ? 'bg-primary text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}
-                                >
-                                    ID
-                                </button>
-                            </div>
-                        </div>
                         <div className="flex items-center justify-between">
                             <div className="truncate mr-2">
                                 <p className="text-[10px] text-gray-500 uppercase font-semibold">{t('nav.loggedInAs')}</p>
