@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar } from 'lucide-react';
+import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar, FileSpreadsheet } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -21,6 +21,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         { label: t('nav.attendance'), path: '/attendance', icon: <CalendarCheck size={20} />, roles: ['admin', 'user'] },
         { label: t('nav.shifts'), path: '/shifts', icon: <Clock size={20} />, roles: ['admin'] },
         { label: t('nav.leaves'), path: '/leaves', icon: <Calendar size={20} />, roles: ['admin', 'user'] },
+        { label: t('nav.reports'), path: '/reports', icon: <FileSpreadsheet size={20} />, roles: ['admin'] },
     ];
 
     const navItems = allNavItems.filter(item => item.roles.includes(user?.role || 'user'));
