@@ -10,9 +10,7 @@ import Modal from '../components/UI/Modal';
 
 const Employees = () => {
     const { t } = useLanguage();
-    const [employees, setEmployees] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [shifts, setShifts] = useState<any[]>([]);
     const [formData, setFormData] = useState({
         employeeId: '',
         name: '',
@@ -21,12 +19,14 @@ const Employees = () => {
         phone: '',
         department: '',
         salary: '',
-        status: 'Kontrak'
+        status: 'Kontrak',
+        shiftId: ''
     });
     const [formLoading, setFormLoading] = useState(false);
 
     useEffect(() => {
         fetchEmployees();
+        fetchShifts();
     }, []);
 
     const fetchEmployees = async () => {
@@ -37,6 +37,15 @@ const Employees = () => {
             console.error("Fetch Error", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchShifts = async () => {
+        try {
+            const res = await api.get('/shifts');
+            setShifts(res.data);
+        } catch (error) {
+            console.error("Fetch Shift Error", error);
         }
     };
 
@@ -62,7 +71,8 @@ const Employees = () => {
                 phone: '',
                 department: '',
                 salary: '',
-                status: 'Kontrak'
+                status: 'Kontrak',
+                shiftId: ''
             });
             setIsModalOpen(false);
 
@@ -108,12 +118,18 @@ const Employees = () => {
                                 <h3 className="text-lg font-bold text-white mb-1">{emp.name}</h3>
                                 <p className="text-primary text-sm mb-4">{emp.position}</p>
 
-                                <div className="w-full bg-white/5 rounded-xl p-3 flex justify-between items-center text-sm">
+                                <div className="w-full bg-white/5 rounded-xl p-3 flex justify-between items-center text-sm mb-2">
                                     <div className="text-gray-400">ID: <span className="text-white font-mono">{emp.employeeId}</span></div>
                                     <div className={`px-2 py-1 rounded text-xs font-bold ${emp.status === 'Tetap' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
                                         {emp.status === 'Tetap' ? t('employees.permanent') : t('employees.contract')}
                                     </div>
                                 </div>
+
+                                {emp.shiftId && (
+                                    <div className="w-full bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-2 text-xs text-indigo-300">
+                                        Shift: {emp.shiftId.name} ({emp.shiftId.startTime} - {emp.shiftId.endTime})
+                                    </div>
+                                )}
 
                                 <div className="mt-4 w-full grid grid-cols-2 gap-2 text-center text-xs">
                                     <div className="p-2 rounded bg-white/5">
@@ -177,6 +193,20 @@ const Employees = () => {
                         onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
                         required
                     />
+
+                    <select
+                        value={formData.shiftId}
+                        onChange={(e) => setFormData({ ...formData, shiftId: e.target.value })}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
+                    >
+                        <option value="" className="bg-slate-800 text-gray-400">Select Shift (Optional)</option>
+                        {shifts.map(shift => (
+                            <option key={shift._id} value={shift._id} className="bg-slate-800">
+                                {shift.name} ({shift.startTime} - {shift.endTime})
+                            </option>
+                        ))}
+                    </select>
+
                     <select
                         value={formData.status}
                         onChange={(e) => setFormData({ ...formData, status: e.target.value })}

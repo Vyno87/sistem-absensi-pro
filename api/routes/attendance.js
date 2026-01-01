@@ -55,16 +55,40 @@ router.post('/', auth, async (req, res) => {
     }
 
     // Check if employee exists  
-    const employee = await Employee.findOne({ employeeId });
+    // Check if employee exists  
+    const employee = await Employee.findOne({ employeeId }).populate('shiftId');
     if (!employee) {
       return res.status(404).json({ msg: 'Employee not found' });
+    }
+
+    // Automatic Late Detection Logic
+    let finalStatus = status; // Default to client sent status (usually 'present')
+
+    if (employee.shiftId && checkIn) {
+      const checkInTime = new Date(checkIn);
+      // Get shift start time (e.g., "08:00")
+      const [startHour, startMinute] = employee.shiftId.startTime.split(':').map(Number);
+
+      // Create a Date object for the shift start time on the same day as checkIn
+      const shiftStart = new Date(checkInTime);
+      shiftStart.setHours(startHour, startMinute, 0, 0);
+
+      // Add tolerance (e.g., 15 minutes)
+      const toleranceMinutes = 15;
+      const lateThreshold = new Date(shiftStart.getTime() + toleranceMinutes * 60000);
+
+      if (checkInTime > lateThreshold) {
+        finalStatus = 'late';
+      } else {
+        finalStatus = 'present';
+      }
     }
 
     // Create new attendance record  
     const newAttendance = new Attendance({
       employeeId,
       checkIn,
-      status,
+      status: finalStatus,
       latitude: latitude || null,
       longitude: longitude || null,
       facePhoto: facePhoto || null
@@ -73,11 +97,11 @@ router.post('/', auth, async (req, res) => {
     const attendance = await newAttendance.save();
 
     // Update employee's attendance count  
-    if (status === 'present') {
+    if (finalStatus === 'present') {
       employee.attendanceCount.present += 1;
-    } else if (status === 'absent') {
+    } else if (finalStatus === 'absent') {
       employee.attendanceCount.absent += 1;
-    } else if (status === 'late') {
+    } else if (finalStatus === 'late') {
       employee.attendanceCount.late += 1;
     }
 

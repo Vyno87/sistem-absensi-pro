@@ -8,7 +8,7 @@ const auth = require('../middleware/auth');
 // @access   Private  
 router.get('/', auth, async (req, res) => {
   try {
-    const employees = await Employee.find().sort({ date: -1 });
+    const employees = await Employee.find().populate('shiftId').sort({ date: -1 });
     res.json(employees);
   } catch (err) {
     console.error(err.message);
@@ -27,7 +27,8 @@ router.post('/', auth, async (req, res) => {
       employeeId,
       name,
       position,
-      status
+      status,
+      shiftId: req.body.shiftId // Optional: assign shift
     });
 
     const employee = await newEmployee.save();
@@ -49,6 +50,7 @@ router.put('/:id', auth, async (req, res) => {
   if (name) employeeFields.name = name;
   if (position) employeeFields.position = position;
   if (status) employeeFields.status = status;
+  if (req.body.shiftId) employeeFields.shiftId = req.body.shiftId;
 
   try {
     let employee = await Employee.findById(req.params.id);
