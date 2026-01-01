@@ -28,6 +28,7 @@ const translations: Translation = {
     'login.password': { en: 'Password', id: 'Kata Sandi' },
     'login.btn': { en: 'Sign In', id: 'Masuk' },
     'login.failed': { en: 'Invalid credentials', id: 'Login gagal' },
+    'login.adminOnline': { en: 'Admin Account is Currently Online', id: 'Akun Admin Sedang Online' },
     'login.downloadApp': { en: 'Download App', id: 'Unduh Aplikasi' },
     'login.installInstruction': { en: 'Install app for faster and easier access.', id: 'Pasang aplikasi untuk akses yang lebih cepat dan mudah.' },
     'login.installBtn': { en: 'Install Now', id: 'Pasang Sekarang' },

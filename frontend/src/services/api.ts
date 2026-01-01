@@ -28,6 +28,14 @@ api.interceptors.response.use(
         if (error.response?.status === 401) {
             // Session expired or login from another device
             localStorage.removeItem('token');
+
+            // Check if it's specifically the admin online elsewhere error
+            const errorCode = error.response?.data?.code;
+            if (errorCode === 'ADMIN_ONLINE_ELSEWHERE') {
+                // Show alert before redirecting
+                alert('Akun Admin Sedang Online di perangkat lain. Anda akan dialihkan ke halaman login.');
+            }
+
             // Redirect to login page
             if (window.location.pathname !== '/login' && window.location.pathname !== '/') {
                 window.location.href = '/login';

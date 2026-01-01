@@ -19,7 +19,7 @@ const auth = async (req, res, next) => {
     if (req.user.role === 'admin') {
       const user = await User.findById(req.user.id);
       if (!user || user.currentSessionToken !== token) {
-        return res.status(401).json({ msg: 'Session expired. Login detected on another device.' });
+        return res.status(401).json({ msg: 'Admin account is online on another device', code: 'ADMIN_ONLINE_ELSEWHERE' });
       }
     }
 
