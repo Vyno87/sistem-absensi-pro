@@ -21,4 +21,20 @@ api.interceptors.request.use(
     }
 );
 
+// Add a response interceptor for auto-logout on 401
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            // Session expired or login from another device
+            localStorage.removeItem('token');
+            // Redirect to login page
+            if (window.location.pathname !== '/login' && window.location.pathname !== '/') {
+                window.location.href = '/login';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default api;
