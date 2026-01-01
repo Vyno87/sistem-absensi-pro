@@ -10,7 +10,10 @@ import Modal from '../components/UI/Modal';
 
 const Employees = () => {
     const { t } = useLanguage();
+    const [employees, setEmployees] = useState<any[]>([]);
     const [shifts, setShifts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({
         employeeId: '',
         name: '',
