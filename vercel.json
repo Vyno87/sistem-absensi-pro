@@ -1,5 +1,5 @@
 {
-    "buildCommand": "CI=false npm run build",
+    "buildCommand": "cd frontend && npm install && CI=false npm run build",
     "framework": "create-react-app",
     "rewrites": [
         {
