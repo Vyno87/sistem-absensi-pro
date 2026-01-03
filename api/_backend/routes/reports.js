@@ -36,24 +36,41 @@ const getAttendanceData = async (startDate, endDate) => {
     });
 
     // Format data
-    const formattedData = attendanceRecords.map(record => {
-        const emp = employeeMap[record.employeeId] || {};
-        return {
-            employeeId: record.employeeId || 'N/A',
-            name: emp.name || 'Unknown',
-            position: emp.position || 'N/A',
-            status: emp.status || 'N/A',
-            performanceScore: emp.performanceScore || 0,
-            date: new Date(record.date).toLocaleDateString('id-ID'),
-            checkIn: new Date(record.checkIn).toLocaleTimeString('id-ID'),
-            checkOut: record.checkOut ? new Date(record.checkOut).toLocaleTimeString('id-ID') : '-',
-            attendanceStatus: record.status,
-            latitude: record.latitude || '-',
-            longitude: record.longitude || '-'
-        };
-    });
+    const emp = employeeMap[record.employeeId] || {};
 
-    return { formattedData, employees, employeeMap };
+    // Calculate Overtime
+    let overtime = '-';
+    if (record.checkIn && record.checkOut) {
+        const start = new Date(record.checkIn);
+        const end = new Date(record.checkOut);
+        const diffMs = end - start;
+        const diffHours = diffMs / (1000 * 60 * 60);
+
+        // Assume 9 hours work day (8 work + 1 break)
+        if (diffHours > 9) {
+            const otHours = Math.floor(diffHours - 9);
+            const otMinutes = Math.floor(((diffHours - 9) - otHours) * 60);
+            overtime = `${otHours}j ${otMinutes}m`;
+        }
+    }
+
+    return {
+        employeeId: record.employeeId || 'N/A',
+        name: emp.name || 'Unknown',
+        position: emp.position || 'N/A',
+        status: emp.status || 'N/A',
+        performanceScore: emp.performanceScore || 0,
+        date: new Date(record.date).toLocaleDateString('id-ID'),
+        checkIn: new Date(record.checkIn).toLocaleTimeString('id-ID'),
+        checkOut: record.checkOut ? new Date(record.checkOut).toLocaleTimeString('id-ID') : '-',
+        overtime: overtime,
+        attendanceStatus: record.status,
+        latitude: record.latitude || '-',
+        longitude: record.longitude || '-'
+    };
+});
+
+return { formattedData, employees, employeeMap };
 };
 
 // Helper function to calculate employee statistics

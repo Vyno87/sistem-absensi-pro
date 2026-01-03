@@ -69,6 +69,7 @@ const Attendance = () => {
             fetchRecent();
 
             const successType = type === 'Check In' ? t('attendance.checkIn') : t('attendance.checkOut');
+            setLoading(false); // Fix: Stop loading immediately
             setMessage({ type: 'success', text: `${t('attendance.success')}: ${successType}` });
             setEmployeeId('');
             setImgSrc(null);

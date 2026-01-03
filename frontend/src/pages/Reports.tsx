@@ -299,6 +299,9 @@ const Reports = () => {
                                     <th className="py-2 px-2 text-left">No</th>
                                     <th className="py-2 px-2 text-left">{t('reports.name')}</th>
                                     <th className="py-2 px-2 text-left">{t('reports.date')}</th>
+                                    <th className="py-2 px-2 text-center">Masuk</th>
+                                    <th className="py-2 px-2 text-center">Keluar</th>
+                                    <th className="py-2 px-2 text-center text-yellow-500">Lembur</th>
                                     <th className="py-2 px-2 text-left">{t('reports.status')}</th>
                                 </tr>
                             </thead>
@@ -310,6 +313,9 @@ const Reports = () => {
                                             <p className="text-white">{record.name}</p>
                                         </td>
                                         <td className="py-2 px-2 text-gray-400">{record.date}</td>
+                                        <td className="py-2 px-2 text-center text-green-400 font-mono">{record.checkIn}</td>
+                                        <td className="py-2 px-2 text-center text-red-400 font-mono">{record.checkOut}</td>
+                                        <td className="py-2 px-2 text-center text-yellow-400 font-bold">{record.overtime}</td>
                                         <td className={`py-2 px-2 font-bold ${getStatusColor(record.attendanceStatus)}`}>
                                             {record.attendanceStatus.toUpperCase()}
                                         </td>
