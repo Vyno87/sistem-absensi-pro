@@ -25,8 +25,8 @@ const Reports = () => {
         setEndDate(lastDay.toISOString().split('T')[0]);
     }, []);
 
-    const fetchData = async () => {
-        setPreviewLoading(true);
+    const fetchData = async (isBackground = false) => {
+        if (!isBackground) setPreviewLoading(true);
         try {
             // Fetch detailed attendance
             const resPreview = await api.get('/reports/attendance', {
@@ -42,14 +42,14 @@ const Reports = () => {
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
-            setPreviewLoading(false);
+            if (!isBackground) setPreviewLoading(false);
         }
     };
 
     useEffect(() => {
         if (startDate && endDate) {
-            fetchData();
-            const interval = setInterval(fetchData, 3000); // Auto-refresh reports every 3s
+            fetchData(); // Initial load (shows spinner)
+            const interval = setInterval(() => fetchData(true), 3000); // Silent refresh
             return () => clearInterval(interval);
         }
     }, [startDate, endDate]);
@@ -144,7 +144,7 @@ const Reports = () => {
                         />
                     </div>
                     <Button
-                        onClick={fetchData}
+                        onClick={() => fetchData(false)}
                         icon={<RefreshCw className="w-4 h-4" />}
                         variant="secondary"
                     >
