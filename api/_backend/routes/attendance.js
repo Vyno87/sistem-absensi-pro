@@ -24,7 +24,12 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 // @desc     Record attendance  
 // @access   Private  
 router.post('/', auth, async (req, res) => {
-  const { employeeId, checkIn, status, latitude, longitude, facePhoto } = req.body;
+  let { employeeId, checkIn, status, latitude, longitude, facePhoto } = req.body;
+
+  // Default checkIn to now if not provided
+  if (!checkIn) {
+    checkIn = new Date();
+  }
 
   try {
     // GPS Validation
@@ -109,8 +114,8 @@ router.post('/', auth, async (req, res) => {
 
     res.json(attendance);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    console.error('Attendance Error:', err);
+    res.status(500).json({ msg: 'Server Error', error: err.message });
   }
 });
 
