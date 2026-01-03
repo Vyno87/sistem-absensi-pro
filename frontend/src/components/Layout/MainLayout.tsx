@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar, FileSpreadsheet } from 'lucide-react';
+import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar, FileSpreadsheet, RefreshCw } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -14,6 +14,19 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         logout();
         navigate('/login');
     };
+
+    React.useEffect(() => {
+        // Listen for service worker updates
+        const onSWUpdate = () => {
+            const toast = document.getElementById('update-toast');
+            if (toast) toast.classList.remove('hidden');
+        };
+
+        // Custom event we might dispatch from index.tsx later or simple timer
+        // For now, we'll just check if we can reach the server after a failure
+        window.addEventListener('sw-update-available', onSWUpdate);
+        return () => window.removeEventListener('sw-update-available', onSWUpdate);
+    }, []);
 
     const allNavItems = [
         { label: t('nav.dashboard'), path: '/dashboard', icon: <LayoutDashboard size={20} />, roles: ['admin', 'user'] },
@@ -89,6 +102,39 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     {children}
                 </div>
             </main>
+
+            {/* Update Notification (Solusi Jangka Panjang) */}
+            <div id="update-toast" className="hidden fixed bottom-4 right-4 bg-slate-800 border border-primary p-4 rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.5)] z-50 animate-bounce">
+                <div className="flex items-center space-x-4">
+                    <div className="bg-primary/20 p-2 rounded-full text-primary">
+                        <RefreshCw size={24} className="animate-spin" />
+                    </div>
+                    <div>
+                        <p className="font-bold text-white">Update Available</p>
+                        <p className="text-xs text-gray-400">New version is ready.</p>
+                    </div>
+                    <button
+                        onClick={() => {
+                            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                                navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+                            }
+                            window.location.reload();
+                        }}
+                        className="px-3 py-1 bg-primary text-white text-sm rounded-lg hover:bg-primary-dark"
+                    >
+                        Reload
+                    </button>
+                    <button
+                        onClick={() => {
+                            const el = document.getElementById('update-toast');
+                            if (el) el.classList.add('hidden');
+                        }}
+                        className="text-gray-400 hover:text-white"
+                    >
+                        <LogOut size={16} /> {/* Reusing LogOut icon as close for now */}
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
