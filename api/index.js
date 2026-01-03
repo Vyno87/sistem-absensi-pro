@@ -7,11 +7,17 @@ const { authLimiter, attendanceLimiter } = require('../backend/middleware/rateLi
 dotenv.config();
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Vercel)
 
 app.use((req, res, next) => {
   console.log(`[BACKEND] Request: ${req.method} ${req.url}`);
   next();
 });
+
+console.log('=> Starting API Server...');
+console.log('=> NODE_ENV:', process.env.NODE_ENV);
+console.log('=> JWT_SECRET exists:', !!process.env.JWT_SECRET);
+console.log('=> MONGODB_URI exists:', !!process.env.MONGODB_URI);
 
 // CORS Configuration - Restrict to frontend domain
 const allowedOrigins = [
