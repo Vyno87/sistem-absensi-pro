@@ -124,6 +124,53 @@ const Reports = () => {
         }
     };
 
+    const toggleSelect = (id: string) => {
+        setSelectedIds(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedIds.length === previewData.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(previewData.map(r => r._id));
+        }
+    };
+
+    const handleBulkDelete = async () => {
+        if (!window.confirm(`Hapus ${selectedIds.length} data absensi?`)) return;
+
+        try {
+            await Promise.all(selectedIds.map(id => api.delete(`/attendance/${id}`)));
+            setSelectedIds([]);
+            fetchData(false);
+        } catch (error) {
+            console.error('Error bulk deleting:', error);
+            alert('Gagal menghapus beberapa data');
+        }
+    };
+
+    const formatDate = (date: any) => {
+        if (!date) return '-';
+        return new Date(date).toLocaleDateString('id-ID', {
+            timeZone: 'Asia/Jakarta',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    };
+
+    const formatTime = (date: any) => {
+        if (!date) return '-';
+        return new Date(date).toLocaleTimeString('id-ID', {
+            timeZone: 'Asia/Jakarta',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+    };
+
     const eligibleForPromotion = statsData.filter(s => s.isEligibleForPromotion);
 
     return (
