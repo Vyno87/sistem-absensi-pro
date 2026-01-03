@@ -27,9 +27,15 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const navItems = allNavItems.filter(item => item.roles.includes(user?.role || 'user'));
 
     return (
-        <div className="flex h-screen bg-transparent overflow-hidden">
+        <div className="flex h-screen bg-black overflow-hidden relative">
+            {/* App-wide Neon Backgrounds */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                <div className="absolute top-[-20%] right-[-10%] w-[100vh] h-[100vh] bg-primary/5 rounded-full blur-[150px] animate-float-neon" />
+                <div className="absolute bottom-[-20%] left-[-10%] w-[90vh] h-[90vh] bg-secondary/5 rounded-full blur-[120px] animate-float-neon-delayed" />
+            </div>
+
             {/* Sidebar */}
-            <aside className="w-72 glass-panel m-4 rounded-3xl flex flex-col border-r-0 relative z-20 overflow-hidden">
+            <aside className="w-72 glass-panel m-4 rounded-3xl flex flex-col border-r-0 relative z-20 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
                 <div className="p-8 flex-shrink-0">
                     <h2 className="text-2xl font-bold tracking-tighter">
                         <span className="text-gradient">SISTEM ABSENSI PRO</span>

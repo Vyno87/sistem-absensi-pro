@@ -83,12 +83,10 @@ body {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
 }
 
+/* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }

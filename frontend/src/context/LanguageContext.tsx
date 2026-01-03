@@ -202,14 +202,22 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [language, setLanguage] = useState<Language>('id'); // Default to Indonesian
+    const [language, setLanguage] = useState<Language>(() => {
+        const saved = localStorage.getItem('absensi-lang');
+        return (saved as Language) || 'id';
+    });
 
     const t = (key: string): string => {
         return translations[key]?.[language] || key;
     };
 
+    const handleSetLanguage = (lang: Language) => {
+        setLanguage(lang);
+        localStorage.setItem('absensi-lang', lang);
+    };
+
     return (
-        <LanguageContext.Provider value={{ language, setLanguage, t }}>
+        <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
             {children}
         </LanguageContext.Provider>
     );

@@ -80,12 +80,22 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[#020617]">
+        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-black selection:bg-primary/30">
+            {/* Background Gradients - Nuansa Neon Premium */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-5%] w-[80vh] h-[80vh] bg-primary/10 rounded-full blur-[120px] animate-float-neon" />
+                <div className="absolute bottom-[-10%] right-[-5%] w-[70vh] h-[70vh] bg-secondary/10 rounded-full blur-[100px] animate-float-neon-delayed" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vh] h-[60vh] bg-indigo-500/5 rounded-full blur-[150px] animate-float-neon-slow" />
+
+                {/* Grid Overlay for Tech Feel */}
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] pointer-events-none" />
+            </div>
+
             {/* Language Selector - Top Right */}
-            <div className="absolute top-4 right-4 z-10">
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl rounded-xl p-2 border border-white/10">
-                    <Globe className="w-4 h-4 text-gray-400" />
-                    <div className="flex bg-white/5 rounded-lg p-1">
+            <div className="absolute top-6 right-6 z-20">
+                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-xl rounded-2xl p-1.5 border border-white/10">
+                    <Globe className="w-4 h-4 text-gray-500 ml-2" />
+                    <div className="flex bg-white/5 rounded-xl p-1">
                         <button
                             onClick={() => setLanguage('en')}
                             className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${language === 'en' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'}`}
@@ -102,13 +112,7 @@ const Login = () => {
                 </div>
             </div>
 
-            {/* Background Decor */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[100px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/30 rounded-full blur-[100px]" />
-            </div>
-
-            <div className="w-full max-w-md space-y-6">
+            <div className="w-full max-w-md space-y-6 relative z-10">
                 <GlassCard className="p-8 backdrop-blur-xl border-opacity-20 animate-fade-in-up">
                     <div className="text-center mb-8">
                         <h1 className="text-4xl font-bold mb-2">

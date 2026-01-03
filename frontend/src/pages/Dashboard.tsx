@@ -125,13 +125,13 @@ const Dashboard = () => {
                             { label: t('dashboard.promotionReady'), value: stats?.promotionRecommended || 0, icon: <Award className="text-yellow-400" />, color: 'from-yellow-500/20 to-yellow-600/5' },
                             { label: t('dashboard.activeStatus'), value: stats?.employeesByStatus?.length || 0, icon: <UserCheck className="text-purple-400" />, color: 'from-purple-500/20 to-purple-600/5' },
                         ].map((stat, idx) => (
-                            <GlassCard key={idx} className={`relative overflow-hidden bg-gradient-to-br ${stat.color} border-white/5`}>
+                            <GlassCard key={idx} className={`relative overflow-hidden bg-gradient-to-br ${stat.color} border-white/5 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(99,102,241,0.1)] transition-all cursor-default group`}>
                                 <div className="flex justify-between items-start z-10 relative">
                                     <div>
                                         <p className="text-gray-400 text-sm font-medium mb-1">{stat.label}</p>
-                                        <h3 className="text-3xl font-bold text-white">{stat.value}</h3>
+                                        <h3 className="text-3xl font-bold text-white group-hover:text-primary transition-colors">{stat.value}</h3>
                                     </div>
-                                    <div className="p-3 bg-white/5 rounded-xl backdrop-blur-md">
+                                    <div className="p-3 bg-white/5 rounded-xl backdrop-blur-md group-hover:bg-primary/20 transition-all">
                                         {stat.icon}
                                     </div>
                                 </div>
