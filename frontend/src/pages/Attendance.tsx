@@ -57,6 +57,7 @@ const Attendance = () => {
             // const position = await new Promise... (removed for stability)
 
             await api.post('/attendance', {
+                type, // Send 'Check In' or 'Check Out'
                 employeeId,
                 checkIn: new Date(),
                 status: 'present',

@@ -24,45 +24,59 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 // @desc     Record attendance  
 // @access   Private  
 router.post('/', auth, async (req, res) => {
-  let { employeeId, checkIn, status, latitude, longitude, facePhoto } = req.body;
+  let { type, employeeId, checkIn, status, latitude, longitude, facePhoto } = req.body;
 
   // Default checkIn to now if not provided
   if (!checkIn) {
     checkIn = new Date();
   }
 
+  const today = new Date(checkIn);
+  today.setHours(0, 0, 0, 0);
+
   try {
-    // GPS Validation disabled per user request
-    if (false && latitude && longitude) {
-      const officeLatitude = parseFloat(process.env.OFFICE_LATITUDE) || -6.188696059432105;
-      const officeLongitude = parseFloat(process.env.OFFICE_LONGITUDE) || 106.33081285722146;
-      const maxRadius = parseFloat(process.env.OFFICE_RADIUS_METERS) || 100;
-
-      const distance = calculateDistance(
-        officeLatitude,
-        officeLongitude,
-        latitude,
-        longitude
-      );
-
-      if (distance > maxRadius) {
-        return res.status(403).json({
-          msg: 'You are outside the office area',
-          distance: Math.round(distance),
-          maxRadius
-        });
-      }
-    }
-
-    // Check if employee exists  
     // Check if employee exists  
     const employee = await Employee.findOne({ employeeId }).populate('shiftId');
     if (!employee) {
       return res.status(404).json({ msg: 'Employee not found' });
     }
 
+    // CHECK OUT LOGIC
+    if (type === 'Check Out') {
+      const lastRecord = await Attendance.findOne({
+        employeeId,
+        date: { $gte: today }
+      }).sort({ createdAt: -1 });
+
+      if (!lastRecord) {
+        return res.status(400).json({ msg: 'No Check In record found for today' });
+      }
+
+      if (lastRecord.checkOut) {
+        return res.status(400).json({ msg: 'You have already checked out today' });
+      }
+
+      lastRecord.checkOut = new Date();
+      await lastRecord.save();
+      return res.json(lastRecord);
+    }
+
+    // CHECK IN LOGIC (Default)
+
+    // Prevent double check-in
+    const existingRecord = await Attendance.findOne({
+      employeeId,
+      date: { $gte: today }
+    });
+
+    if (existingRecord) {
+      // If they already have a record today, don't allow another Check In.
+      // User should use Check Out.
+      return res.status(400).json({ msg: 'You have already checked in today' });
+    }
+
     // Automatic Late Detection Logic
-    let finalStatus = status; // Default to client sent status (usually 'present')
+    let finalStatus = status;
 
     if (employee.shiftId && checkIn) {
       const checkInTime = new Date(checkIn);
