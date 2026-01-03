@@ -62,9 +62,9 @@ const getAttendanceData = async (startDate, endDate) => {
             position: emp.position || 'N/A',
             status: emp.status || 'N/A',
             performanceScore: emp.performanceScore || 0,
-            date: new Date(record.date).toLocaleDateString('id-ID'),
-            checkIn: new Date(record.checkIn).toLocaleTimeString('id-ID'),
-            checkOut: record.checkOut ? new Date(record.checkOut).toLocaleTimeString('id-ID') : '-',
+            date: record.date, // Send raw date for timezone handling on frontend
+            checkIn: record.checkIn, // Send raw date
+            checkOut: record.checkOut || null, // Send raw date or null
             overtime: overtime,
             attendanceStatus: record.status,
             latitude: record.latitude || '-',
