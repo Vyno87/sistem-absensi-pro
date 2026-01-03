@@ -5,7 +5,7 @@ import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { FileSpreadsheet, FileText, Download, Calendar, Users, Clock, RefreshCw } from 'lucide-react';
+import { FileSpreadsheet, FileText, Download, Calendar, Users, Clock, RefreshCw, Trash2, X, User } from 'lucide-react';
 
 const Reports = () => {
     const { t } = useLanguage();
@@ -15,6 +15,8 @@ const Reports = () => {
     const [previewData, setPreviewData] = useState<any[]>([]);
     const [statsData, setStatsData] = useState<any[]>([]);
     const [previewLoading, setPreviewLoading] = useState(false);
+    const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+    const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; record: any }>({ show: false, record: null });
 
     // Set default date range (current month)
     useEffect(() => {
@@ -108,6 +110,17 @@ const Reports = () => {
             case 'late': return 'text-yellow-400';
             case 'absent': return 'text-red-400';
             default: return 'text-gray-400';
+        }
+    };
+
+    const handleDelete = async (record: any) => {
+        try {
+            await api.delete(`/attendance/${record._id}`);
+            setDeleteConfirm({ show: false, record: null });
+            fetchData(false); // Refresh data after delete
+        } catch (error) {
+            console.error('Error deleting attendance:', error);
+            alert('Gagal menghapus data absensi');
         }
     };
 
@@ -297,18 +310,34 @@ const Reports = () => {
                             <thead>
                                 <tr className="border-b border-white/10 text-gray-500 uppercase">
                                     <th className="py-2 px-2 text-left">No</th>
+                                    <th className="py-2 px-2 text-center">Foto</th>
                                     <th className="py-2 px-2 text-left">{t('reports.name')}</th>
                                     <th className="py-2 px-2 text-left">{t('reports.date')}</th>
                                     <th className="py-2 px-2 text-center">Masuk</th>
                                     <th className="py-2 px-2 text-center">Keluar</th>
                                     <th className="py-2 px-2 text-center text-yellow-500">Lembur</th>
                                     <th className="py-2 px-2 text-left">{t('reports.status')}</th>
+                                    <th className="py-2 px-2 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {previewData.slice(0, 10).map((record, index) => (
                                     <tr key={index} className="border-b border-white/5 hover:bg-white/5">
                                         <td className="py-2 px-2 text-gray-500">{index + 1}</td>
+                                        <td className="py-2 px-2 text-center">
+                                            {record.facePhoto ? (
+                                                <img
+                                                    src={record.facePhoto}
+                                                    alt={record.name}
+                                                    className="w-10 h-10 rounded-full object-cover mx-auto cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all"
+                                                    onClick={() => setSelectedPhoto(record.facePhoto)}
+                                                />
+                                            ) : (
+                                                <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center mx-auto">
+                                                    <User className="w-5 h-5 text-gray-500" />
+                                                </div>
+                                            )}
+                                        </td>
                                         <td className="py-2 px-2">
                                             <p className="text-white">{record.name}</p>
                                         </td>
@@ -319,6 +348,15 @@ const Reports = () => {
                                         <td className={`py-2 px-2 font-bold ${getStatusColor(record.attendanceStatus)}`}>
                                             {record.attendanceStatus.toUpperCase()}
                                         </td>
+                                        <td className="py-2 px-2 text-center">
+                                            <button
+                                                onClick={() => setDeleteConfirm({ show: true, record })}
+                                                className="p-2 hover:bg-red-500/20 rounded-lg transition-colors group"
+                                                title="Hapus"
+                                            >
+                                                <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-400" />
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -326,6 +364,56 @@ const Reports = () => {
                     </div>
                 )}
             </GlassCard>
+
+            {/* Photo Modal */}
+            {selectedPhoto && (
+                <div
+                    className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+                    onClick={() => setSelectedPhoto(null)}
+                >
+                    <div className="relative max-w-2xl max-h-[90vh]">
+                        <button
+                            onClick={() => setSelectedPhoto(null)}
+                            className="absolute -top-12 right-0 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+                        >
+                            <X className="w-6 h-6 text-white" />
+                        </button>
+                        <img
+                            src={selectedPhoto}
+                            alt="Face Photo"
+                            className="max-w-full max-h-[90vh] rounded-lg shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Dialog */}
+            {deleteConfirm.show && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <GlassCard className="max-w-md w-full p-6">
+                        <h3 className="text-xl font-bold text-white mb-4">Konfirmasi Hapus</h3>
+                        <p className="text-gray-300 mb-6">
+                            Yakin hapus data absensi <span className="font-bold text-white">{deleteConfirm.record?.name}</span> pada tanggal <span className="font-bold text-white">{deleteConfirm.record?.date}</span>?
+                        </p>
+                        <div className="flex gap-3">
+                            <Button
+                                onClick={() => handleDelete(deleteConfirm.record)}
+                                className="flex-1 bg-red-500 hover:bg-red-600 border-none"
+                            >
+                                Hapus
+                            </Button>
+                            <Button
+                                onClick={() => setDeleteConfirm({ show: false, record: null })}
+                                variant="secondary"
+                                className="flex-1"
+                            >
+                                Batal
+                            </Button>
+                        </div>
+                    </GlassCard>
+                </div>
+            )}
         </MainLayout>
     );
 };

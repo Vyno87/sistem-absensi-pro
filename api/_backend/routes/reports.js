@@ -56,6 +56,7 @@ const getAttendanceData = async (startDate, endDate) => {
         }
 
         return {
+            _id: record._id, // Include ID for deletion
             employeeId: record.employeeId || 'N/A',
             name: emp.name || 'Unknown',
             position: emp.position || 'N/A',
@@ -67,7 +68,8 @@ const getAttendanceData = async (startDate, endDate) => {
             overtime: overtime,
             attendanceStatus: record.status,
             latitude: record.latitude || '-',
-            longitude: record.longitude || '-'
+            longitude: record.longitude || '-',
+            facePhoto: record.facePhoto || null // Include face photo
         };
     });
 
