@@ -1,7 +1,7 @@
 {
-  "name": "Sistem Absensi PRO",
-  "short_name": "AbsensiPRO",
-  "description": "Modern Biometric Attendance System - Axiom Edition",
+  "name": "Axiom ID - Attendance System",
+  "short_name": "Axiom ID",
+  "description": "Secure Biometric Attendance System - Modern Edition",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#020617",

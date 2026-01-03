@@ -34,6 +34,8 @@ const attendanceSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  deviceAuthToken: String,
+  hardwareUid: Number,
   notes: String
 }, {
   timestamps: true

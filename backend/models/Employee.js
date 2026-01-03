@@ -12,6 +12,11 @@ const employeeSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  fingerprintId: {
+    type: Number,
+    unique: true,
+    sparse: true
+  },
   position: {
     type: String,
     required: true,

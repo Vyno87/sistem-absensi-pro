@@ -11,7 +11,7 @@ interface Translation {
 
 const translations: Translation = {
     // Auth & Navigation
-    'app.title': { en: 'ATTENDANCE SYSTEM PRO', id: 'SISTEM ABSENSI PRO' },
+    'app.title': { en: 'Axiom ID', id: 'Axiom ID' },
     'nav.dashboard': { en: 'Dashboard', id: 'Dashboard' },
     'nav.attendance': { en: 'Attendance', id: 'Absensi' },
     'nav.employees': { en: 'Employees', id: 'Karyawan' },

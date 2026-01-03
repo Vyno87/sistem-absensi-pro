@@ -23,7 +23,8 @@ const Employees = () => {
         department: '',
         salary: '',
         status: 'Kontrak',
-        shiftId: ''
+        shiftId: '',
+        fingerprintId: ''
     });
     const [formLoading, setFormLoading] = useState(false);
 
@@ -75,7 +76,8 @@ const Employees = () => {
                 department: '',
                 salary: '',
                 status: 'Kontrak',
-                shiftId: ''
+                shiftId: '',
+                fingerprintId: ''
             });
             setIsModalOpen(false);
 
@@ -195,6 +197,12 @@ const Employees = () => {
                         value={formData.salary}
                         onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
                         required
+                    />
+                    <Input
+                        placeholder="Fingerprint ID (Optional)"
+                        type="number"
+                        value={formData.fingerprintId}
+                        onChange={(e) => setFormData({ ...formData, fingerprintId: e.target.value })}
                     />
 
                     <select
