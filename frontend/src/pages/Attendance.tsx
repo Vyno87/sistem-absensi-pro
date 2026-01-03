@@ -29,7 +29,7 @@ const Attendance = () => {
 
     useEffect(() => {
         fetchRecent();
-        const interval = setInterval(fetchRecent, 5000); // Live poll
+        const interval = setInterval(fetchRecent, 2000); // Live poll (2s)
         return () => clearInterval(interval);
     }, []);
 
@@ -64,6 +64,9 @@ const Attendance = () => {
                 longitude: 0,
                 facePhoto: imgSrc
             });
+
+            // Instant Refresh after submission
+            fetchRecent();
 
             const successType = type === 'Check In' ? t('attendance.checkIn') : t('attendance.checkOut');
             setMessage({ type: 'success', text: `${t('attendance.success')}: ${successType}` });

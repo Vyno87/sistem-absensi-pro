@@ -49,6 +49,8 @@ const Reports = () => {
     useEffect(() => {
         if (startDate && endDate) {
             fetchData();
+            const interval = setInterval(fetchData, 3000); // Auto-refresh reports every 3s
+            return () => clearInterval(interval);
         }
     }, [startDate, endDate]);
 
