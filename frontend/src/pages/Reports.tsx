@@ -17,6 +17,7 @@ const Reports = () => {
     const [previewLoading, setPreviewLoading] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; record: any }>({ show: false, record: null });
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
     // Set default date range (current month)
     useEffect(() => {
