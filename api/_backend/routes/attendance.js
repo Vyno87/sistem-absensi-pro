@@ -119,6 +119,22 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// @route    GET api/attendance
+// @desc     Get all attendance records (descending)
+// @access   Private
+router.get('/', auth, async (req, res) => {
+  try {
+    const attendance = await Attendance.find()
+      .populate('employeeId', 'name position employeeId')
+      .sort({ createdAt: -1 }) // Newest first
+      .limit(10); // Limit to recent 10
+    res.json(attendance);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route    POST api/attendance/ingest
 // @desc     Record attendance from hardware (ESP32)
 // @access   Public (API Key Required)

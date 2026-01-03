@@ -15,7 +15,23 @@ const Attendance = () => {
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [imgSrc, setImgSrc] = useState<string | null>(null);
+    const [recentActivity, setRecentActivity] = useState([]);
     const webcamRef = useRef<Webcam>(null);
+
+    const fetchRecent = async () => {
+        try {
+            const res = await api.get('/attendance');
+            setRecentActivity(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    useEffect(() => {
+        fetchRecent();
+        const interval = setInterval(fetchRecent, 5000); // Live poll
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -171,23 +187,29 @@ const Attendance = () => {
                 <GlassCard>
                     <h3 className="text-xl font-bold text-white mb-6">{t('attendance.recentActivity')}</h3>
                     <div className="space-y-4">
-                        {[1, 2, 3, 4].map((_, i) => (
-                            <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                                        ID
+                        {recentActivity.length === 0 ? (
+                            <div className="text-gray-400 text-center py-4">{t('common.noData')}</div>
+                        ) : (
+                            recentActivity.map((record: any, i) => (
+                                <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors animate-fade-in">
+                                    <div className="flex items-center space-x-4">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${record.status === 'late' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gradient-to-br from-indigo-500 to-purple-500'}`}>
+                                            {record.employeeId?.employeeId || 'ID'}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-white">{record.employeeId?.name || 'Unknown'}</p>
+                                            <p className="text-xs text-gray-400">{record.employeeId?.position || 'Employee'}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="font-bold text-white">{t('attendance.employee')} {100 + i}</p>
-                                        <p className="text-xs text-gray-400">{t('attendance.position')}</p>
+                                    <div className="text-right">
+                                        <p className={`font-bold ${record.status === 'late' ? 'text-yellow-400' : 'text-green-400'}`}>
+                                            {new Date(record.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </p>
+                                        <p className="text-xs text-gray-400 capitalize">{record.status || 'Present'}</p>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-green-400 font-bold">08:00 AM</p>
-                                    <p className="text-xs text-gray-400">{t('attendance.onTime')}</p>
-                                </div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </GlassCard>
             </div>
