@@ -32,10 +32,8 @@ router.post('/', auth, async (req, res) => {
   }
 
   try {
-    // GPS Validation
-    if (process.env.DISABLE_GPS_CHECK === 'true') {
-      console.log('GPS check disabled via environment variable');
-    } else if (latitude && longitude) {
+    // GPS Validation disabled per user request
+    if (false && latitude && longitude) {
       const officeLatitude = parseFloat(process.env.OFFICE_LATITUDE) || -6.188696059432105;
       const officeLongitude = parseFloat(process.env.OFFICE_LONGITUDE) || 106.33081285722146;
       const maxRadius = parseFloat(process.env.OFFICE_RADIUS_METERS) || 100;
@@ -54,9 +52,6 @@ router.post('/', auth, async (req, res) => {
           maxRadius
         });
       }
-    } else {
-      // If GPS is required but not provided
-      return res.status(400).json({ msg: 'GPS coordinates are required for attendance' });
     }
 
     // Check if employee exists  

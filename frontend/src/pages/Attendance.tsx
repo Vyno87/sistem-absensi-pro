@@ -53,27 +53,15 @@ const Attendance = () => {
         setMessage(null);
 
         try {
-            // Request GPS Location
-            const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-                if (!navigator.geolocation) {
-                    reject(new Error('Geolocation not supported'));
-                    return;
-                }
-                navigator.geolocation.getCurrentPosition(resolve, reject, {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                });
-            });
-
-            const { latitude, longitude } = position.coords;
+            // Geolocation disabled per user request
+            // const position = await new Promise... (removed for stability)
 
             await api.post('/attendance', {
                 employeeId,
                 checkIn: new Date(),
                 status: 'present',
-                latitude,
-                longitude,
+                latitude: 0,
+                longitude: 0,
                 facePhoto: imgSrc
             });
 
