@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { authLimiter, attendanceLimiter } = require('./backend/middleware/rateLimiter');
+const { authLimiter, attendanceLimiter } = require('./_backend/middleware/rateLimiter');
 
 dotenv.config();
 
@@ -68,13 +68,13 @@ app.use(async (req, res, next) => {
 });
 
 // Define Routes with Rate Limiting
-app.use('/api/auth', authLimiter, require('./backend/routes/auth'));
-app.use('/api/employees', require('./backend/routes/employees'));
-app.use('/api/attendance', attendanceLimiter, require('./backend/routes/attendance'));
-app.use('/api/dashboard', require('./backend/routes/dashboard'));
-app.use('/api/reports', require('./backend/routes/reports'));
-app.use('/api/shifts', require('./backend/routes/shifts'));
-app.use('/api/leaves', require('./backend/routes/leaves'));
+app.use('/api/auth', authLimiter, require('./_backend/routes/auth'));
+app.use('/api/employees', require('./_backend/routes/employees'));
+app.use('/api/attendance', attendanceLimiter, require('./_backend/routes/attendance'));
+app.use('/api/dashboard', require('./_backend/routes/dashboard'));
+app.use('/api/reports', require('./_backend/routes/reports'));
+app.use('/api/shifts', require('./_backend/routes/shifts'));
+app.use('/api/leaves', require('./_backend/routes/leaves'));
 
 app.get('/api/health', (req, res) => {
   console.log('=> Health check requested. MONGODB_URI exists:', !!process.env.MONGODB_URI);
