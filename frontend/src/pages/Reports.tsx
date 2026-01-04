@@ -49,10 +49,13 @@ const Reports = () => {
         }
     };
 
+    // Auto-refresh untuk Live Reports (Admin)
     useEffect(() => {
         if (startDate && endDate) {
             fetchData(); // Initial load
-            // Optimized: Hapus auto-refresh, hanya manual refresh dengan tombol
+            // Live refresh setiap 3 detik
+            const interval = setInterval(() => fetchData(true), 3000);
+            return () => clearInterval(interval);
         }
     }, [startDate, endDate]);
 
