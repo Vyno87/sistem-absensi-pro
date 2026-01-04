@@ -152,7 +152,11 @@ router.post('/', auth, async (req, res) => {
     await employee.save();
 
     res.json(attendance);
-  });
+  } catch (err) {
+    console.error('Attendance Error:', err);
+    res.status(500).json({ msg: 'Server Error', error: err.message });
+  }
+});
 
 // @route    DELETE api/attendance/:id
 // @desc     Delete attendance record (Admin only)
