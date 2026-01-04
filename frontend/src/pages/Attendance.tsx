@@ -41,34 +41,75 @@ const Attendance = () => {
     };
 
     useEffect(() => {
-        // Pastikan token ada sebelum mulai polling
         const token = localStorage.getItem('token');
         if (!token) return;
 
         // Initial fetch
         fetchRecent();
-        fetchGPSSetting(); // Initial GPS setting fetch
+        fetchGPSSetting();
 
+        // Real-time polling setiap 5 detik
+        const interval = setInterval(() => {
+            fetchRecent();
+            fetchGPSSetting();
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
-        const capture = useCallback(() => {
-            const imageSrc = webcamRef.current?.getScreenshot({
-                width: 400, // Optimize width
-                height: 300
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const capture = useCallback(() => {
+        const imageSrc = webcamRef.current?.getScreenshot({
+            width: 400,
+            height: 300
+        });
+        if (imageSrc) {
+            setImgSrc(imageSrc);
+        }
+    }, [webcamRef]);
+
+    const handleAttendance = async (type: 'Check In' | 'Check Out') => {
+        if (!employeeId || !imgSrc) {
+            setMessage({ type: 'error', text: t('attendance.validationError') });
+            return;
+        }
+
+        setLoading(true);
+        setMessage(null);
+
+        try {
+            let locationData = {};
+
+            // Only request GPS if enabled by Admin
+            if (gpsEnabled) {
+                if (!navigator.geolocation) {
+                    throw new Error('Geolocation not supported');
+                }
+
+                const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: false, // Changed to false for faster lock
+                        timeout: 5000, // Reduced timeout to 5s
+                        maximumAge: 0
+                    });
+                });
+
+                locationData = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                };
+            }
+
+            const res = await api.post('/attendance', {
+                type,
+                employeeId,
+                checkIn: new Date(),
+                facePhoto: imgSrc,
+                ...locationData
             });
-            if (imageSrc) {
-                setImgSrc(imageSrc);
-            }
-        }, [webcamRef]);
-
-        const handleAttendance = async (type: 'Check In' | 'Check Out') => {
-            if (!employeeId || !imgSrc) {
-                setMessage({ type: 'error', text: t('attendance.validationError') });
-                return;
-            }
-
-            setLoading(true);
-            setMessage(null);
-
             try {
                 let locationData = {};
 
