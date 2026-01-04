@@ -11,7 +11,50 @@ import Webcam from 'react-webcam';
 const Attendance = () => {
     const { t, language } = useLanguage();
     const [employeeId, setEmployeeId] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loadingAction, setLoadingAction] = useState<'Check In' | 'Check Out' | null>(null);
+
+    // ... (existing code)
+
+    const handleAttendance = async (type: 'Check In' | 'Check Out') => {
+        if (!employeeId || !imgSrc) {
+            setMessage({ type: 'error', text: t('attendance.validationError') });
+            return;
+        }
+
+        setLoadingAction(type); // Set specific loading action
+        setMessage(null);
+
+        try {
+            // ... (rest of logic)
+            // Replace setLoading(false) with setLoadingAction(null)
+        } catch (err: any) {
+            // ...
+        } finally {
+            setLoadingAction(null);
+        }
+    };
+
+    // ... (inside return)
+
+    <div className="grid grid-cols-2 gap-4">
+        <Button
+            onClick={() => handleAttendance('Check In')}
+            isLoading={loadingAction === 'Check In'}
+            disabled={loadingAction !== null}
+            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-none"
+        >
+            {t('attendance.checkIn')}
+        </Button>
+        <Button
+            onClick={() => handleAttendance('Check Out')}
+            variant="secondary"
+            isLoading={loadingAction === 'Check Out'}
+            disabled={loadingAction !== null}
+            className="w-full"
+        >
+            {t('attendance.checkOut')}
+        </Button>
+    </div>
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [imgSrc, setImgSrc] = useState<string | null>(null);

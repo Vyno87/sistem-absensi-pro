@@ -155,9 +155,14 @@ const Employees = () => {
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('employees.addTitle')}>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input
-                        placeholder={t('employees.employeeIdPlaceholder')}
+                        placeholder="Employee ID (8 Digits)"
                         value={formData.employeeId}
-                        onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
+                        onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, ''); // Numbers only
+                            if (val.length <= 8) {
+                                setFormData({ ...formData, employeeId: val });
+                            }
+                        }}
                         required
                     />
                     <Input
