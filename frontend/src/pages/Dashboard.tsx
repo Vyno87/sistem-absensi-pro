@@ -49,6 +49,16 @@ const Dashboard = () => {
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [recentActivity, setRecentActivity] = useState([]);
+    const [enableGPS, setEnableGPS] = useState(() => {
+        // Load GPS setting from localStorage
+        const saved = localStorage.getItem('gpsEnabled');
+        return saved !== null ? saved === 'true' : true;
+    });
+
+    // Save GPS setting to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('gpsEnabled', enableGPS.toString());
+    }, [enableGPS]);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -139,12 +149,36 @@ const Dashboard = () => {
     return (
         <MainLayout>
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-white mb-2">
-                    {user?.role === 'admin' ? t('dashboard.overview') : `${t('dashboard.welcome')}, ${user?.username}`}
-                </h1>
-                <p className="text-gray-400">
-                    {user?.role === 'admin' ? t('dashboard.monitoring') : t('dashboard.userSubtitle')}
-                </p>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-white mb-2">
+                            {user?.role === 'admin' ? t('dashboard.overview') : `${t('dashboard.welcome')}, ${user?.username}`}
+                        </h1>
+                        <p className="text-gray-400">
+                            {user?.role === 'admin' ? t('dashboard.monitoring') : t('dashboard.userSubtitle')}
+                        </p>
+                    </div>
+
+                    {/* GPS Control Toggle (Admin Only) */}
+                    {user?.role === 'admin' && (
+                        <div className="flex items-center space-x-3 bg-white/5 px-4 py-3 rounded-lg border border-white/10">
+                            <MapPin className={`w-5 h-5 ${enableGPS ? 'text-green-400' : 'text-gray-500'}`} />
+                            <div className="flex flex-col">
+                                <span className="text-white text-sm font-medium">GPS Enforcement</span>
+                                <span className="text-gray-400 text-xs">{enableGPS ? 'Active' : 'Disabled'}</span>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={enableGPS}
+                                    onChange={(e) => setEnableGPS(e.target.checked)}
+                                    className="sr-only peer"
+                                />
+                                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                            </label>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {user?.role === 'admin' ? (

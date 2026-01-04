@@ -55,8 +55,6 @@ const Attendance = () => {
         }
     }, [webcamRef]);
 
-    const [enableGPS, setEnableGPS] = useState(true);
-
     const handleAttendance = async (type: 'Check In' | 'Check Out') => {
         if (!employeeId || !imgSrc) {
             setMessage({ type: 'error', text: t('attendance.validationError') });
@@ -67,33 +65,26 @@ const Attendance = () => {
         setMessage(null);
 
         try {
-            let locationData = {};
-
-            if (enableGPS) {
-                if (!navigator.geolocation) {
-                    throw new Error('Geolocation not supported');
-                }
-
-                const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 0
-                    });
-                });
-
-                locationData = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
-                };
+            // Get GPS location
+            if (!navigator.geolocation) {
+                throw new Error('Geolocation not supported');
             }
+
+            const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                });
+            });
 
             const res = await api.post('/attendance', {
                 type,
                 employeeId,
                 checkIn: new Date(),
                 facePhoto: imgSrc,
-                ...locationData
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
             });
 
             if (res.data.msg) {
@@ -114,11 +105,11 @@ const Attendance = () => {
         } catch (err: any) {
             console.error("Attendance Error:", err);
 
-            if (enableGPS && (err.code === 1 || err.message === 'User denied Geolocation')) {
+            if (err.code === 1 || err.message === 'User denied Geolocation') {
                 setMessage({ type: 'error', text: t('attendance.locationDenied') });
-            } else if (enableGPS && err.code === 2) {
-                setMessage({ type: 'error', text: 'Lokasi tidak ditemukan. Coba matikan GPS Toggle.' });
-            } else if (err.response?.data?.msg === 'You are outside the office area') {
+            } else if (err.code === 2) {
+                setMessage({ type: 'error', text: 'Lokasi tidak tersedia. Hubungi admin.' });
+            } else if (err.response?.data?.msg?.includes('outside')) {
                 setMessage({
                     type: 'error',
                     text: `${t('attendance.outsideOffice')}: ${err.response.data.distance}m`
@@ -186,22 +177,6 @@ const Attendance = () => {
                                 className="text-center text-xl tracking-widest"
                                 icon={<Clock />}
                             />
-
-                            <div className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/10 mb-4">
-                                <div className="flex items-center space-x-2">
-                                    <MapPin className={`w-5 h-5 ${enableGPS ? 'text-green-400' : 'text-gray-500'}`} />
-                                    <span className="text-white text-sm">GPS Location</span>
-                                </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={enableGPS}
-                                        onChange={(e) => setEnableGPS(e.target.checked)}
-                                        className="sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                                </label>
-                            </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <Button
