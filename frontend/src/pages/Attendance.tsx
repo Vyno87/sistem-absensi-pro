@@ -1,75 +1,40 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import MainLayout from '../components/Layout/MainLayout';
 import GlassCard from '../components/UI/GlassCard';
-import Button from '../components/UI/Button';
-import Input from '../components/UI/Input';
+import Webcam from 'react-webcam';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { Clock, CheckCircle, XCircle, Camera, RefreshCw, User, MapPin } from 'lucide-react';
-import Webcam from 'react-webcam';
+import { Clock, MapPin, User, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import Button from '../components/UI/Button';
+import Input from '../components/UI/Input';
+
+// Tipe data untuk AttendanceRecord
+interface AttendanceRecord {
+    employeeName: string;
+    position: string;
+    checkIn: string;
+    status: string;
+    type?: string;
+}
 
 const Attendance = () => {
     const { t, language } = useLanguage();
     const [employeeId, setEmployeeId] = useState('');
     const [loadingAction, setLoadingAction] = useState<'Check In' | 'Check Out' | null>(null);
-
-    // ... (existing code)
-
-    const handleAttendance = async (type: 'Check In' | 'Check Out') => {
-        if (!employeeId || !imgSrc) {
-            setMessage({ type: 'error', text: t('attendance.validationError') });
-            return;
-        }
-
-        setLoadingAction(type); // Set specific loading action
-        setMessage(null);
-
-        try {
-            // ... (rest of logic)
-            // Replace setLoading(false) with setLoadingAction(null)
-        } catch (err: any) {
-            // ...
-        } finally {
-            setLoadingAction(null);
-        }
-    };
-
-    // ... (inside return)
-
-    <div className="grid grid-cols-2 gap-4">
-        <Button
-            onClick={() => handleAttendance('Check In')}
-            isLoading={loadingAction === 'Check In'}
-            disabled={loadingAction !== null}
-            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-none"
-        >
-            {t('attendance.checkIn')}
-        </Button>
-        <Button
-            onClick={() => handleAttendance('Check Out')}
-            variant="secondary"
-            isLoading={loadingAction === 'Check Out'}
-            disabled={loadingAction !== null}
-            className="w-full"
-        >
-            {t('attendance.checkOut')}
-        </Button>
-    </div>
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [imgSrc, setImgSrc] = useState<string | null>(null);
-    const [recentActivity, setRecentActivity] = useState([]);
-    const [gpsEnabled, setGpsEnabled] = useState(true); // Real-time GPS setting from backend
     const webcamRef = useRef<Webcam>(null);
+    const [recentActivity, setRecentActivity] = useState<AttendanceRecord[]>([]);
+    const [gpsEnabled, setGpsEnabled] = useState(false);
 
+    // Fetch recent attendance
     const fetchRecent = async () => {
         try {
             const res = await api.get('/attendance');
             setRecentActivity(res.data);
-        } catch (err: any) {
-            if (err.response?.status !== 401) {
-                console.error('Error fetching recent:', err);
-            }
+        } catch (err) {
+            console.error('Error fetching recent activity:', err);
         }
     };
 
@@ -87,7 +52,6 @@ const Attendance = () => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        // Initial fetch
         fetchRecent();
         fetchGPSSetting();
 
@@ -120,7 +84,7 @@ const Attendance = () => {
             return;
         }
 
-        setLoading(true);
+        setLoadingAction(type);
         setMessage(null);
 
         try {
@@ -165,7 +129,6 @@ const Attendance = () => {
             fetchRecent();
 
             const successType = type === 'Check In' ? t('attendance.checkIn') : t('attendance.checkOut');
-            setLoading(false);
             setMessage({ type: 'success', text: `${t('attendance.success')}: ${successType}` });
             setEmployeeId('');
             setImgSrc(null);
@@ -185,7 +148,7 @@ const Attendance = () => {
                 setMessage({ type: 'error', text: err.response?.data?.msg || err.message || t('attendance.failed') });
             }
         } finally {
-            setLoading(false);
+            setLoadingAction(null);
         }
     };
 
@@ -214,31 +177,29 @@ const Attendance = () => {
                                         ref={webcamRef}
                                         screenshotFormat="image/jpeg"
                                         className="w-full h-full object-cover"
-                                        videoConstraints={{ facingMode: "user" }}
+                                        videoConstraints={{ facingMode: "user" }} // Ensure front camera
                                     />
-                                    <button
-                                        onClick={capture}
-                                        className="absolute bottom-4 p-4 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all transform hover:scale-110"
-                                    >
-                                        <Camera size={24} />
-                                    </button>
+                                    <div className="absolute bottom-4">
+                                        <Button onClick={capture} size="sm" icon={<User className="w-4 h-4" />}>
+                                            {t('attendance.capturePhoto')}
+                                        </Button>
+                                    </div>
                                 </>
                             ) : (
                                 <>
-                                    <img src={imgSrc} alt="captured" className="w-full h-full object-cover" />
-                                    <button
-                                        onClick={() => setImgSrc(null)}
-                                        className="absolute bottom-4 p-4 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all transform hover:scale-110"
-                                    >
-                                        <RefreshCw size={24} />
-                                    </button>
+                                    <img src={imgSrc} alt="Captured" className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                        <Button onClick={() => setImgSrc(null)} variant="secondary" icon={<RefreshCw className="w-4 h-4" />}>
+                                            {t('attendance.retakePhoto')}
+                                        </Button>
+                                    </div>
                                 </>
                             )}
                         </div>
 
                         <div className="space-y-4">
                             <Input
-                                placeholder={t('attendance.employeeId')}
+                                placeholder={t('attendance.enterEmployeeId')}
                                 value={employeeId}
                                 onChange={(e) => setEmployeeId(e.target.value)}
                                 className="text-center text-xl tracking-widest"
@@ -248,7 +209,8 @@ const Attendance = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <Button
                                     onClick={() => handleAttendance('Check In')}
-                                    isLoading={loading}
+                                    isLoading={loadingAction === 'Check In'}
+                                    disabled={loadingAction !== null}
                                     className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-none"
                                 >
                                     {t('attendance.checkIn')}
@@ -256,7 +218,8 @@ const Attendance = () => {
                                 <Button
                                     onClick={() => handleAttendance('Check Out')}
                                     variant="secondary"
-                                    isLoading={loading}
+                                    isLoading={loadingAction === 'Check Out'}
+                                    disabled={loadingAction !== null}
                                     className="w-full"
                                 >
                                     {t('attendance.checkOut')}
@@ -273,7 +236,7 @@ const Attendance = () => {
                     </GlassCard>
                 </div>
 
-                {/* Right Side - Recent Activity (Placeholder) */}
+                {/* Right Side - Recent Activity */}
                 <GlassCard>
                     <h3 className="text-xl font-bold text-white mb-6">{t('attendance.recentActivity')}</h3>
                     <div className="space-y-4">
@@ -293,7 +256,7 @@ const Attendance = () => {
                                     </div>
                                     <div className="text-right">
                                         <p className={`font-bold ${record.status === 'late' ? 'text-yellow-400' : 'text-green-400'}`}>
-                                            {new Date(record.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                                            {new Date(record.checkIn).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })}
                                         </p>
                                         <p className="text-xs text-gray-400 capitalize">
                                             <span className={record.type === 'Check Out' ? 'text-orange-400 font-medium' : 'text-blue-400 font-medium'}>
@@ -314,4 +277,3 @@ const Attendance = () => {
 };
 
 export default Attendance;
-
