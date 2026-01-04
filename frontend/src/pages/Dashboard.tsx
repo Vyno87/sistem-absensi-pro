@@ -29,6 +29,7 @@ import {
     ArcElement,
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
+import LiveMap from '../components/Dashboard/LiveMap';
 
 ChartJS.register(
     CategoryScale,
@@ -176,6 +177,11 @@ const Dashboard = () => {
                                 <Line options={chartOptions} data={lineData} />
                             </div>
                         </GlassCard>
+
+                        {/* Live Map Section */}
+                        <div className="lg:col-span-3">
+                            <LiveMap />
+                        </div>
 
                         <div className="space-y-8">
                             {/* Employee Status Chart */}
