@@ -26,12 +26,12 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 router.get('/', auth, async (req, res) => {
   try {
     // Get latest 10 attendance records with employee details
-    const recentAttendance = await Attendance.find({}, { facePhoto: 0 }) // Exclude facePhoto to reduce payload size
+    const recentAttendance = await Attendance.find({}, { facePhoto: 0 }) // Exclude facePhoto
       .sort({ createdAt: -1 })
       .limit(10)
       .lean();
 
-    // Populate employee info for each record
+    // Populate employee info
     const populatedRecords = await Promise.all(
       recentAttendance.map(async (record) => {
         const employee = await Employee.findOne({ employeeId: record.employeeId });
@@ -46,6 +46,43 @@ router.get('/', auth, async (req, res) => {
     res.json(populatedRecords);
   } catch (err) {
     console.error('Error fetching recent attendance:', err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// @route    GET api/attendance/today
+// @desc     Get ALL attendance records for today (for Live Map)
+// @access   Private (Admin)
+router.get('/today', auth, async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get all records for today that have location data
+    // We include facePhoto here? No, let's exclude it to keep map fast. 
+    // Or maybe include a small version? For now exclude, use placeholder in map.
+    const records = await Attendance.find({
+      date: { $gte: today },
+      latitude: { $ne: null },
+      longitude: { $ne: null }
+    }, { facePhoto: 0 })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const populatedRecords = await Promise.all(
+      records.map(async (record) => {
+        const employee = await Employee.findOne({ employeeId: record.employeeId });
+        return {
+          ...record,
+          employeeName: employee ? employee.name : 'Unknown',
+          position: employee ? employee.position : 'N/A'
+        };
+      })
+    );
+
+    res.json(populatedRecords);
+  } catch (err) {
+    console.error('Error fetching map data:', err.message);
     res.status(500).send('Server error');
   }
 });

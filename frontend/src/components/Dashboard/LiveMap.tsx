@@ -24,12 +24,9 @@ const LiveMap = () => {
     useEffect(() => {
         const fetchLocations = async () => {
             try {
-                // Reuse existing endpoint but filter for today's locations on frontend for now
-                // Ideally backend should provide a dedicated endpoint
-                const res = await api.get('/attendance');
-                // Filter only records with valid lat/long
-                const validLocations = res.data.filter((r: any) => r.latitude && r.longitude && r.latitude !== 0);
-                setMarkers(validLocations);
+                // Fetch ALL today's active locations
+                const res = await api.get('/attendance/today');
+                setMarkers(res.data);
             } catch (err) {
                 console.error("Error fetching map locations:", err);
             }
