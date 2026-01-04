@@ -5,7 +5,7 @@ import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { FileSpreadsheet, FileText, Download, Calendar, Users, Clock, RefreshCw, Trash2, X, User } from 'lucide-react';
+import { FileSpreadsheet, FileText, Download, Calendar, Users, Clock, RefreshCw, Trash2, X, User, Check } from 'lucide-react';
 
 const Reports = () => {
     const { t } = useLanguage();
