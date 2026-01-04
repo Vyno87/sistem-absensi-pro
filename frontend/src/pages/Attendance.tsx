@@ -5,7 +5,7 @@ import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { Clock, CheckCircle, XCircle, Camera, RefreshCw } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, Camera, RefreshCw, User } from 'lucide-react';
 import Webcam from 'react-webcam';
 
 const Attendance = () => {
