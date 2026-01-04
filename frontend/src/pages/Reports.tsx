@@ -51,9 +51,8 @@ const Reports = () => {
 
     useEffect(() => {
         if (startDate && endDate) {
-            fetchData(); // Initial load (shows spinner)
-            const interval = setInterval(() => fetchData(true), 3000); // Silent refresh
-            return () => clearInterval(interval);
+            fetchData(); // Initial load
+            // Optimized: Hapus auto-refresh, hanya manual refresh dengan tombol
         }
     }, [startDate, endDate]);
 

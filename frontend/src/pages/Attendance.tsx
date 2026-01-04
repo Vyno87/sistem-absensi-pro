@@ -29,7 +29,8 @@ const Attendance = () => {
 
     useEffect(() => {
         fetchRecent();
-        const interval = setInterval(fetchRecent, 2000); // Live poll (2s)
+        // Optimized: Kurangi polling dari 2s ke 5s
+        const interval = setInterval(fetchRecent, 5000);
         return () => clearInterval(interval);
     }, []);
 

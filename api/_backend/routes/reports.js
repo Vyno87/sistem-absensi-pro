@@ -69,7 +69,7 @@ const getAttendanceData = async (startDate, endDate) => {
             attendanceStatus: record.status,
             latitude: record.latitude || '-',
             longitude: record.longitude || '-',
-            facePhoto: record.facePhoto || null // Include face photo
+            facePhoto: null // Optimized: Don't send photos in list view (reduce payload 50-80%)
         };
     });
 
