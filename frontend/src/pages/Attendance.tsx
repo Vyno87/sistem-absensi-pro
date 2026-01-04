@@ -5,7 +5,7 @@ import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { Clock, CheckCircle, XCircle, Camera, RefreshCw, User } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, Camera, RefreshCw, User, MapPin } from 'lucide-react';
 import Webcam from 'react-webcam';
 
 const Attendance = () => {
@@ -55,47 +55,76 @@ const Attendance = () => {
         }
     }, [webcamRef]);
 
+    const [enableGPS, setEnableGPS] = useState(true);
+
     const handleAttendance = async (type: 'Check In' | 'Check Out') => {
-        if (!employeeId) return setMessage({ type: 'error', text: t('attendance.pleaseEnterEmployeeId') });
-        if (!imgSrc) return setMessage({ type: 'error', text: t('attendance.pleaseCapturePhoto') });
+        if (!employeeId || !imgSrc) {
+            setMessage({ type: 'error', text: t('attendance.validationError') });
+            return;
+        }
 
         setLoading(true);
         setMessage(null);
 
         try {
-            // Geolocation disabled per user request
-            // const position = await new Promise... (removed for stability)
+            let locationData = {};
 
-            await api.post('/attendance', {
-                type, // Send 'Check In' or 'Check Out'
+            if (enableGPS) {
+                if (!navigator.geolocation) {
+                    throw new Error('Geolocation not supported');
+                }
+
+                const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    });
+                });
+
+                locationData = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                };
+            }
+
+            const res = await api.post('/attendance', {
+                type,
                 employeeId,
                 checkIn: new Date(),
-                status: 'present',
-                latitude: 0,
-                longitude: 0,
-                facePhoto: imgSrc
+                facePhoto: imgSrc,
+                ...locationData
             });
 
-            // Instant Refresh after submission
+            if (res.data.msg) {
+                // Handle specific messages usually meant for errors but sent as 200/201
+                if (res.data.msg.includes('outside')) {
+                    setMessage({ type: 'error', text: res.data.msg });
+                    return;
+                }
+            }
+
             fetchRecent();
 
             const successType = type === 'Check In' ? t('attendance.checkIn') : t('attendance.checkOut');
-            setLoading(false); // Fix: Stop loading immediately
+            setLoading(false);
             setMessage({ type: 'success', text: `${t('attendance.success')}: ${successType}` });
             setEmployeeId('');
             setImgSrc(null);
         } catch (err: any) {
-            if (err.message === 'Geolocation not supported') {
-                setMessage({ type: 'error', text: t('attendance.browserNoLocation') });
-            } else if (err.code === 1) {
+            console.error("Attendance Error:", err);
+
+            if (enableGPS && (err.code === 1 || err.message === 'User denied Geolocation')) {
                 setMessage({ type: 'error', text: t('attendance.locationDenied') });
+            } else if (enableGPS && err.code === 2) {
+                setMessage({ type: 'error', text: 'Lokasi tidak ditemukan. Coba matikan GPS Toggle.' });
             } else if (err.response?.data?.msg === 'You are outside the office area') {
                 setMessage({
                     type: 'error',
                     text: `${t('attendance.outsideOffice')}: ${err.response.data.distance}m`
                 });
             } else {
-                setMessage({ type: 'error', text: err.response?.data?.msg || t('attendance.failed') });
+                setMessage({ type: 'error', text: err.response?.data?.msg || err.message || t('attendance.failed') });
             }
         } finally {
             setLoading(false);
@@ -157,6 +186,22 @@ const Attendance = () => {
                                 className="text-center text-xl tracking-widest"
                                 icon={<Clock />}
                             />
+
+                            <div className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/10 mb-4">
+                                <div className="flex items-center space-x-2">
+                                    <MapPin className={`w-5 h-5 ${enableGPS ? 'text-green-400' : 'text-gray-500'}`} />
+                                    <span className="text-white text-sm">GPS Location</span>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={enableGPS}
+                                        onChange={(e) => setEnableGPS(e.target.checked)}
+                                        className="sr-only peer"
+                                    />
+                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                </label>
+                            </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <Button
