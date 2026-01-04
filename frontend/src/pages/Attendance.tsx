@@ -22,13 +22,22 @@ const Attendance = () => {
         try {
             const res = await api.get('/attendance');
             setRecentActivity(res.data);
-        } catch (err) {
-            console.error(err);
+        } catch (err: any) {
+            // Silently fail untuk polling - tidak ganggu UX
+            if (err.response?.status !== 401) {
+                console.error('Error fetching recent:", err);
+            }
         }
     };
 
     useEffect(() => {
+        // Pastikan token ada sebelum mulai polling
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        // Initial fetch
         fetchRecent();
+
         // Real-time polling setiap 2 detik
         const interval = setInterval(fetchRecent, 2000);
         return () => clearInterval(interval);
