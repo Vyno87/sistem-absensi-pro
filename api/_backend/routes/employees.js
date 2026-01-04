@@ -20,7 +20,7 @@ router.get('/', auth, async (req, res) => {
 // @desc     Add new employee  
 // @access   Private  
 router.post('/', auth, async (req, res) => {
-  const { employeeId, name, position, status } = req.body;
+  const { employeeId, name, position, status, department, email, phone, salary } = req.body;
 
   try {
     const newEmployee = new Employee({
@@ -28,6 +28,10 @@ router.post('/', auth, async (req, res) => {
       name,
       position,
       status,
+      department,
+      email,
+      phone,
+      salary,
       shiftId: req.body.shiftId // Optional: assign shift
     });
 
@@ -43,13 +47,17 @@ router.post('/', auth, async (req, res) => {
 // @desc     Update employee  
 // @access   Private  
 router.put('/:id', auth, async (req, res) => {
-  const { name, position, status } = req.body;
+  const { name, position, status, department, email, phone, salary } = req.body;
 
   // Build employee object  
   const employeeFields = {};
   if (name) employeeFields.name = name;
   if (position) employeeFields.position = position;
   if (status) employeeFields.status = status;
+  if (department) employeeFields.department = department;
+  if (email) employeeFields.email = email;
+  if (phone) employeeFields.phone = phone;
+  if (salary) employeeFields.salary = salary;
   if (req.body.shiftId) employeeFields.shiftId = req.body.shiftId;
 
   try {

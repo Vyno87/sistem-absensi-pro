@@ -22,6 +22,24 @@ const employeeSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  department: {
+    type: String,
+    required: true,
+    enum: ['Warehouse', 'R & D', 'WWT-P', 'Sausage', 'Further', 'Cut-Up', 'Defeathering', 'Evis', 'P 7 GA', 'Engineering', 'QC'],
+    trim: true
+  },
+  email: {
+    type: String,
+    trim: true
+  },
+  phone: {
+    type: String,
+    trim: true
+  },
+  salary: {
+    type: Number,
+    default: 0
+  },
   status: {
     type: String,
     enum: ['Harian Lepas', 'Outsourcing', 'Borongan', 'Kontrak', 'Tetap'],

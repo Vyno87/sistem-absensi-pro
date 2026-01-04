@@ -190,18 +190,23 @@ const Employees = () => {
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         required
                     />
-                    <Input
-                        placeholder={t('employees.department')}
+                    <select
                         value={formData.department}
                         onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
                         required
-                    />
+                    >
+                        <option value="" className="bg-slate-800 text-gray-400">Select Department</option>
+                        {['Warehouse', 'R & D', 'WWT-P', 'Sausage', 'Further', 'Cut-Up', 'Defeathering', 'Evis', 'P 7 GA', 'Engineering', 'QC'].map(dept => (
+                            <option key={dept} value={dept} className="bg-slate-800">{dept}</option>
+                        ))}
+                    </select>
+
                     <Input
-                        placeholder={t('employees.salary')}
+                        placeholder={t('employees.salary') + " (Optional)"}
                         type="number"
                         value={formData.salary}
                         onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                        required
                     />
                     <Input
                         placeholder="Fingerprint ID (Optional)"
