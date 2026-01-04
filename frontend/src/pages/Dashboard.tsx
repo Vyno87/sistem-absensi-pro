@@ -97,12 +97,12 @@ const Dashboard = () => {
             fetchRecent();
             fetchGPSSetting(); // Initial GPS setting fetch
 
-            // Real-time polling setiap 2 detik
+            // Real-time polling setiap 5 detik (Optimized for mobile)
             const interval = setInterval(() => {
                 fetchStats();
                 fetchRecent();
                 fetchGPSSetting(); // Poll GPS setting for real-time sync
-            }, 2000);
+            }, 5000);
             setLoading(false); // Set loading to false after initial fetch for admin
             return () => clearInterval(interval);
         } else {

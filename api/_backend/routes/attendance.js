@@ -26,7 +26,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 router.get('/', auth, async (req, res) => {
   try {
     // Get latest 10 attendance records with employee details
-    const recentAttendance = await Attendance.find()
+    const recentAttendance = await Attendance.find({}, { facePhoto: 0 }) // Exclude facePhoto to reduce payload size
       .sort({ createdAt: -1 })
       .limit(10)
       .lean();
