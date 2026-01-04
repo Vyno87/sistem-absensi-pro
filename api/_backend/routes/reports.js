@@ -18,9 +18,12 @@ const adminOnly = (req, res, next) => {
 const getAttendanceData = async (startDate, endDate) => {
     let query = {};
     if (startDate && endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+
         query.date = {
             $gte: new Date(startDate),
-            $lte: new Date(endDate)
+            $lte: end
         };
     }
 
