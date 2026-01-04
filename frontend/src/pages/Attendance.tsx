@@ -180,7 +180,7 @@ const Attendance = () => {
                                         videoConstraints={{ facingMode: "user" }} // Ensure front camera
                                     />
                                     <div className="absolute bottom-4">
-                                        <Button onClick={capture} size="sm" icon={<User className="w-4 h-4" />}>
+                                        <Button onClick={capture} icon={<User className="w-4 h-4" />}>
                                             {t('attendance.capturePhoto')}
                                         </Button>
                                     </div>
