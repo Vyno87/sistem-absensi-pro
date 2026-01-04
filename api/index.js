@@ -70,11 +70,12 @@ app.use(async (req, res, next) => {
 // Define Routes with Rate Limiting
 app.use('/api/auth', authLimiter, require('./_backend/routes/auth'));
 app.use('/api/employees', require('./_backend/routes/employees'));
-app.use('/api/attendance', attendanceLimiter, require('./_backend/routes/attendance'));
+app.use('/api/attendance', require('./_backend/routes/attendance'));
 app.use('/api/dashboard', require('./_backend/routes/dashboard'));
-app.use('/api/reports', require('./_backend/routes/reports'));
 app.use('/api/shifts', require('./_backend/routes/shifts'));
 app.use('/api/leaves', require('./_backend/routes/leaves'));
+app.use('/api/reports', require('./_backend/routes/reports'));
+app.use('/api/settings', require('./_backend/routes/settings')); // Settings API
 
 app.get('/api/health', (req, res) => {
   console.log('=> Health check requested. MONGODB_URI exists:', !!process.env.MONGODB_URI);

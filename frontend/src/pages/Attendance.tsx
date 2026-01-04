@@ -16,6 +16,7 @@ const Attendance = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [imgSrc, setImgSrc] = useState<string | null>(null);
     const [recentActivity, setRecentActivity] = useState([]);
+    const [gpsEnabled, setGpsEnabled] = useState(true); // Real-time GPS setting from backend
     const webcamRef = useRef<Webcam>(null);
 
     const fetchRecent = async () => {
@@ -23,10 +24,19 @@ const Attendance = () => {
             const res = await api.get('/attendance');
             setRecentActivity(res.data);
         } catch (err: any) {
-            // Silently fail untuk polling - tidak ganggu UX
             if (err.response?.status !== 401) {
                 console.error('Error fetching recent:', err);
             }
+        }
+    };
+
+    // Fetch GPS setting from backend
+    const fetchGPSSetting = async () => {
+        try {
+            const res = await api.get('/settings/gpsEnabled');
+            setGpsEnabled(res.data.value);
+        } catch (err) {
+            console.error('Error fetching GPS setting:', err);
         }
     };
 
@@ -37,9 +47,13 @@ const Attendance = () => {
 
         // Initial fetch
         fetchRecent();
+        fetchGPSSetting(); // Initial GPS setting fetch
 
         // Real-time polling setiap 2 detik
-        const interval = setInterval(fetchRecent, 2000);
+        const interval = setInterval(() => {
+            fetchRecent();
+            fetchGPSSetting(); // Poll GPS setting for real-time sync
+        }, 2000);
         return () => clearInterval(interval);
     }, []);
 
@@ -65,26 +79,34 @@ const Attendance = () => {
         setMessage(null);
 
         try {
-            // Get GPS location
-            if (!navigator.geolocation) {
-                throw new Error('Geolocation not supported');
-            }
+            let locationData = {};
 
-            const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
+            // Only request GPS if enabled by Admin
+            if (gpsEnabled) {
+                if (!navigator.geolocation) {
+                    throw new Error('Geolocation not supported');
+                }
+
+                const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    });
                 });
-            });
+
+                locationData = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                };
+            }
 
             const res = await api.post('/attendance', {
                 type,
                 employeeId,
                 checkIn: new Date(),
                 facePhoto: imgSrc,
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude
+                ...locationData
             });
 
             if (res.data.msg) {

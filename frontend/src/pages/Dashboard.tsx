@@ -49,16 +49,27 @@ const Dashboard = () => {
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [recentActivity, setRecentActivity] = useState([]);
-    const [enableGPS, setEnableGPS] = useState(() => {
-        // Load GPS setting from localStorage
-        const saved = localStorage.getItem('gpsEnabled');
-        return saved !== null ? saved === 'true' : true;
-    });
+    const [enableGPS, setEnableGPS] = useState(true);
 
-    // Save GPS setting to localStorage whenever it changes
-    useEffect(() => {
-        localStorage.setItem('gpsEnabled', enableGPS.toString());
-    }, [enableGPS]);
+    // Fetch GPS setting from backend
+    const fetchGPSSetting = async () => {
+        try {
+            const res = await api.get('/settings/gpsEnabled');
+            setEnableGPS(res.data.value);
+        } catch (err) {
+            console.error('Error fetching GPS setting:', err);
+        }
+    };
+
+    // Update GPS setting to backend
+    const updateGPSSetting = async (newValue: boolean) => {
+        try {
+            await api.post('/settings/gpsEnabled', { value: newValue });
+            setEnableGPS(newValue);
+        } catch (err) {
+            console.error('Error updating GPS setting:', err);
+        }
+    };
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -84,11 +95,13 @@ const Dashboard = () => {
         if (user?.role === 'admin') {
             fetchStats();
             fetchRecent();
+            fetchGPSSetting(); // Initial GPS setting fetch
 
             // Real-time polling setiap 2 detik
             const interval = setInterval(() => {
                 fetchStats();
                 fetchRecent();
+                fetchGPSSetting(); // Poll GPS setting for real-time sync
             }, 2000);
             setLoading(false); // Set loading to false after initial fetch for admin
             return () => clearInterval(interval);
@@ -171,7 +184,7 @@ const Dashboard = () => {
                                 <input
                                     type="checkbox"
                                     checked={enableGPS}
-                                    onChange={(e) => setEnableGPS(e.target.checked)}
+                                    onChange={(e) => updateGPSSetting(e.target.checked)}
                                     className="sr-only peer"
                                 />
                                 <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
