@@ -20,10 +20,10 @@ router.get('/', auth, async (req, res) => {
 // @desc     Add new employee  
 // @access   Private  
 router.post('/', auth, async (req, res) => {
-  const { employeeId, name, position, status, department, email, phone, salary } = req.body;
+  const { employeeId, name, position, status, department, email, phone, salary, fingerprintId, shiftId } = req.body;
 
   try {
-    const newEmployee = new Employee({
+    const employeeData = {
       employeeId,
       name,
       position,
@@ -31,15 +31,20 @@ router.post('/', auth, async (req, res) => {
       department,
       email,
       phone,
-      salary,
-      shiftId: req.body.shiftId // Optional: assign shift
-    });
+      salary
+    };
+
+    // Only add optional fields if they have valid values
+    if (shiftId && shiftId !== '') employeeData.shiftId = shiftId;
+    if (fingerprintId && fingerprintId !== '') employeeData.fingerprintId = fingerprintId;
+
+    const newEmployee = new Employee(employeeData);
 
     const employee = await newEmployee.save();
     res.json(employee);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).send(err.message || 'Server Error');
   }
 });
 
@@ -47,7 +52,7 @@ router.post('/', auth, async (req, res) => {
 // @desc     Update employee  
 // @access   Private  
 router.put('/:id', auth, async (req, res) => {
-  const { name, position, status, department, email, phone, salary } = req.body;
+  const { name, position, status, department, email, phone, salary, fingerprintId, shiftId } = req.body;
 
   // Build employee object  
   const employeeFields = {};
@@ -58,7 +63,13 @@ router.put('/:id', auth, async (req, res) => {
   if (email) employeeFields.email = email;
   if (phone) employeeFields.phone = phone;
   if (salary) employeeFields.salary = salary;
-  if (req.body.shiftId) employeeFields.shiftId = req.body.shiftId;
+
+  if (fingerprintId) employeeFields.fingerprintId = fingerprintId;
+  if (shiftId && shiftId !== '') employeeFields.shiftId = shiftId;
+  // If explicitly removing shift (sending null), handle accordingly if needed, but for now assuming empty string means 'no change' or 'unset' logic depending on frontend. 
+  // Better logic: if (shiftId) ... but if we want to unset? Mongoose unsets if we pass null explicitly? 
+  // Let's stick to adding if present for now.
+
 
   try {
     let employee = await Employee.findById(req.params.id);

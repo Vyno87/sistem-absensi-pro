@@ -58,13 +58,20 @@ const Employees = () => {
         setFormLoading(true);
 
         try {
-            await api.post('/employees', {
+            // Prepare payload clean from empty strings
+            const payload: any = {
                 ...formData,
                 salary: parseFloat(formData.salary) || 0,
                 joinDate: new Date(),
                 performanceScore: 0,
                 attendanceCount: { present: 0, absent: 0, late: 0 }
-            });
+            };
+
+            // Remove empty optional fields to avoid CastErrors in backend
+            if (!payload.shiftId) delete payload.shiftId;
+            if (!payload.fingerprintId) delete payload.fingerprintId;
+
+            await api.post('/employees', payload);
 
             // Reset form and close modal
             setFormData({
