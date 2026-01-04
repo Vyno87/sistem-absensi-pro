@@ -51,7 +51,6 @@ const Attendance = () => {
 
         // Real-time polling setiap 5 detik (Optimized for mobile)
         const interval = setInterval(() => {
-            fetchStats();
             fetchRecent();
             fetchGPSSetting(); // Poll GPS setting for real-time sync
         }, 5000);
