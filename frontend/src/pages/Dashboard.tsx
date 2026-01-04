@@ -5,7 +5,18 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
-import { Users, UserCheck, TrendingUp, Award, CalendarCheck, Calendar } from 'lucide-react';
+import {
+    Users,
+    UserCheck,
+    TrendingUp,
+    Award,
+    CalendarCheck,
+    Calendar,
+    Clock,
+    MapPin,
+    BarChart3,
+    User
+} from 'lucide-react';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -36,6 +47,7 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [recentActivity, setRecentActivity] = useState([]);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -45,15 +57,34 @@ const Dashboard = () => {
             } catch (error) {
                 console.error("Error fetching stats", error);
             } finally {
-                setLoading(false);
+                // setLoading(false); // Moved to the if/else block
             }
         };
 
-        fetchStats();
-        // Real-time polling setiap 2 detik
-        const interval = setInterval(fetchStats, 2000);
-        return () => clearInterval(interval);
-    }, []);
+        const fetchRecent = async () => {
+            try {
+                const res = await api.get('/attendance'); // Reuse user API for recent list
+                setRecentActivity(res.data);
+            } catch (error) {
+                console.error("Error fetching recent", error);
+            }
+        };
+
+        if (user?.role === 'admin') {
+            fetchStats();
+            fetchRecent();
+
+            // Real-time polling setiap 2 detik
+            const interval = setInterval(() => {
+                fetchStats();
+                fetchRecent();
+            }, 2000);
+            setLoading(false); // Set loading to false after initial fetch for admin
+            return () => clearInterval(interval);
+        } else {
+            setLoading(false); // Set loading to false immediately for non-admin users
+        }
+    }, [user]);
 
     const chartOptions = {
         responsive: true,
@@ -78,8 +109,8 @@ const Dashboard = () => {
         labels: [t('days.mon'), t('days.tue'), t('days.wed'), t('days.thu'), t('days.fri'), t('days.sat'), t('days.sun')],
         datasets: [
             {
-                label: t('dashboard.attendanceRate'),
-                data: [85, 88, 92, 90, 85, 95, 98],
+                label: t('dashboard.attendanceTrend'),
+                data: stats?.weeklyAttendance || [],
                 borderColor: '#6366f1',
                 backgroundColor: 'rgba(99, 102, 241, 0.5)',
                 tension: 0.4,
@@ -88,16 +119,11 @@ const Dashboard = () => {
     };
 
     const doughnutData = {
-        labels: stats?.employeesByStatus?.map((s: any) => s._id) || [t('common.active'), t('common.inactive')],
+        labels: [t('dashboard.present'), t('dashboard.late'), t('dashboard.absent')],
         datasets: [
             {
-                data: stats?.employeesByStatus?.map((s: any) => s.count) || [10, 5],
-                backgroundColor: [
-                    'rgba(99, 102, 241, 0.8)',
-                    'rgba(239, 68, 68, 0.8)',
-                    'rgba(34, 197, 94, 0.8)',
-                    'rgba(234, 179, 8, 0.8)',
-                ],
+                data: [stats?.todayStats?.present || 0, stats?.todayStats?.late || 0, stats?.todayStats?.absent || 0],
+                backgroundColor: ['#4ade80', '#facc15', '#f87171'],
                 borderColor: 'transparent',
             },
         ],
@@ -151,12 +177,55 @@ const Dashboard = () => {
                             </div>
                         </GlassCard>
 
-                        <GlassCard>
-                            <h3 className="text-xl font-bold text-white mb-6">{t('dashboard.employeeStatus')}</h3>
-                            <div className="h-[300px] flex items-center justify-center">
-                                <Doughnut data={doughnutData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }} />
-                            </div>
-                        </GlassCard>
+                        <div className="space-y-8">
+                            {/* Employee Status Chart */}
+                            <GlassCard>
+                                <h3 className="text-xl font-bold text-white mb-6">{t('dashboard.employeeStatus')}</h3>
+                                <div className="h-[200px] flex justify-center">
+                                    <Doughnut data={doughnutData} options={{
+                                        plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } }
+                                    }} />
+                                </div>
+                            </GlassCard>
+
+                            {/* Recent Activity Feed (Live) */}
+                            <GlassCard>
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                        <Clock className="w-5 h-5 text-blue-400" />
+                                        Recent Activity (Live)
+                                    </h3>
+                                    <span className="animate-pulse w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
+                                </div>
+                                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {recentActivity.length === 0 ? (
+                                        <div className="text-gray-400 text-center py-4">{t('common.noData')}</div>
+                                    ) : (
+                                        recentActivity.map((record: any, i) => (
+                                            <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all border border-white/5">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${record.status === 'late' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-blue-500/20 text-blue-500'}`}>
+                                                        <User className="w-4 h-4" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-white text-sm">{record.employeeName || 'Unknown'}</p>
+                                                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">{record.position || 'Employee'}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className={`font-mono font-bold text-sm ${record.status === 'late' ? 'text-yellow-400' : 'text-green-400'}`}>
+                                                        {new Date(record.checkIn).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                                                    </p>
+                                                    <p className="text-[10px] text-blue-300 font-medium capitalize">
+                                                        {record.type || 'Check In'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </GlassCard>
+                        </div>
                     </div>
                 </>
             ) : (

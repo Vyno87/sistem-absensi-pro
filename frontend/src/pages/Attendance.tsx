@@ -109,7 +109,7 @@ const Attendance = () => {
                 <div className="flex flex-col justify-center space-y-8">
                     <div className="text-center">
                         <h2 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 mb-4 animate-pulse">
-                            {currentTime.toLocaleTimeString()}
+                            {currentTime.toLocaleTimeString('id-ID', { hour12: false })}
                         </h2>
                         <p className="text-xl text-gray-400">
                             {currentTime.toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
