@@ -152,27 +152,7 @@ router.post('/', auth, async (req, res) => {
     await employee.save();
 
     res.json(attendance);
-  } catch (err) {
-    console.error('Attendance Error:', err);
-    res.status(500).json({ msg: 'Server Error', error: err.message });
-  }
-});
-
-// @route    GET api/attendance
-// @desc     Get all attendance records (descending)
-// @access   Private
-router.get('/', auth, async (req, res) => {
-  try {
-    const attendance = await Attendance.find()
-      .populate('employeeId', 'name position employeeId')
-      .sort({ createdAt: -1 }) // Newest first
-      .limit(10); // Limit to recent 10
-    res.json(attendance);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
+  });
 
 // @route    DELETE api/attendance/:id
 // @desc     Delete attendance record (Admin only)
