@@ -197,7 +197,7 @@ const Employees = () => {
                         required
                     >
                         <option value="" className="bg-slate-800 text-gray-400">Select Department</option>
-                        {['Warehouse', 'R & D', 'WWT-P', 'Sausage', 'Further', 'Cut-Up', 'Defeathering', 'Evis', 'P 7 GA', 'Engineering', 'QC'].map(dept => (
+                        {['Warehouse', 'R & D', 'WWT-P', 'Sausage', 'Further', 'Cut-Up', 'Defeathering', 'Evis', 'P & GA', 'Engineering', 'QC'].map(dept => (
                             <option key={dept} value={dept} className="bg-slate-800">{dept}</option>
                         ))}
                     </select>

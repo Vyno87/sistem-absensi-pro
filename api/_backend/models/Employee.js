@@ -25,7 +25,7 @@ const employeeSchema = new mongoose.Schema({
   department: {
     type: String,
     required: true,
-    enum: ['Warehouse', 'R & D', 'WWT-P', 'Sausage', 'Further', 'Cut-Up', 'Defeathering', 'Evis', 'P 7 GA', 'Engineering', 'QC'],
+    enum: ['Warehouse', 'R & D', 'WWT-P', 'Sausage', 'Further', 'Cut-Up', 'Defeathering', 'Evis', 'P & GA', 'Engineering', 'QC'],
     trim: true
   },
   email: {
