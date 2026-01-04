@@ -49,22 +49,6 @@ const Attendance = () => {
         fetchRecent();
         fetchGPSSetting(); // Initial GPS setting fetch
 
-        useEffect(() => {
-            const fetchStats = async () => {
-                // Placeholder if needed
-            };
-            // Real-time polling setiap 5 detik (Optimized for mobile)
-            const interval = setInterval(() => {
-                fetchRecent();
-                fetchGPSSetting(); // Poll GPS setting for real-time sync
-            }, 5000);
-            return () => clearInterval(interval);
-        }, []);
-
-        useEffect(() => {
-            const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-            return () => clearInterval(timer);
-        }, []);
 
         const capture = useCallback(() => {
             const imageSrc = webcamRef.current?.getScreenshot({
