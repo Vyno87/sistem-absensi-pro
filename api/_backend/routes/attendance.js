@@ -20,6 +20,36 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c; // Distance in meters
 }
 
+// @route    GET api/attendance
+// @desc     Get recent attendance records (for real-time feed)
+// @access   Private
+router.get('/', auth, async (req, res) => {
+  try {
+    // Get latest 10 attendance records with employee details
+    const recentAttendance = await Attendance.find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean();
+
+    // Populate employee info for each record
+    const populatedRecords = await Promise.all(
+      recentAttendance.map(async (record) => {
+        const employee = await Employee.findOne({ employeeId: record.employeeId });
+        return {
+          ...record,
+          employeeName: employee ? employee.name : 'Unknown',
+          position: employee ? employee.position : 'N/A'
+        };
+      })
+    );
+
+    res.json(populatedRecords);
+  } catch (err) {
+    console.error('Error fetching recent attendance:', err.message);
+    res.status(500).send('Server error');
+  }
+});
+
 // @route    POST api/attendance  
 // @desc     Record attendance  
 // @access   Private  
