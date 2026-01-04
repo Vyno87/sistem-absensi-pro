@@ -345,6 +345,23 @@ const Reports = () => {
                 </Button>
             </div>
 
+            {/* Bulk Action Toolbar */}
+            {selectedIds.length > 0 && (
+                <div className="sticky top-0 z-10 bg-gradient-to-r from-indigo-600 to-purple-600 p-4 rounded-lg mb-4 flex justify-between items-center shadow-lg">
+                    <div className="flex items-center gap-2">
+                        <Check className="w-5 h-5 text-white" />
+                        <span className="text-white font-bold">{selectedIds.length} data dipilih</span>
+                    </div>
+                    <Button
+                        onClick={handleBulkDelete}
+                        className="bg-red-500 hover:bg-red-600 border-none"
+                        icon={<Trash2 className="w-4 h-4" />}
+                    >
+                        Hapus Semua
+                    </Button>
+                </div>
+            )}
+
             {/* Detailed Data Preview - Collapsible or simpler */}
             <GlassCard>
                 <div className="flex items-center gap-2 mb-4">
@@ -358,6 +375,14 @@ const Reports = () => {
                         <table className="w-full text-[11px]">
                             <thead>
                                 <tr className="border-b border-white/10 text-gray-500 uppercase">
+                                    <th className="py-2 px-2 text-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.length === previewData.length && previewData.length > 0}
+                                            onChange={toggleSelectAll}
+                                            className="w-4 h-4 cursor-pointer"
+                                        />
+                                    </th>
                                     <th className="py-2 px-2 text-left">No</th>
                                     <th className="py-2 px-2 text-center">Foto</th>
                                     <th className="py-2 px-2 text-left">{t('reports.name')}</th>
@@ -372,6 +397,14 @@ const Reports = () => {
                             <tbody>
                                 {previewData.slice(0, 10).map((record, index) => (
                                     <tr key={index} className="border-b border-white/5 hover:bg-white/5">
+                                        <td className="py-2 px-2 text-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.includes(record._id)}
+                                                onChange={() => toggleSelect(record._id)}
+                                                className="w-4 h-4 cursor-pointer"
+                                            />
+                                        </td>
                                         <td className="py-2 px-2 text-gray-500">{index + 1}</td>
                                         <td className="py-2 px-2 text-center">
                                             {record.facePhoto ? (
