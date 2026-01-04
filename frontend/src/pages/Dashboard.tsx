@@ -50,8 +50,8 @@ const Dashboard = () => {
         };
 
         fetchStats();
-        // Optimized: Kurangi polling dari 2s ke 10s
-        const interval = setInterval(fetchStats, 10000);
+        // Real-time polling setiap 2 detik
+        const interval = setInterval(fetchStats, 2000);
         return () => clearInterval(interval);
     }, []);
 
