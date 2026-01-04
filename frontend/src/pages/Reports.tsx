@@ -390,9 +390,9 @@ const Reports = () => {
                                         <td className="py-2 px-2">
                                             <p className="text-white">{record.name}</p>
                                         </td>
-                                        <td className="py-2 px-2 text-gray-400">{record.date}</td>
-                                        <td className="py-2 px-2 text-center text-green-400 font-mono">{record.checkIn}</td>
-                                        <td className="py-2 px-2 text-center text-red-400 font-mono">{record.checkOut}</td>
+                                        <td className="py-2 px-2 text-gray-400">{formatDate(record.date)}</td>
+                                        <td className="py-2 px-2 text-center text-green-400 font-mono">{formatTime(record.checkIn)}</td>
+                                        <td className="py-2 px-2 text-center text-red-400 font-mono">{formatTime(record.checkOut)}</td>
                                         <td className="py-2 px-2 text-center text-yellow-400 font-bold">{record.overtime}</td>
                                         <td className={`py-2 px-2 font-bold ${getStatusColor(record.attendanceStatus)}`}>
                                             {record.attendanceStatus.toUpperCase()}
