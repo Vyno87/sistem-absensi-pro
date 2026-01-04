@@ -206,7 +206,7 @@ const Attendance = () => {
                                     </div>
                                     <div className="text-right">
                                         <p className={`font-bold ${record.status === 'late' ? 'text-yellow-400' : 'text-green-400'}`}>
-                                            {new Date(record.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {new Date(record.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                                         </p>
                                         <p className="text-xs text-gray-400 capitalize">
                                             <span className={record.type === 'Check Out' ? 'text-orange-400 font-medium' : 'text-blue-400 font-medium'}>
