@@ -197,11 +197,11 @@ const Attendance = () => {
                                 <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors animate-fade-in">
                                     <div className="flex items-center space-x-4">
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${record.status === 'late' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gradient-to-br from-indigo-500 to-purple-500'}`}>
-                                            {record.employeeId?.employeeId || 'ID'}
+                                            <User className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <p className="font-bold text-white">{record.employeeId?.name || 'Unknown'}</p>
-                                            <p className="text-xs text-gray-400">{record.employeeId?.position || 'Employee'}</p>
+                                            <p className="font-bold text-white">{record.employeeName || 'Unknown'}</p>
+                                            <p className="text-xs text-gray-400">{record.position || 'Employee'}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
