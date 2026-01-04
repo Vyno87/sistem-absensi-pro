@@ -25,7 +25,7 @@ const Attendance = () => {
         } catch (err: any) {
             // Silently fail untuk polling - tidak ganggu UX
             if (err.response?.status !== 401) {
-                console.error('Error fetching recent:", err);
+                console.error('Error fetching recent:', err);
             }
         }
     };
