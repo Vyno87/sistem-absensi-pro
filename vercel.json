@@ -1,13 +1,25 @@
 {
     "version": 2,
-    "routes": [
+    "rewrites": [
         {
-            "src": "/api/(.*)",
-            "dest": "/api/index.js"
+            "source": "/api/(.*)",
+            "destination": "/api/index.js"
         },
         {
-            "src": "/((?!api/).*)",
-            "dest": "/index.html"
+            "source": "/static/(.*)",
+            "destination": "/frontend/build/static/$1"
+        },
+        {
+            "source": "/manifest.json",
+            "destination": "/frontend/build/manifest.json"
+        },
+        {
+            "source": "/service-worker.js",
+            "destination": "/frontend/build/service-worker.js"
+        },
+        {
+            "source": "/((?!api/).*)",
+            "destination": "/frontend/build/index.html"
         }
     ],
     "crons": [
