@@ -215,15 +215,23 @@ router.delete('/:id', auth, async (req, res) => {
     const employee = await Employee.findOne({ employeeId: attendance.employeeId });
 
     if (employee) {
+      const updateFields = {};
+
       // Decrement the attendance count based on status
       if (attendance.status === 'present' && employee.attendanceCount.present > 0) {
-        employee.attendanceCount.present -= 1;
+        updateFields['attendanceCount.present'] = -1;
       } else if (attendance.status === 'late' && employee.attendanceCount.late > 0) {
-        employee.attendanceCount.late -= 1;
+        updateFields['attendanceCount.late'] = -1;
       } else if (attendance.status === 'absent' && employee.attendanceCount.absent > 0) {
-        employee.attendanceCount.absent -= 1;
+        updateFields['attendanceCount.absent'] = -1;
       }
-      await employee.save();
+
+      if (Object.keys(updateFields).length > 0) {
+        await Employee.updateOne(
+          { employeeId: attendance.employeeId },
+          { $inc: updateFields }
+        );
+      }
     }
 
     // Delete the attendance record
