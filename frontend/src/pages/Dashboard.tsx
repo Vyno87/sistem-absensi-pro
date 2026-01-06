@@ -14,7 +14,6 @@ import {
     Calendar,
     Clock,
     MapPin,
-    BarChart3,
     User
 } from 'lucide-react';
 import {

@@ -5,7 +5,7 @@ import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { FileSpreadsheet, FileText, Download, Calendar, Users, Clock, RefreshCw, Trash2, X, User, Check } from 'lucide-react';
+import { FileSpreadsheet, FileText, Calendar, Users, RefreshCw, Trash2, X, User, Check } from 'lucide-react';
 import Modal from '../components/UI/Modal';
 
 const Reports = () => {
@@ -30,7 +30,7 @@ const Reports = () => {
         setEndDate(lastDay.toISOString().split('T')[0]);
     }, []);
 
-    const fetchData = async (isBackground = false) => {
+    const fetchData = React.useCallback(async (isBackground = false) => {
         if (!isBackground) setPreviewLoading(true);
         try {
             // Fetch detailed attendance
@@ -49,7 +49,7 @@ const Reports = () => {
         } finally {
             if (!isBackground) setPreviewLoading(false);
         }
-    };
+    }, [startDate, endDate]);
 
     // Auto-refresh untuk Live Reports (Admin)
     useEffect(() => {
@@ -59,7 +59,7 @@ const Reports = () => {
             const interval = setInterval(() => fetchData(true), 3000);
             return () => clearInterval(interval);
         }
-    }, [startDate, endDate]);
+    }, [startDate, endDate, fetchData]);
 
     const downloadExcel = async () => {
         setLoading(prev => ({ ...prev, excel: true }));
@@ -475,7 +475,7 @@ const Reports = () => {
                         </button>
                         <img
                             src={selectedPhoto}
-                            alt="Face Photo"
+                            alt="Employee View"
                             className="max-w-full max-h-[90vh] rounded-lg shadow-2xl"
                             onClick={(e) => e.stopPropagation()}
                         />

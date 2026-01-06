@@ -13,7 +13,6 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-    const [isInstallable, setIsInstallable] = useState(false);
     const [deviceType, setDeviceType] = useState<'pc' | 'android' | 'ios'>('pc');
     const { login } = useAuth();
     const { t, language, setLanguage } = useLanguage();
@@ -26,7 +25,7 @@ const Login = () => {
             setDeviceType('ios');
         } else if (/android/.test(userAgent)) {
             setDeviceType('android');
-            setIsInstallable(true); // Usually android shows "Add to Home Screen"
+            // Usually android shows "Add to Home Screen"
         } else {
             setDeviceType('pc');
         }
@@ -34,7 +33,6 @@ const Login = () => {
         const handleBeforeInstallPrompt = (e: any) => {
             e.preventDefault();
             setDeferredPrompt(e);
-            setIsInstallable(true);
         };
 
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -55,7 +53,6 @@ const Login = () => {
             const { outcome } = await deferredPrompt.userChoice;
             if (outcome === 'accepted') {
                 setDeferredPrompt(null);
-                setIsInstallable(false);
             }
         } else if (deviceType === 'android') {
             // If Android but no deferredPrompt (e.g. already handled by browser)
