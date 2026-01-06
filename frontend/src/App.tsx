@@ -13,6 +13,7 @@ const Attendance = lazy(() => import('./pages/Attendance'));
 const Shifts = lazy(() => import('./pages/Shifts'));
 const Leaves = lazy(() => import('./pages/Leaves'));
 const Reports = lazy(() => import('./pages/Reports'));
+const Settings = lazy(() => import('./pages/Settings'));
 
 // Loading component yang ringan
 const PageLoader = () => (
@@ -80,6 +81,12 @@ function App() {
               <Route path="/reports" element={
                 <PrivateRoute allowedRoles={['admin']}>
                   <Reports />
+                </PrivateRoute>
+              } />
+
+              <Route path="/settings" element={
+                <PrivateRoute allowedRoles={['admin']}>
+                  <Settings />
                 </PrivateRoute>
               } />
 
