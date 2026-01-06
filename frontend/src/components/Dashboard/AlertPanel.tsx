@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import GlassCard from '../UI/GlassCard';
 import api from '../../services/api';
 import { AlertTriangle, X, Clock, User } from 'lucide-react';
-import Button from '../UI/Button';
 
 interface Alert {
     _id: string;

@@ -4,11 +4,9 @@ import GlassCard from '../components/UI/GlassCard';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import api from '../services/api';
-import { useLanguage } from '../context/LanguageContext';
 import { MapPin, Save, ToggleLeft, ToggleRight, Shield } from 'lucide-react';
 
 const Settings = () => {
-    const { t } = useLanguage();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [settings, setSettings] = useState({
@@ -93,8 +91,8 @@ const Settings = () => {
                         <button
                             onClick={() => setSettings({ ...settings, enabled: !settings.enabled })}
                             className={`px-6 py-2 rounded-lg font-semibold transition-all ${settings.enabled
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-gray-600 text-gray-300'
+                                ? 'bg-green-500 text-white'
+                                : 'bg-gray-600 text-gray-300'
                                 }`}
                         >
                             {settings.enabled ? 'AKTIF' : 'NONAKTIF'}
@@ -163,8 +161,8 @@ const Settings = () => {
                             <button
                                 onClick={() => setSettings({ ...settings, blockOutOfRange: !settings.blockOutOfRange })}
                                 className={`px-4 py-1 rounded-lg text-sm font-semibold transition-all ${settings.blockOutOfRange
-                                        ? 'bg-red-500 text-white'
-                                        : 'bg-yellow-500 text-black'
+                                    ? 'bg-red-500 text-white'
+                                    : 'bg-yellow-500 text-black'
                                     }`}
                             >
                                 {settings.blockOutOfRange ? 'BLOCK' : 'WARN'}
