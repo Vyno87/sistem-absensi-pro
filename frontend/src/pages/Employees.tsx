@@ -113,6 +113,12 @@ const Employees = () => {
         }
     };
 
+    // Filter employees based on search query (name or ID)
+    const filteredEmployees = employees.filter(emp =>
+        emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        emp.employeeId.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <MainLayout>
             <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
