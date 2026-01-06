@@ -99,6 +99,11 @@ const translations: Translation = {
     'employees.failedToAdd': { en: 'Failed to add employee', id: 'Gagal menambahkan karyawan' },
     'employees.present': { en: 'Present', id: 'Hadir' },
     'employees.performance': { en: 'Performance', id: 'Kinerja' },
+    'employees.dailyWorker': { en: 'Daily Worker', id: 'Harian Lepas' },
+    'employees.outsourcing': { en: 'Outsourcing', id: 'Outsourcing' },
+    'employees.freelance': { en: 'Freelance', id: 'Borongan' },
+    'employees.confirmDelete': { en: 'Delete Employee', id: 'Hapus Karyawan' },
+    'employees.failedDelete': { en: 'Failed to delete employee', id: 'Gagal menghapus karyawan' },
 
     // Days of week
     'days.mon': { en: 'Mon', id: 'Sen' },

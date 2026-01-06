@@ -391,7 +391,7 @@ router.get('/excel', auth, adminOnly, async (req, res) => {
         detailSheet.getCell('A2').value = `Periode: ${dateRange}`;
         detailSheet.getCell('A2').alignment = { horizontal: 'center' };
 
-        const detailHeaders = ['No', 'ID Karyawan', 'Nama', 'Jabatan', 'Tanggal', 'Check In', 'Check Out', 'Status', 'Latitude', 'Longitude'];
+        const detailHeaders = ['No', 'ID Karyawan', 'Nama', 'Jabatan', 'Tanggal', 'Jam Masuk', 'Jam Pulang', 'Status', 'Keterangan', 'Latitude', 'Longitude'];
         detailSheet.addRow([]);
         const detailHeaderRow = detailSheet.addRow(detailHeaders);
         detailHeaderRow.font = { bold: true };
@@ -403,20 +403,57 @@ router.get('/excel', auth, adminOnly, async (req, res) => {
         });
 
         formattedData.forEach((record, index) => {
+            // Format times as HH:MM
+            const checkInTime = record.checkIn ? new Date(record.checkIn).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) : '-';
+            const checkOutTime = record.checkOut ? new Date(record.checkOut).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) : '-';
+
+            // Determine status description
+            let keterangan = '';
+            if (record.attendanceStatus === 'late') {
+                keterangan = '⚠️ TERLAMBAT';
+            } else if (record.attendanceStatus === 'absent') {
+                keterangan = '❌ TIDAK HADIR';
+            } else if (record.attendanceStatus === 'present') {
+                keterangan = '✓ Tepat Waktu';
+            }
+
             const row = detailSheet.addRow([
-                index + 1, record.employeeId, record.name, record.position,
-                record.date, record.checkIn, record.checkOut, record.attendanceStatus,
-                record.latitude, record.longitude
+                index + 1,
+                record.employeeId,
+                record.name,
+                record.position,
+                new Date(record.date).toLocaleDateString('id-ID'),
+                checkInTime,
+                checkOutTime,
+                record.attendanceStatus,
+                keterangan,
+                record.latitude || '-',
+                record.longitude || '-'
             ]);
-            row.eachCell(cell => {
+
+            row.eachCell((cell, colNumber) => {
                 cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+
+                // Color-code the status column
+                if (colNumber === 9) { // Keterangan column
+                    if (record.attendanceStatus === 'late') {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEF3C7' } };
+                        cell.font = { bold: true, color: { argb: 'D97706' } };
+                    } else if (record.attendanceStatus === 'absent') {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEE2E2' } };
+                        cell.font = { bold: true, color: { argb: 'DC2626' } };
+                    } else if (record.attendanceStatus === 'present') {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D1FAE5' } };
+                        cell.font = { color: { argb: '059669' } };
+                    }
+                }
             });
         });
 
         detailSheet.columns = [
-            { width: 5 }, { width: 15 }, { width: 25 }, { width: 20 },
-            { width: 15 }, { width: 12 }, { width: 12 }, { width: 12 },
-            { width: 15 }, { width: 15 }
+            { width: 5 }, { width: 12 }, { width: 25 }, { width: 20 },
+            { width: 12 }, { width: 12 }, { width: 12 }, { width: 12 },
+            { width: 18 }, { width: 12 }, { width: 12 }
         ];
 
         // Generate file

@@ -23,7 +23,7 @@ const Employees = () => {
         phone: '',
         department: '',
         salary: '',
-        status: 'Kontrak',
+        status: 'Harian Lepas',
         shiftId: '',
         fingerprintId: ''
     });
@@ -85,7 +85,7 @@ const Employees = () => {
                 phone: '',
                 department: '',
                 salary: '',
-                status: 'Kontrak',
+                status: 'Harian Lepas',
                 shiftId: '',
                 fingerprintId: ''
             });
@@ -256,6 +256,9 @@ const Employees = () => {
                         className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
                         required
                     >
+                        <option value="Harian Lepas">{t('employees.dailyWorker')}</option>
+                        <option value="Outsourcing">{t('employees.outsourcing')}</option>
+                        <option value="Borongan">{t('employees.freelance')}</option>
                         <option value="Kontrak">{t('employees.contract')}</option>
                         <option value="Tetap">{t('employees.permanent')}</option>
                     </select>
