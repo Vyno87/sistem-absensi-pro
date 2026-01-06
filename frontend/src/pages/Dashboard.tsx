@@ -50,6 +50,7 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [recentActivity, setRecentActivity] = useState([]);
     const [enableGPS, setEnableGPS] = useState(true);
+    const [shifts, setShifts] = useState<any[]>([]);
 
     // Fetch GPS setting from backend
     const fetchGPSSetting = async () => {
@@ -68,6 +69,15 @@ const Dashboard = () => {
             setEnableGPS(newValue);
         } catch (err) {
             console.error('Error updating GPS setting:', err);
+        }
+    };
+
+    const fetchShifts = async () => {
+        try {
+            const res = await api.get('/shifts');
+            setShifts(res.data);
+        } catch (err) {
+            console.error('Error fetching shifts:', err);
         }
     };
 
@@ -106,6 +116,7 @@ const Dashboard = () => {
             setLoading(false); // Set loading to false after initial fetch for admin
             return () => clearInterval(interval);
         } else {
+            fetchShifts(); // Fetch shifts for user view
             setLoading(false); // Set loading to false immediately for non-admin users
         }
     }, [user]);
@@ -282,33 +293,55 @@ const Dashboard = () => {
                     </div>
                 </>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <GlassCard className="flex flex-col items-center justify-center p-12 text-center h-[300px]">
-                        <div className="p-4 bg-primary/20 rounded-full mb-6 text-primary">
-                            <CalendarCheck size={48} />
-                        </div>
-                        <h2 className="text-2xl font-bold text-white mb-2">{t('dashboard.readyCheckIn')}</h2>
-                        <p className="text-gray-400 mb-6">{t('dashboard.markAttendance')}</p>
-                        <button
-                            onClick={() => navigate('/attendance')}
-                            className="px-8 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/30 hover:scale-105 transition-all"
-                        >
-                            {t('dashboard.goToAttendance')}
-                        </button>
-                    </GlassCard>
+                <div className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <GlassCard className="flex flex-col items-center justify-center p-12 text-center h-[300px]">
+                            <div className="p-4 bg-primary/20 rounded-full mb-6 text-primary">
+                                <CalendarCheck size={48} />
+                            </div>
+                            <h2 className="text-2xl font-bold text-white mb-2">{t('dashboard.readyCheckIn')}</h2>
+                            <p className="text-gray-400 mb-6">{t('dashboard.markAttendance')}</p>
+                            <button
+                                onClick={() => navigate('/attendance')}
+                                className="px-8 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/30 hover:scale-105 transition-all"
+                            >
+                                {t('dashboard.goToAttendance')}
+                            </button>
+                        </GlassCard>
 
-                    <GlassCard className="flex flex-col items-center justify-center p-12 text-center h-[300px]">
-                        <div className="p-4 bg-green-500/20 rounded-full mb-6 text-green-400">
-                            <Calendar size={48} />
-                        </div>
-                        <h2 className="text-2xl font-bold text-white mb-2">{t('dashboard.needLeave')}</h2>
-                        <p className="text-gray-400 mb-6">{t('dashboard.submitLeave')}</p>
-                        <button
-                            onClick={() => navigate('/leaves')}
-                            className="px-8 py-3 bg-green-500 text-white rounded-xl font-bold shadow-lg shadow-green-500/30 hover:scale-105 transition-all"
-                        >
-                            {t('dashboard.requestLeave')}
-                        </button>
+                        <GlassCard className="flex flex-col items-center justify-center p-12 text-center h-[300px]">
+                            <div className="p-4 bg-green-500/20 rounded-full mb-6 text-green-400">
+                                <Calendar size={48} />
+                            </div>
+                            <h2 className="text-2xl font-bold text-white mb-2">{t('dashboard.needLeave')}</h2>
+                            <p className="text-gray-400 mb-6">{t('dashboard.submitLeave')}</p>
+                            <button
+                                onClick={() => navigate('/leaves')}
+                                className="px-8 py-3 bg-green-500 text-white rounded-xl font-bold shadow-lg shadow-green-500/30 hover:scale-105 transition-all"
+                            >
+                                {t('dashboard.requestLeave')}
+                            </button>
+                        </GlassCard>
+                    </div>
+
+                    {/* Shift Schedule Card */}
+                    <GlassCard className="border-indigo-500/30">
+                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <Clock className="w-5 h-5 text-indigo-400" /> {t('attendance.shiftSchedule')}
+                        </h3>
+                        {shifts.length === 0 ? (
+                            <p className="text-gray-400 text-center py-4">{t('common.noData')}</p>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {shifts.map((shift: any) => (
+                                    <div key={shift._id} className="p-4 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20">
+                                        <p className="font-bold text-white mb-1">{shift.name}</p>
+                                        <p className="text-xs text-gray-400 mb-3">{shift.description || 'Regular Shift'}</p>
+                                        <p className="text-lg font-bold text-indigo-400">{shift.startTime} - {shift.endTime}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </GlassCard>
                 </div>
             )}
