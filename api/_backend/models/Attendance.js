@@ -34,6 +34,15 @@ const attendanceSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  distanceFromOffice: {
+    type: Number,
+    required: false
+  },
+  geofenceStatus: {
+    type: String,
+    enum: ['in-range', 'out-of-range', 'disabled'],
+    default: 'disabled'
+  },
   deviceAuthToken: String,
   hardwareUid: Number,
   notes: String

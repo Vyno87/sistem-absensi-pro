@@ -76,6 +76,7 @@ app.use('/api/shifts', require('./_backend/routes/shifts'));
 app.use('/api/leaves', require('./_backend/routes/leaves'));
 app.use('/api/reports', require('./_backend/routes/reports'));
 app.use('/api/settings', require('./_backend/routes/settings')); // Settings API
+app.use('/api/geofence', require('./_backend/routes/geofence').router); // Geofence API
 
 app.get('/api/health', (req, res) => {
   console.log('=> Health check requested. MONGODB_URI exists:', !!process.env.MONGODB_URI);

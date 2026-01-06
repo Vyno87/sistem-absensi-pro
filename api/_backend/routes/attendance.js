@@ -165,6 +165,44 @@ router.post('/', auth, async (req, res) => {
       }
     }
 
+    // ==== GEOFENCE VALIDATION ====
+    const GeofenceSettings = require('../models/GeofenceSettings');
+    const geofenceSettings = await GeofenceSettings.getSettings();
+
+    let distanceFromOffice = null;
+    let geofenceStatus = 'disabled';
+
+    if (geofenceSettings.enabled && latitude && longitude) {
+      // Calculate distance from office
+      distanceFromOffice = calculateDistance(
+        geofenceSettings.centerLat,
+        geofenceSettings.centerLng,
+        latitude,
+        longitude
+      );
+
+      // Check if within radius
+      if (distanceFromOffice <= geofenceSettings.radiusMeters) {
+        geofenceStatus = 'in-range';
+      } else {
+        geofenceStatus = 'out-of-range';
+
+        // Block check-in if configured
+        if (geofenceSettings.blockOutOfRange) {
+          return res.status(403).json({
+            msg: 'Anda berada di luar radius kantor',
+            distance: Math.round(distanceFromOffice),
+            maxDistance: geofenceSettings.radiusMeters,
+            officeLocation: {
+              lat: geofenceSettings.centerLat,
+              lng: geofenceSettings.centerLng
+            }
+          });
+        }
+      }
+    }
+    // ==== END GEOFENCE VALIDATION ====
+
     // Create new attendance record  
     const newAttendance = new Attendance({
       employeeId,
@@ -172,7 +210,9 @@ router.post('/', auth, async (req, res) => {
       status: finalStatus,
       latitude: latitude || null,
       longitude: longitude || null,
-      facePhoto: facePhoto || null
+      facePhoto: facePhoto || null,
+      distanceFromOffice,
+      geofenceStatus
     });
 
     const attendance = await newAttendance.save();
