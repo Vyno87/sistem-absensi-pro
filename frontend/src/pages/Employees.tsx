@@ -89,7 +89,8 @@ const Employees = () => {
                 salary: '',
                 status: 'Harian Lepas',
                 shiftId: '',
-                fingerprintId: ''
+                fingerprintId: '',
+                isKeyPerson: false
             });
             setIsModalOpen(false);
 
