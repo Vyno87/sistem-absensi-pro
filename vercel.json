@@ -6,13 +6,8 @@
             "destination": "/api/index.js"
         },
         {
-            "source": "/(.*)",
-            "destination": "/frontend/build/$1",
-            "check": true
-        },
-        {
             "source": "/((?!api/).*)",
-            "destination": "/frontend/build/index.html"
+            "destination": "/index.html"
         }
     ],
     "crons": [
