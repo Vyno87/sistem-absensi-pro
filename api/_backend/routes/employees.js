@@ -94,16 +94,21 @@ router.put('/:id', auth, async (req, res) => {
 // @access   Private  
 router.delete('/:id', auth, async (req, res) => {
   try {
+    // Check if user is admin (optional but recommended)
+    // if (req.user.role !== 'admin') {
+    //   return res.status(403).json({ msg: 'Access denied. Admin only.' });
+    // }
+
     const employee = await Employee.findById(req.params.id);
 
     if (!employee) return res.status(404).json({ msg: 'Employee not found' });
 
-    await Employee.findByIdAndRemove(req.params.id);
+    await Employee.findByIdAndDelete(req.params.id);
 
     res.json({ msg: 'Employee removed' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ msg: 'Server Error: ' + err.message });
   }
 });
 
