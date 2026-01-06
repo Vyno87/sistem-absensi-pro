@@ -31,6 +31,7 @@ import {
 import { Line, Doughnut } from 'react-chartjs-2';
 import LiveMap from '../components/Dashboard/LiveMap';
 import SmartInsights from '../components/Dashboard/SmartInsights';
+import AlertPanel from '../components/Dashboard/AlertPanel';
 
 ChartJS.register(
     CategoryScale,
@@ -228,6 +229,9 @@ const Dashboard = () => {
                             </GlassCard>
                         ))}
                     </div>
+
+                    {/* Late Alerts Section - Shows only if there are active alerts */}
+                    <AlertPanel />
 
                     {/* Smart Insights Section */}
                     <div className="mb-8">
