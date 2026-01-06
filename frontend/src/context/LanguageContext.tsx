@@ -104,6 +104,7 @@ const translations: Translation = {
     'employees.freelance': { en: 'Freelance', id: 'Borongan' },
     'employees.confirmDelete': { en: 'Delete Employee', id: 'Hapus Karyawan' },
     'employees.failedDelete': { en: 'Failed to delete employee', id: 'Gagal menghapus karyawan' },
+    'employees.noResults': { en: 'No employees found matching your search', id: 'Tidak ada karyawan yang cocok dengan pencarian' },
 
     // Days of week
     'days.mon': { en: 'Mon', id: 'Sen' },

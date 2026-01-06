@@ -62,7 +62,7 @@ const Reports = () => {
     }, [startDate, endDate]);
 
     const downloadExcel = async () => {
-        setLoading({ ...loading, excel: true });
+        setLoading(prev => ({ ...prev, excel: true }));
         try {
             const response = await api.get('/reports/excel', {
                 params: { startDate, endDate },
@@ -81,12 +81,12 @@ const Reports = () => {
             console.error('Error downloading Excel:', error);
             setErrorMsg(t('reports.downloadFailed'));
         } finally {
-            setLoading({ ...loading, excel: false });
+            setLoading(prev => ({ ...prev, excel: false }));
         }
     };
 
     const downloadPDF = async () => {
-        setLoading({ ...loading, pdf: true });
+        setLoading(prev => ({ ...prev, pdf: true }));
         try {
             const response = await api.get('/reports/pdf', {
                 params: { startDate, endDate },
@@ -105,7 +105,7 @@ const Reports = () => {
             console.error('Error downloading PDF:', error);
             setErrorMsg(t('reports.downloadFailed'));
         } finally {
-            setLoading({ ...loading, pdf: false });
+            setLoading(prev => ({ ...prev, pdf: false }));
         }
     };
 

@@ -28,6 +28,7 @@ const Employees = () => {
         fingerprintId: ''
     });
     const [formLoading, setFormLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [errorMsg, setErrorMsg] = useState('');
 
@@ -120,7 +121,13 @@ const Employees = () => {
                     <p className="text-gray-400">{t('employees.subtitle')}</p>
                 </div>
                 <div className="flex gap-3 w-full md:w-auto">
-                    <Input placeholder={t('employees.search')} icon={<Search className="w-4 h-4" />} className="md:w-64" />
+                    <Input
+                        placeholder={t('employees.search')}
+                        icon={<Search className="w-4 h-4" />}
+                        className="md:w-64"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                     <Button icon={<UserPlus className="w-4 h-4" />} onClick={() => setIsModalOpen(true)}>{t('employees.addNew')}</Button>
                 </div>
             </div>
@@ -128,8 +135,10 @@ const Employees = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {loading ? (
                     <p className="text-white">{t('common.loading')}</p>
+                ) : filteredEmployees.length === 0 ? (
+                    <p className="text-gray-400 col-span-full text-center py-8">{searchQuery ? t('employees.noResults') : t('common.noData')}</p>
                 ) : (
-                    employees.map((emp) => (
+                    filteredEmployees.map((emp) => (
                         <GlassCard key={emp._id} className="group relative hover:border-indigo-500/50">
                             <div className="absolute top-4 right-4 text-gray-400 cursor-pointer hover:text-red-400 transition-colors" onClick={() => setDeleteId(emp._id)}>
                                 <Trash2 size={20} />
