@@ -284,6 +284,24 @@ const Employees = () => {
                         <option value="Kontrak" className="bg-slate-800">{t('employees.contract')}</option>
                         <option value="Tetap" className="bg-slate-800">{t('employees.permanent')}</option>
                     </select>
+
+                    {/* Key Person Toggle */}
+                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:border-yellow-500/30 transition-colors">
+                        <div>
+                            <label className="text-white font-semibold block mb-1">⭐ Key Person</label>
+                            <p className="text-xs text-gray-400">Enable late alerts for this employee</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={formData.isKeyPerson}
+                                onChange={(e) => setFormData({ ...formData, isKeyPerson: e.target.checked })}
+                                className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-yellow-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+                        </label>
+                    </div>
+
                     <Button type="submit" isLoading={formLoading} className="w-full">
                         {t('employees.addEmployee')}
                     </Button>
