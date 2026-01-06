@@ -647,6 +647,85 @@ router.get('/pdf', auth, adminOnly, async (req, res) => {
             doc.fontSize(9).text('Tidak ada karyawan yang memenuhi kriteria pengangkatan saat ini.');
         }
 
+        // ========== PAGE 2: DETAIL ABSENSI DENGAN JAM ==========
+        doc.addPage();
+
+        doc.fontSize(18).font('Helvetica-Bold').text('DATA ABSENSI DETAIL', { align: 'center' });
+        doc.fontSize(12).font('Helvetica').text(`Periode: ${dateRange}`, { align: 'center' });
+        doc.moveDown(1.5);
+
+        // Detail Table Headers
+        const detailTableTop = doc.y;
+        const detailCols = [30, 70, 180, 280, 350, 420, 490, 560, 650];
+        const detailHeaders = ['No', 'ID', 'Nama', 'Jabatan', 'Tanggal', 'Jam Masuk', 'Jam Pulang', 'Status', 'Keterangan'];
+
+        doc.rect(30, detailTableTop - 5, 750, 20).fill('#6366F1');
+        doc.fillColor('white').fontSize(7).font('Helvetica-Bold');
+        detailHeaders.forEach((h, i) => doc.text(h, detailCols[i], detailTableTop, { width: 60 }));
+
+        doc.fillColor('black').font('Helvetica').fontSize(6);
+        let detailY = detailTableTop + 20;
+
+        formattedData.forEach((record, idx) => {
+            if (detailY > 520) {
+                doc.addPage();
+                detailY = 50;
+                // Re-draw header on new page
+                doc.rect(30, detailY - 5, 750, 20).fill('#6366F1');
+                doc.fillColor('white').fontSize(7).font('Helvetica-Bold');
+                detailHeaders.forEach((h, i) => doc.text(h, detailCols[i], detailY, { width: 60 }));
+                doc.fillColor('black').font('Helvetica').fontSize(6);
+                detailY += 20;
+            }
+
+            // Zebra striping
+            if (idx % 2 === 0) {
+                doc.rect(30, detailY - 2, 750, 14).fill('#f3f4f6');
+                doc.fillColor('black');
+            }
+
+            // Format times
+            const checkInTime = record.checkIn ? new Date(record.checkIn).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) : '-';
+            const checkOutTime = record.checkOut ? new Date(record.checkOut).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) : '-';
+
+            // Status description
+            let keterangan = '';
+            if (record.attendanceStatus === 'late') {
+                keterangan = '⚠️ TERLAMBAT';
+            } else if (record.attendanceStatus === 'absent') {
+                keterangan = '❌ TIDAK HADIR';
+            } else if (record.attendanceStatus === 'present') {
+                keterangan = '✓ Tepat Waktu';
+            }
+
+            const rowData = [
+                (idx + 1).toString(),
+                record.employeeId,
+                record.name.substring(0, 18),
+                record.position.substring(0, 15),
+                new Date(record.date).toLocaleDateString('id-ID'),
+                checkInTime,
+                checkOutTime,
+                record.attendanceStatus,
+                keterangan
+            ];
+
+            rowData.forEach((text, i) => {
+                if (i === 8) { // Keterangan column with color
+                    if (record.attendanceStatus === 'late') {
+                        doc.fillColor('#D97706').font('Helvetica-Bold');
+                    } else if (record.attendanceStatus === 'absent') {
+                        doc.fillColor('#DC2626').font('Helvetica-Bold');
+                    } else if (record.attendanceStatus === 'present') {
+                        doc.fillColor('#059669').font('Helvetica');
+                    }
+                }
+                doc.text(text, detailCols[i], detailY, { width: 60 });
+                doc.fillColor('black').font('Helvetica');
+            });
+            detailY += 14;
+        });
+
         doc.end();
 
     } catch (err) {
