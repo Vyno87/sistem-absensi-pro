@@ -5,7 +5,7 @@
     "private": true,
     "scripts": {
         "start": "concurrently \"npm run start --prefix api\" \"npm run start --prefix frontend\"",
-        "build": "npm run build --prefix frontend",
+        "build": "npm run build --prefix frontend && cp -rv frontend/build/* .",
         "install-all": "npm install && npm install --prefix api && npm install --prefix frontend"
     },
     "devDependencies": {
