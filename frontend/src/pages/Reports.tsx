@@ -6,6 +6,7 @@ import Input from '../components/UI/Input';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
 import { FileSpreadsheet, FileText, Download, Calendar, Users, Clock, RefreshCw, Trash2, X, User, Check } from 'lucide-react';
+import Modal from '../components/UI/Modal';
 
 const Reports = () => {
     const { t } = useLanguage();
