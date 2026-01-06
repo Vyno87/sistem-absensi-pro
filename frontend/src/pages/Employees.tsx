@@ -25,7 +25,8 @@ const Employees = () => {
         salary: '',
         status: 'Harian Lepas',
         shiftId: '',
-        fingerprintId: ''
+        fingerprintId: '',
+        isKeyPerson: false
     });
     const [formLoading, setFormLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -170,6 +171,12 @@ const Employees = () => {
                                 {emp.shiftId && (
                                     <div className="w-full bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-2 text-xs text-indigo-300">
                                         Shift: {emp.shiftId.name} ({emp.shiftId.startTime} - {emp.shiftId.endTime})
+                                    </div>
+                                )}
+
+                                {emp.isKeyPerson && (
+                                    <div className="w-full bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-2 text-xs text-yellow-400 font-semibold flex items-center justify-center gap-1">
+                                        ⭐ Key Person - Late Alerts Active
                                     </div>
                                 )}
 
