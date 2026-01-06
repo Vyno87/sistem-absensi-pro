@@ -1,7 +1,5 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import Button from '../UI/Button';
-import Input from '../UI/Input';
 
 interface ModalProps {
     isOpen: boolean;
