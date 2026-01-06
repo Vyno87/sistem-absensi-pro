@@ -30,6 +30,7 @@ import {
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
 import LiveMap from '../components/Dashboard/LiveMap';
+import SmartInsights from '../components/Dashboard/SmartInsights';
 
 ChartJS.register(
     CategoryScale,
@@ -226,6 +227,11 @@ const Dashboard = () => {
                                 </div>
                             </GlassCard>
                         ))}
+                    </div>
+
+                    {/* Smart Insights Section */}
+                    <div className="mb-8">
+                        <SmartInsights />
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
