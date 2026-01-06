@@ -6,6 +6,11 @@
             "destination": "/api/index.js"
         },
         {
+            "source": "/(.*)",
+            "destination": "/$1",
+            "check": true
+        },
+        {
             "source": "/((?!api/).*)",
             "destination": "/index.html"
         }
