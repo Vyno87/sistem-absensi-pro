@@ -78,6 +78,7 @@ app.use('/api/reports', require('./_backend/routes/reports'));
 app.use('/api/settings', require('./_backend/routes/settings')); // Settings API
 app.use('/api/geofence', require('./_backend/routes/geofence').router); // Geofence API
 app.use('/api/analytics', require('./_backend/routes/analytics')); // Analytics API
+app.use('/api/alerts', require('./_backend/routes/alerts')); // Late Alerts API
 
 app.get('/api/health', (req, res) => {
   console.log('=> Health check requested. MONGODB_URI exists:', !!process.env.MONGODB_URI);
@@ -106,6 +107,17 @@ app.use((err, req, res, next) => {
     message: err.message
   });
 });
+
+// ========== BACKGROUND JOBS ==========
+const checkLateEmployees = require('./_backend/jobs/lateAlertChecker');
+
+// Run late employee check every 15 minutes
+setInterval(checkLateEmployees, 15 * 60 * 1000);
+
+// Run once on startup (after 30 seconds delay to ensure DB is connected)
+setTimeout(checkLateEmployees, 30000);
+
+console.log('✅ Late alert checker initialized (runs every 15 minutes)');
 
 module.exports = app;
 

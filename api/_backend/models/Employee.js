@@ -63,6 +63,10 @@ const employeeSchema = new mongoose.Schema({
       default: 0
     }
   },
+  isKeyPerson: {
+    type: Boolean,
+    default: false
+  },
   performanceScore: {
     type: Number,
     default: 0,
