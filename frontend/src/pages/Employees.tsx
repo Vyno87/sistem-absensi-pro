@@ -250,18 +250,17 @@ const Employees = () => {
                         {t('employees.addEmployee')}
                     </Button>
                 </form>
-            </form>
-        </Modal>
+            </Modal>
 
-            {/* Error Modal */ }
-    <Modal isOpen={!!errorMsg} onClose={() => setErrorMsg('')} title="Gagal">
-        <div className="text-center p-4">
-            <p className="text-gray-300 mb-6">{errorMsg}</p>
-            <Button onClick={() => setErrorMsg('')} className="w-full">
-                Tutup
-            </Button>
-        </div>
-    </Modal>
+            {/* Error Modal */}
+            <Modal isOpen={!!errorMsg} onClose={() => setErrorMsg('')} title="Gagal">
+                <div className="text-center p-4">
+                    <p className="text-gray-300 mb-6">{errorMsg}</p>
+                    <Button onClick={() => setErrorMsg('')} className="w-full">
+                        Tutup
+                    </Button>
+                </div>
+            </Modal>
         </MainLayout >
     );
 };
