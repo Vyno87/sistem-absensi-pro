@@ -33,6 +33,7 @@ const Leaves = () => {
         reason: ''
     });
     const [formLoading, setFormLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
 
     useEffect(() => {
         fetchLeaves();
@@ -59,7 +60,7 @@ const Leaves = () => {
             setIsModalOpen(false);
             fetchLeaves();
         } catch (error: any) {
-            alert(error.response?.data?.msg || t('leaves.failedSubmit'));
+            setErrorMsg(error.response?.data?.msg || t('leaves.failedSubmit'));
         } finally {
             setFormLoading(false);
         }
@@ -70,7 +71,7 @@ const Leaves = () => {
             await api.put(`/leaves/${id}/approve`);
             fetchLeaves();
         } catch (error: any) {
-            alert(error.response?.data?.msg || t('leaves.failedApprove'));
+            setErrorMsg(error.response?.data?.msg || t('leaves.failedApprove'));
         }
     };
 
@@ -79,7 +80,7 @@ const Leaves = () => {
             await api.put(`/leaves/${id}/reject`);
             fetchLeaves();
         } catch (error: any) {
-            alert(error.response?.data?.msg || t('leaves.failedReject'));
+            setErrorMsg(error.response?.data?.msg || t('leaves.failedReject'));
         }
     };
 
@@ -221,7 +222,19 @@ const Leaves = () => {
                     </Button>
                 </form>
             </Modal>
-        </MainLayout>
+        </form>
+            </Modal >
+
+    {/* Error Modal */ }
+    < Modal isOpen = {!!errorMsg} onClose = {() => setErrorMsg('')} title = "Gagal" >
+        <div className="text-center p-4">
+            <p className="text-gray-300 mb-6">{errorMsg}</p>
+            <Button onClick={() => setErrorMsg('')} className="w-full">
+                Tutup
+            </Button>
+        </div>
+            </Modal >
+        </MainLayout >
     );
 };
 
