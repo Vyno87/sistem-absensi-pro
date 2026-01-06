@@ -1,40 +1,12 @@
 {
-    "buildCommand": "cd frontend && npm install && CI=false npm run build",
-    "outputDirectory": "frontend/build",
-    "framework": "create-react-app",
-    "rewrites": [
-        {
-            "source": "/api/(.*)",
-            "destination": "/api/index.js"
-        },
-        {
-            "source": "/(.*)",
-            "destination": "/index.html"
-        }
-    ],
-    "headers": [
-        {
-            "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "Cross-Origin-Opener-Policy",
-                    "value": "unsafe-none"
-                },
-                {
-                    "key": "Cross-Origin-Embedder-Policy",
-                    "value": "unsafe-none"
-                },
-                {
-                    "key": "Cross-Origin-Resource-Policy",
-                    "value": "cross-origin"
-                }
-            ]
-        }
-    ],
     "crons": [
         {
             "path": "/api/cron/daily-report",
             "schedule": "0 0 * * *"
+        },
+        {
+            "path": "/api/cron/weekly-report",
+            "schedule": "30 0 * * 1"
         }
     ]
 }

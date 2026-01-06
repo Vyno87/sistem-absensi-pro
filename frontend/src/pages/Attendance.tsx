@@ -4,7 +4,7 @@ import GlassCard from '../components/UI/GlassCard';
 import Webcam from 'react-webcam';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { Clock, CheckCircle, XCircle, RefreshCw, User, Camera } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, RefreshCw, User, Camera, AlertTriangle } from 'lucide-react';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 
@@ -21,7 +21,7 @@ const Attendance = () => {
     const { t, language } = useLanguage();
     const [employeeId, setEmployeeId] = useState('');
     const [loadingAction, setLoadingAction] = useState<'Check In' | 'Check Out' | null>(null);
-    const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [message, setMessage] = useState<{ type: 'success' | 'error' | 'warning', text: string } | null>(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [imgSrc, setImgSrc] = useState<string | null>(null);
     const webcamRef = useRef<Webcam>(null);
@@ -328,8 +328,10 @@ const Attendance = () => {
                             </div>
 
                             {message && (
-                                <div className={`p-4 rounded-xl flex items-center justify-center space-x-2 animate-bounce ${message.type === 'success' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                                    {message.type === 'success' ? <CheckCircle /> : <XCircle />}
+                                <div className={`p-4 rounded-xl flex items-center justify-center space-x-2 animate-bounce ${message.type === 'success' ? 'bg-green-500/20 text-green-400' :
+                                    message.type === 'warning' ? 'bg-yellow-500/20 text-yellow-400' :
+                                        'bg-red-500/20 text-red-400'}`}>
+                                    {message.type === 'success' ? <CheckCircle /> : message.type === 'warning' ? <AlertTriangle /> : <XCircle />}
                                     <span>{message.text}</span>
                                 </div>
                             )}
