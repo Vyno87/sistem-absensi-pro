@@ -44,6 +44,10 @@ const translations: Translation = {
     'dashboard.weeklyAttendance': { en: 'Weekly Attendance', id: 'Absensi Mingguan' },
     'dashboard.employeeStatus': { en: 'Employee Status', id: 'Status Karyawan' },
     'dashboard.attendanceRate': { en: 'Attendance Rate', id: 'Tingkat Kehadiran' },
+    'dashboard.attendanceTrend': { en: 'Attendance Trend', id: 'Tren Kehadiran' },
+    'dashboard.present': { en: 'Present', id: 'Hadir' },
+    'dashboard.late': { en: 'Late', id: 'Terlambat' },
+    'dashboard.absent': { en: 'Absent', id: 'Tidak Hadir' },
 
     // Dashboard - User
     'dashboard.welcome': { en: 'Welcome', id: 'Selamat Datang' },
