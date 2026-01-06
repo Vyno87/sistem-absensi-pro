@@ -367,6 +367,23 @@ router.get('/excel', auth, adminOnly, async (req, res) => {
             { width: 12 }, { width: 12 }, { width: 12 }, { width: 20 }
         ];
 
+        // Configure print settings for A4
+        summarySheet.pageSetup = {
+            paperSize: 9, // A4
+            orientation: 'landscape',
+            fitToPage: true,
+            fitToWidth: 1,
+            fitToHeight: 0,
+            margins: {
+                left: 0.5,
+                right: 0.5,
+                top: 0.5,
+                bottom: 0.5,
+                header: 0.3,
+                footer: 0.3
+            }
+        };
+
         // ========== SHEET 2: DATA DETAIL ==========
         const detailSheet = workbook.addWorksheet('Data Absensi Detail');
 
@@ -443,6 +460,23 @@ router.get('/excel', auth, adminOnly, async (req, res) => {
             { width: 12 }, { width: 12 }, { width: 12 }, { width: 12 },
             { width: 18 }, { width: 12 }, { width: 12 }
         ];
+
+        // Configure print settings for A4
+        detailSheet.pageSetup = {
+            paperSize: 9, // A4
+            orientation: 'landscape',
+            fitToPage: true,
+            fitToWidth: 1,
+            fitToHeight: 0,
+            margins: {
+                left: 0.5,
+                right: 0.5,
+                top: 0.5,
+                bottom: 0.5,
+                header: 0.3,
+                footer: 0.3
+            }
+        };
 
         // Generate file
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -529,7 +563,7 @@ router.get('/pdf', auth, adminOnly, async (req, res) => {
         doc.fillColor('black');
 
         // Visual Pie Chart using rectangles
-        doc.fontSize(12).font('Helvetica-Bold').text('DISTRIBUSI STATUS KEHADIRAN (Visual)', { underline: true });
+        doc.fontSize(12).font('Helvetica-Bold').text('DISTRIBUSI STATUS KEHADIRAN (Visual)', { align: 'center', underline: true });
         doc.moveDown(0.5);
 
         const chartY = doc.y;
