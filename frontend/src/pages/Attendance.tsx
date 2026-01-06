@@ -272,8 +272,7 @@ const Attendance = () => {
                     </div>
                 </GlassCard>
             </div>
-        </div>
-        </MainLayout >
+        </MainLayout>
     );
 };
 
