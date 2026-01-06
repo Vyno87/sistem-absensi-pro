@@ -27,6 +27,8 @@ const Attendance = () => {
     const webcamRef = useRef<Webcam>(null);
     const [recentActivity, setRecentActivity] = useState<AttendanceRecord[]>([]);
     const [gpsEnabled, setGpsEnabled] = useState(false);
+    const [geofenceSettings, setGeofenceSettings] = useState<any>(null);
+    const [distanceFromOffice, setDistanceFromOffice] = useState<number | null>(null);
 
     // Fetch recent attendance
     const fetchRecent = async () => {
@@ -48,12 +50,23 @@ const Attendance = () => {
         }
     };
 
+    // Fetch Geofence settings
+    const fetchGeofenceSettings = async () => {
+        try {
+            const res = await api.get('/geofence');
+            setGeofenceSettings(res.data);
+        } catch (err) {
+            console.error('Error fetching geofence settings:', err);
+        }
+    };
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
         fetchRecent();
         fetchGPSSetting();
+        fetchGeofenceSettings();
 
         // Real-time polling setiap 5 detik
         const interval = setInterval(() => {
@@ -109,6 +122,23 @@ const Attendance = () => {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 };
+
+                // Calculate distance if geofencing is enabled
+                if (geofenceSettings?.enabled) {
+                    const R = 6371e3; // Earth radius in meters
+                    const φ1 = geofenceSettings.centerLat * Math.PI / 180;
+                    const φ2 = position.coords.latitude * Math.PI / 180;
+                    const Δφ = (position.coords.latitude - geofenceSettings.centerLat) * Math.PI / 180;
+                    const Δλ = (position.coords.longitude - geofenceSettings.centerLng) * Math.PI / 180;
+
+                    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                        Math.cos(φ1) * Math.cos(φ2) *
+                        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+                    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    const distance = R * c;
+
+                    setDistanceFromOffice(Math.round(distance));
+                }
             }
 
             const res = await api.post('/attendance', {
@@ -165,6 +195,36 @@ const Attendance = () => {
                             {currentTime.toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                         </p>
                     </div>
+
+                    {/* Distance Indicator */}
+                    {geofenceSettings?.enabled && distanceFromOffice !== null && (
+                        <div className={`p-4 rounded-xl border-2 ${distanceFromOffice <= geofenceSettings.radiusMeters
+                                ? 'bg-green-500/10 border-green-500/50'
+                                : 'bg-red-500/10 border-red-500/50'
+                            }`}>
+                            <div className="text-center">
+                                <p className={`text-sm ${distanceFromOffice <= geofenceSettings.radiusMeters
+                                        ? 'text-green-400'
+                                        : 'text-red-400'
+                                    }`}>
+                                    📍 Jarak dari Kantor
+                                </p>
+                                <p className={`text-3xl font-bold ${distanceFromOffice <= geofenceSettings.radiusMeters
+                                        ? 'text-green-400'
+                                        : 'text-red-400'
+                                    }`}>
+                                    {distanceFromOffice}m
+                                </p>
+                                <p className="text-xs text-gray-400 mt-1">
+                                    Max: {geofenceSettings.radiusMeters}m | Status: {
+                                        distanceFromOffice <= geofenceSettings.radiusMeters
+                                            ? '✅ Dalam Radius'
+                                            : '❌ Di Luar Radius'
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    )}
 
                     <GlassCard className="p-6 border-indigo-500/30">
                         <h3 className="text-2xl font-bold text-white mb-6 text-center">{t('attendance.faceVerification')}</h3>
