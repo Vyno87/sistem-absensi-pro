@@ -27,6 +27,7 @@ const Attendance = () => {
     const webcamRef = useRef<Webcam>(null);
     const [recentActivity, setRecentActivity] = useState<AttendanceRecord[]>([]);
     const [gpsEnabled, setGpsEnabled] = useState(false);
+    const [shifts, setShifts] = useState<any[]>([]);
 
     // Fetch recent attendance
     const fetchRecent = async () => {
@@ -48,12 +49,23 @@ const Attendance = () => {
         }
     };
 
+    // Fetch shifts
+    const fetchShifts = async () => {
+        try {
+            const res = await api.get('/shifts');
+            setShifts(res.data);
+        } catch (err) {
+            console.error('Error fetching shifts:', err);
+        }
+    };
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
         fetchRecent();
         fetchGPSSetting();
+        fetchShifts();
 
         // Real-time polling setiap 5 detik
         const interval = setInterval(() => {
@@ -236,41 +248,68 @@ const Attendance = () => {
                     </GlassCard>
                 </div>
 
-                {/* Right Side - Recent Activity */}
-                <GlassCard>
-                    <h3 className="text-xl font-bold text-white mb-6">{t('attendance.recentActivity')}</h3>
-                    <div className="space-y-4">
-                        {recentActivity.length === 0 ? (
-                            <div className="text-gray-400 text-center py-4">{t('common.noData')}</div>
+                {/* Right Side - Shift Schedule & Recent Activity */}
+                <div className="space-y-6">
+                    {/* Shift Schedule Card */}
+                    <GlassCard className="border-indigo-500/30">
+                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <Clock className="w-5 h-5 text-indigo-400" /> {t('attendance.shiftSchedule')}
+                        </h3>
+                        {shifts.length === 0 ? (
+                            <p className="text-gray-400 text-center py-4">{t('common.noData')}</p>
                         ) : (
-                            recentActivity.map((record: any, i) => (
-                                <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors animate-fade-in">
-                                    <div className="flex items-center space-x-4">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${record.status === 'late' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gradient-to-br from-indigo-500 to-purple-500'}`}>
-                                            <User className="w-5 h-5" />
-                                        </div>
+                            <div className="space-y-3">
+                                {shifts.map((shift: any) => (
+                                    <div key={shift._id} className="p-4 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 flex justify-between items-center">
                                         <div>
-                                            <p className="font-bold text-white">{record.employeeName || 'Unknown'}</p>
-                                            <p className="text-xs text-gray-400">{record.position || 'Employee'}</p>
+                                            <p className="font-bold text-white">{shift.name}</p>
+                                            <p className="text-xs text-gray-400">{shift.description || 'Regular Shift'}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-lg font-bold text-indigo-400">{shift.startTime} - {shift.endTime}</p>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <p className={`font-bold ${record.status === 'late' ? 'text-yellow-400' : 'text-green-400'}`}>
-                                            {new Date(record.checkIn).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })}
-                                        </p>
-                                        <p className="text-xs text-gray-400 capitalize">
-                                            <span className={record.type === 'Check Out' ? 'text-orange-400 font-medium' : 'text-blue-400 font-medium'}>
-                                                {record.type}
-                                            </span>
-                                            <span className="mx-1">•</span>
-                                            {record.status || 'Present'}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))
+                                ))}
+                            </div>
                         )}
-                    </div>
-                </GlassCard>
+                    </GlassCard>
+
+                    {/* Recent Activity Card */}
+                    <GlassCard>
+                        <h3 className="text-xl font-bold text-white mb-6">{t('attendance.recentActivity')}</h3>
+                        <div className="space-y-4">
+                            {recentActivity.length === 0 ? (
+                                <div className="text-gray-400 text-center py-4">{t('common.noData')}</div>
+                            ) : (
+                                recentActivity.map((record: any, i) => (
+                                    <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors animate-fade-in">
+                                        <div className="flex items-center space-x-4">
+                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${record.status === 'late' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gradient-to-br from-indigo-500 to-purple-500'}`}>
+                                                <User className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-white">{record.employeeName || 'Unknown'}</p>
+                                                <p className="text-xs text-gray-400">{record.position || 'Employee'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className={`font-bold ${record.status === 'late' ? 'text-yellow-400' : 'text-green-400'}`}>
+                                                {new Date(record.checkIn).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                                            </p>
+                                            <p className="text-xs text-gray-400 capitalize">
+                                                <span className={record.type === 'Check Out' ? 'text-orange-400 font-medium' : 'text-blue-400 font-medium'}>
+                                                    {record.type}
+                                                </span>
+                                                <span className="mx-1">•</span>
+                                                {record.status || 'Present'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </GlassCard>
+                </div>
             </div>
         </MainLayout>
     );

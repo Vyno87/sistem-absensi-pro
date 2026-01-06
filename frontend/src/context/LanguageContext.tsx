@@ -69,6 +69,7 @@ const translations: Translation = {
     'attendance.browserNoLocation': { en: 'Your browser does not support location access', id: 'Browser Anda tidak mendukung akses lokasi' },
     'attendance.failed': { en: 'Attendance failed', id: 'Absensi gagal' },
     'attendance.recentActivity': { en: 'Recent Activity', id: 'Aktivitas Terbaru' },
+    'attendance.shiftSchedule': { en: 'Work Schedule', id: 'Jadwal Kerja' },
     'attendance.onTime': { en: 'On Time', id: 'Tepat Waktu' },
     'attendance.employee': { en: 'Employee', id: 'Karyawan' },
     'attendance.position': { en: 'Software Engineer', id: 'Pengembang Perangkat Lunak' },
@@ -191,6 +192,7 @@ const translations: Translation = {
     'common.edit': { en: 'Edit', id: 'Ubah' },
     'common.active': { en: 'Active', id: 'Aktif' },
     'common.inactive': { en: 'Inactive', id: 'Tidak Aktif' },
+    'common.noData': { en: 'No data available', id: 'Tidak ada data' },
 };
 
 interface LanguageContextType {
