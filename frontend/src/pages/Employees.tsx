@@ -28,6 +28,8 @@ const Employees = () => {
     });
     const [formLoading, setFormLoading] = useState(false);
 
+    const [errorMsg, setErrorMsg] = useState('');
+
     useEffect(() => {
         fetchEmployees();
         fetchShifts();
@@ -91,7 +93,7 @@ const Employees = () => {
             // Refresh employee list
             fetchEmployees();
         } catch (error: any) {
-            alert(error.response?.data?.msg || t('employees.failedToAdd'));
+            setErrorMsg(error.response?.data?.msg || t('employees.failedToAdd'));
         } finally {
             setFormLoading(false);
         }
@@ -248,8 +250,19 @@ const Employees = () => {
                         {t('employees.addEmployee')}
                     </Button>
                 </form>
-            </Modal>
-        </MainLayout>
+            </form>
+        </Modal>
+
+            {/* Error Modal */ }
+    <Modal isOpen={!!errorMsg} onClose={() => setErrorMsg('')} title="Gagal">
+        <div className="text-center p-4">
+            <p className="text-gray-300 mb-6">{errorMsg}</p>
+            <Button onClick={() => setErrorMsg('')} className="w-full">
+                Tutup
+            </Button>
+        </div>
+    </Modal>
+        </MainLayout >
     );
 };
 

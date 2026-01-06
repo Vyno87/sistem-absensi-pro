@@ -30,6 +30,8 @@ const Shifts = () => {
     });
     const [formLoading, setFormLoading] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [errorMsg, setErrorMsg] = useState('');
 
     useEffect(() => {
         fetchShifts();
@@ -62,7 +64,7 @@ const Shifts = () => {
             setEditingId(null);
             fetchShifts();
         } catch (error: any) {
-            alert(error.response?.data?.msg || t('shifts.failedSave'));
+            setErrorMsg(error.response?.data?.msg || t('shifts.failedSave'));
         } finally {
             setFormLoading(false);
         }
@@ -79,14 +81,19 @@ const Shifts = () => {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!window.confirm(t('shifts.confirmDelete'))) return;
+    const handleDelete = (id: string) => {
+        setDeleteId(id);
+    };
 
+    const executeDelete = async () => {
+        if (!deleteId) return;
         try {
-            await api.delete(`/shifts/${id}`);
+            await api.delete(`/shifts/${deleteId}`);
+            setDeleteId(null);
             fetchShifts();
         } catch (error: any) {
-            alert(error.response?.data?.msg || t('shifts.failedDelete'));
+            setDeleteId(null);
+            setErrorMsg(error.response?.data?.msg || t('shifts.failedDelete'));
         }
     };
 
@@ -197,6 +204,31 @@ const Shifts = () => {
                         {editingId ? t('shifts.updateShift') : t('shifts.addShift')}
                     </Button>
                 </form>
+            </Modal>
+
+            {/* Delete Confirmation Modal */}
+            <Modal isOpen={!!deleteId} onClose={() => setDeleteId(null)} title={t('shifts.confirmDelete')}>
+                <div className="p-4">
+                    <p className="text-gray-300 mb-6">Apakah Anda yakin ingin menghapus shift ini?</p>
+                    <div className="flex gap-3">
+                        <Button onClick={executeDelete} className="flex-1 bg-red-500 hover:bg-red-600 border-none">
+                            {t('common.delete')}
+                        </Button>
+                        <Button onClick={() => setDeleteId(null)} variant="secondary" className="flex-1">
+                            {t('common.cancel')}
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Error Modal */}
+            <Modal isOpen={!!errorMsg} onClose={() => setErrorMsg('')} title="Gagal">
+                <div className="text-center p-4">
+                    <p className="text-gray-300 mb-6">{errorMsg}</p>
+                    <Button onClick={() => setErrorMsg('')} className="w-full">
+                        Tutup
+                    </Button>
+                </div>
             </Modal>
         </MainLayout>
     );
