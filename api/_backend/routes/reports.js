@@ -274,6 +274,104 @@ router.get('/excel', auth, adminOnly, async (req, res) => {
             summarySheet.addRow(['Tidak ada karyawan yang memenuhi kriteria pengangkatan saat ini.']);
         }
 
+        // ========== ADD CHARTS ==========
+        // Chart 1: Pie Chart - Distribusi Status Kehadiran
+        summarySheet.addRow([]);
+        summarySheet.addRow([]);
+        const chartTitleRow = summarySheet.addRow(['VISUALISASI DATA']);
+        chartTitleRow.font = { bold: true, size: 14 };
+        summarySheet.addRow([]);
+
+        // Prepare data for pie chart
+        const chartDataStart = summarySheet.lastRow.number + 2;
+        summarySheet.addRow(['Status', 'Jumlah', 'Persentase']);
+        summarySheet.addRow(['Hadir Tepat Waktu', presentCount, totalRecords > 0 ? `${(presentCount / totalRecords * 100).toFixed(1)}%` : '0%']);
+        summarySheet.addRow(['Terlambat', lateCount, totalRecords > 0 ? `${(lateCount / totalRecords * 100).toFixed(1)}%` : '0%']);
+        summarySheet.addRow(['Tidak Hadir', absentCount, totalRecords > 0 ? `${(absentCount / totalRecords * 100).toFixed(1)}%` : '0%']);
+
+        // Add Pie Chart
+        summarySheet.addImage(
+            workbook.addImage({
+                base64: '',
+                extension: 'png',
+            }),
+            {
+                tl: { col: 0, row: chartDataStart + 5 },
+                ext: { width: 400, height: 300 }
+            }
+        );
+
+        // Note: ExcelJS has limited chart support, so we'll add chart data and let Excel render it
+        // Add a note for manual chart creation
+        const chartNoteRow = summarySheet.getRow(chartDataStart + 5);
+        summarySheet.mergeCells(`A${chartDataStart + 5}:D${chartDataStart + 5}`);
+        summarySheet.getCell(`A${chartDataStart + 5}`).value = '📊 GRAFIK PIE: Distribusi Status Kehadiran';
+        summarySheet.getCell(`A${chartDataStart + 5}`).font = { bold: true, size: 12, color: { argb: '6366F1' } };
+        summarySheet.getCell(`A${chartDataStart + 5}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'EEF2FF' } };
+        summarySheet.getCell(`A${chartDataStart + 5}`).alignment = { horizontal: 'center', vertical: 'middle' };
+        summarySheet.getRow(chartDataStart + 5).height = 25;
+
+        // Visual representation using colored cells
+        summarySheet.addRow([]);
+        const visualRow1 = summarySheet.addRow(['Hadir:', presentCount, `(${totalRecords > 0 ? (presentCount / totalRecords * 100).toFixed(1) : 0}%)`]);
+        visualRow1.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '4ADE80' } };
+        visualRow1.getCell(1).font = { bold: true, color: { argb: 'FFFFFF' } };
+
+        const visualRow2 = summarySheet.addRow(['Terlambat:', lateCount, `(${totalRecords > 0 ? (lateCount / totalRecords * 100).toFixed(1) : 0}%)`]);
+        visualRow2.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FACC15' } };
+        visualRow2.getCell(1).font = { bold: true };
+
+        const visualRow3 = summarySheet.addRow(['Tidak Hadir:', absentCount, `(${totalRecords > 0 ? (absentCount / totalRecords * 100).toFixed(1) : 0}%)`]);
+        visualRow3.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F87171' } };
+        visualRow3.getCell(1).font = { bold: true, color: { argb: 'FFFFFF' } };
+
+        // Chart 2: Bar Chart - Top 10 Performers
+        summarySheet.addRow([]);
+        summarySheet.addRow([]);
+        const barChartTitle = summarySheet.addRow(['📊 GRAFIK BAR: Top 10 Karyawan Berdasarkan Kehadiran']);
+        barChartTitle.font = { bold: true, size: 12, color: { argb: '6366F1' } };
+        barChartTitle.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'EEF2FF' } };
+        summarySheet.mergeCells(`A${barChartTitle.number}:F${barChartTitle.number}`);
+        summarySheet.getRow(barChartTitle.number).height = 25;
+
+        // Top 10 performers
+        const topPerformers = [...employeeStats]
+            .sort((a, b) => b.attendanceRate - a.attendanceRate)
+            .slice(0, 10);
+
+        summarySheet.addRow([]);
+        summarySheet.addRow(['Rank', 'Nama', 'ID', '% Kehadiran', 'Hadir', 'Total']);
+        topPerformers.forEach((emp, idx) => {
+            const row = summarySheet.addRow([
+                idx + 1,
+                emp.name,
+                emp.employeeId,
+                `${emp.attendanceRate}%`,
+                emp.present,
+                emp.totalDays
+            ]);
+
+            // Color coding based on rank
+            if (idx === 0) {
+                row.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD700' } }; // Gold
+            } else if (idx === 1) {
+                row.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'C0C0C0' } }; // Silver
+            } else if (idx === 2) {
+                row.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'CD7F32' } }; // Bronze
+            }
+
+            row.getCell(1).font = { bold: true };
+
+            // Progress bar visualization in attendance rate
+            const percentage = emp.attendanceRate;
+            row.getCell(4).fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: percentage >= 90 ? '4ADE80' : percentage >= 75 ? 'FACC15' : 'F87171' }
+            };
+            row.getCell(4).font = { bold: true, color: { argb: 'FFFFFF' } };
+        });
+
         // Set column widths
         summarySheet.columns = [
             { width: 10 }, { width: 25 }, { width: 20 }, { width: 12 },
@@ -360,19 +458,78 @@ router.get('/pdf', auth, adminOnly, async (req, res) => {
         doc.text(`Dibuat: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}`, { align: 'center' });
         doc.moveDown(1.5);
 
-        // Summary Stats
+        // Summary Stats - Visual Boxes
         const totalRecords = formattedData.length;
         const presentCount = formattedData.filter(d => d.attendanceStatus === 'present').length;
         const lateCount = formattedData.filter(d => d.attendanceStatus === 'late').length;
         const absentCount = formattedData.filter(d => d.attendanceStatus === 'absent').length;
 
-        doc.fontSize(12).font('Helvetica-Bold').text('STATISTIK UMUM');
-        doc.fontSize(10).font('Helvetica');
-        doc.text(`Total Data Absensi: ${totalRecords}`);
-        doc.text(`Hadir Tepat Waktu: ${presentCount} (${totalRecords > 0 ? (presentCount / totalRecords * 100).toFixed(1) : 0}%)`);
-        doc.text(`Terlambat: ${lateCount} (${totalRecords > 0 ? (lateCount / totalRecords * 100).toFixed(1) : 0}%)`);
-        doc.text(`Tidak Hadir: ${absentCount} (${totalRecords > 0 ? (absentCount / totalRecords * 100).toFixed(1) : 0}%)`);
-        doc.moveDown(1);
+        doc.fontSize(14).font('Helvetica-Bold').text('STATISTIK UMUM', { underline: true });
+        doc.moveDown(0.5);
+
+        // Visual stat boxes
+        const boxY = doc.y;
+        const boxWidth = 180;
+        const boxHeight = 60;
+        const boxSpacing = 20;
+
+        // Box 1: Total
+        doc.rect(30, boxY, boxWidth, boxHeight).fill('#6366F1');
+        doc.fillColor('white').fontSize(10).text('Total Absensi', 40, boxY + 10);
+        doc.fontSize(24).font('Helvetica-Bold').text(totalRecords.toString(), 40, boxY + 25);
+        doc.fontSize(8).font('Helvetica').text('records', 40, boxY + 48);
+
+        // Box 2: Present
+        const box2X = 30 + boxWidth + boxSpacing;
+        doc.rect(box2X, boxY, boxWidth, boxHeight).fill('#4ADE80');
+        doc.fillColor('white').fontSize(10).text('Hadir Tepat Waktu', box2X + 10, boxY + 10);
+        doc.fontSize(24).font('Helvetica-Bold').text(presentCount.toString(), box2X + 10, boxY + 25);
+        doc.fontSize(8).font('Helvetica').text(`${totalRecords > 0 ? (presentCount / totalRecords * 100).toFixed(1) : 0}%`, box2X + 10, boxY + 48);
+
+        // Box 3: Late
+        const box3X = box2X + boxWidth + boxSpacing;
+        doc.rect(box3X, boxY, boxWidth, boxHeight).fill('#FACC15');
+        doc.fillColor('black').fontSize(10).text('Terlambat', box3X + 10, boxY + 10);
+        doc.fontSize(24).font('Helvetica-Bold').text(lateCount.toString(), box3X + 10, boxY + 25);
+        doc.fontSize(8).font('Helvetica').text(`${totalRecords > 0 ? (lateCount / totalRecords * 100).toFixed(1) : 0}%`, box3X + 10, boxY + 48);
+
+        // Box 4: Absent
+        const box4X = box3X + boxWidth + boxSpacing;
+        doc.rect(box4X, boxY, boxWidth, boxHeight).fill('#F87171');
+        doc.fillColor('white').fontSize(10).text('Tidak Hadir', box4X + 10, boxY + 10);
+        doc.fontSize(24).font('Helvetica-Bold').text(absentCount.toString(), box4X + 10, boxY + 25);
+        doc.fontSize(8).font('Helvetica').text(`${totalRecords > 0 ? (absentCount / totalRecords * 100).toFixed(1) : 0}%`, box4X + 10, boxY + 48);
+
+        doc.y = boxY + boxHeight + 30;
+        doc.fillColor('black');
+
+        // Visual Pie Chart using rectangles
+        doc.fontSize(12).font('Helvetica-Bold').text('DISTRIBUSI STATUS KEHADIRAN (Visual)', { underline: true });
+        doc.moveDown(0.5);
+
+        const chartY = doc.y;
+        const barWidth = 700;
+        const barHeight = 40;
+
+        // Calculate proportions
+        const presentWidth = totalRecords > 0 ? (presentCount / totalRecords) * barWidth : 0;
+        const lateWidth = totalRecords > 0 ? (lateCount / totalRecords) * barWidth : 0;
+        const absentWidth = totalRecords > 0 ? (absentCount / totalRecords) * barWidth : 0;
+
+        // Draw stacked bar chart
+        doc.rect(30, chartY, presentWidth, barHeight).fill('#4ADE80');
+        doc.rect(30 + presentWidth, chartY, lateWidth, barHeight).fill('#FACC15');
+        doc.rect(30 + presentWidth + lateWidth, chartY, absentWidth, barHeight).fill('#F87171');
+
+        // Add labels on bars
+        doc.fillColor('white').fontSize(10).font('Helvetica-Bold');
+        if (presentWidth > 50) doc.text(`${(presentCount / totalRecords * 100).toFixed(1)}%`, 35, chartY + 12);
+        if (lateWidth > 50) doc.text(`${(lateCount / totalRecords * 100).toFixed(1)}%`, 35 + presentWidth, chartY + 12);
+        if (absentWidth > 50) doc.text(`${(absentCount / totalRecords * 100).toFixed(1)}%`, 35 + presentWidth + lateWidth, chartY + 12);
+
+        doc.y = chartY + barHeight + 30;
+        doc.fillColor('black');
+
 
         // Pivot Table
         doc.fontSize(12).font('Helvetica-Bold').text('TABEL RINGKASAN PER KARYAWAN');
