@@ -289,21 +289,9 @@ router.get('/excel', auth, adminOnly, async (req, res) => {
         summarySheet.addRow(['Terlambat', lateCount, totalRecords > 0 ? `${(lateCount / totalRecords * 100).toFixed(1)}%` : '0%']);
         summarySheet.addRow(['Tidak Hadir', absentCount, totalRecords > 0 ? `${(absentCount / totalRecords * 100).toFixed(1)}%` : '0%']);
 
-        // Add Pie Chart
-        summarySheet.addImage(
-            workbook.addImage({
-                base64: '',
-                extension: 'png',
-            }),
-            {
-                tl: { col: 0, row: chartDataStart + 5 },
-                ext: { width: 400, height: 300 }
-            }
-        );
-
-        // Note: ExcelJS has limited chart support, so we'll add chart data and let Excel render it
-        // Add a note for manual chart creation
-        const chartNoteRow = summarySheet.getRow(chartDataStart + 5);
+        // Chart Title
+        summarySheet.addRow([]);
+        summarySheet.addRow([]);
         summarySheet.mergeCells(`A${chartDataStart + 5}:D${chartDataStart + 5}`);
         summarySheet.getCell(`A${chartDataStart + 5}`).value = '📊 GRAFIK PIE: Distribusi Status Kehadiran';
         summarySheet.getCell(`A${chartDataStart + 5}`).font = { bold: true, size: 12, color: { argb: '6366F1' } };
