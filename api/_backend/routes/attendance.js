@@ -203,6 +203,18 @@ router.post('/', auth, async (req, res) => {
     }
     // ==== END GEOFENCE VALIDATION ====
 
+    // ==== ANTI-FAKE GPS DETECTION ====
+    let isMocked = false;
+    const accuracy = req.body.accuracy;
+
+    // High-accuracy spoof detection: standard GPS rarely below 3m. 
+    // If it's exactly 0 or extremely low (< 0.5), it's likely mocked.
+    if (accuracy !== undefined && (accuracy === 0 || accuracy < 0.5)) {
+      isMocked = true;
+      console.warn(`⚠️ Potential Fake GPS detected for employee ${employeeId}. Accuracy: ${accuracy}`);
+    }
+    // ================================
+
     // Create new attendance record  
     const newAttendance = new Attendance({
       employeeId,
@@ -212,7 +224,10 @@ router.post('/', auth, async (req, res) => {
       longitude: longitude || null,
       facePhoto: facePhoto || null,
       distanceFromOffice,
-      geofenceStatus
+      geofenceStatus,
+      accuracy,
+      deviceId: req.body.deviceId,
+      isMocked
     });
 
     const attendance = await newAttendance.save();

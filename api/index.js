@@ -79,6 +79,7 @@ app.use('/api/settings', require('./_backend/routes/settings')); // Settings API
 app.use('/api/geofence', require('./_backend/routes/geofence').router); // Geofence API
 app.use('/api/analytics', require('./_backend/routes/analytics')); // Analytics API
 app.use('/api/alerts', require('./_backend/routes/alerts')); // Late Alerts API
+app.use('/api/cron', require('./_backend/routes/cron')); // Cron/Automated Reports API
 
 app.get('/api/health', (req, res) => {
   console.log('=> Health check requested. MONGODB_URI exists:', !!process.env.MONGODB_URI);

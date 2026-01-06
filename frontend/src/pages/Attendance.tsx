@@ -120,7 +120,8 @@ const Attendance = () => {
 
                 locationData = {
                     latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
+                    longitude: position.coords.longitude,
+                    accuracy: position.coords.accuracy
                 };
 
                 // Calculate distance if geofencing is enabled
@@ -141,25 +142,58 @@ const Attendance = () => {
                 }
             }
 
-            const res = await api.post('/attendance', {
+            // Simple Device Fingerprinting
+            let deviceId = localStorage.getItem('absensi_device_id');
+            if (!deviceId) {
+                deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + Date.now();
+                localStorage.setItem('absensi_device_id', deviceId);
+            }
+
+            const attendancePayload = {
                 type,
                 employeeId,
                 checkIn: new Date(),
                 facePhoto: imgSrc,
+                deviceId,
                 ...locationData
-            });
+            };
 
-            if (res.data.msg) {
-                if (res.data.msg.includes('outside')) {
-                    setMessage({ type: 'error', text: res.data.msg });
-                    return;
+            try {
+                const res = await api.post('/attendance', attendancePayload);
+
+                if (res.data.msg) {
+                    if (res.data.msg.includes('outside')) {
+                        setMessage({ type: 'error', text: res.data.msg });
+                        return;
+                    }
+                }
+
+                setMessage({
+                    type: 'success',
+                    text: type === 'Check In' ? 'Check-in Berhasil!' : 'Check-out Berhasil!'
+                });
+
+                // Clear any pending sync for this employee if successful
+                const pending = JSON.parse(localStorage.getItem('pending_attendance') || '[]');
+                const remaining = pending.filter((p: any) => p.employeeId !== employeeId);
+                localStorage.setItem('pending_attendance', JSON.stringify(remaining));
+
+            } catch (error: any) {
+                if (!navigator.onLine || error.code === 'ERR_NETWORK') {
+                    // Offline handling
+                    const pending = JSON.parse(localStorage.getItem('pending_attendance') || '[]');
+                    pending.push({ ...attendancePayload, offlineTimestamp: new Date() });
+                    localStorage.setItem('pending_attendance', JSON.stringify(pending));
+
+                    setMessage({
+                        type: 'warning',
+                        text: 'Offline! Absensi disimpan secara lokal dan akan disinkronisasi saat internet aktif.'
+                    });
+                } else {
+                    throw error;
                 }
             }
-
             fetchRecent();
-
-            const successType = type === 'Check In' ? t('attendance.checkIn') : t('attendance.checkOut');
-            setMessage({ type: 'success', text: `${t('attendance.success')}: ${successType}` });
             setEmployeeId('');
             setImgSrc(null);
         } catch (err: any) {
@@ -199,19 +233,19 @@ const Attendance = () => {
                     {/* Distance Indicator */}
                     {geofenceSettings?.enabled && distanceFromOffice !== null && (
                         <div className={`p-4 rounded-xl border-2 ${distanceFromOffice <= geofenceSettings.radiusMeters
-                                ? 'bg-green-500/10 border-green-500/50'
-                                : 'bg-red-500/10 border-red-500/50'
+                            ? 'bg-green-500/10 border-green-500/50'
+                            : 'bg-red-500/10 border-red-500/50'
                             }`}>
                             <div className="text-center">
                                 <p className={`text-sm ${distanceFromOffice <= geofenceSettings.radiusMeters
-                                        ? 'text-green-400'
-                                        : 'text-red-400'
+                                    ? 'text-green-400'
+                                    : 'text-red-400'
                                     }`}>
                                     📍 Jarak dari Kantor
                                 </p>
                                 <p className={`text-3xl font-bold ${distanceFromOffice <= geofenceSettings.radiusMeters
-                                        ? 'text-green-400'
-                                        : 'text-red-400'
+                                    ? 'text-green-400'
+                                    : 'text-red-400'
                                     }`}>
                                     {distanceFromOffice}m
                                 </p>
@@ -239,6 +273,13 @@ const Attendance = () => {
                                         className="w-full h-full object-cover"
                                         videoConstraints={{ facingMode: "user" }} // Ensure front camera
                                     />
+                                    {/* Face Guide Overlay */}
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-[180px] h-[240px] border-2 border-dashed border-white/50 rounded-[50%] shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"></div>
+                                        <p className="absolute bottom-16 text-white text-xs font-semibold bg-black/50 px-3 py-1 rounded-full border border-white/20">
+                                            Posisikan wajah dalam area oval
+                                        </p>
+                                    </div>
                                     <div className="absolute bottom-4">
                                         <Button onClick={capture} icon={<User className="w-4 h-4" />}>
                                             {t('attendance.capturePhoto')}

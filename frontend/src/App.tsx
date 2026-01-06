@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import api from './services/api';
 
 // Direct import hanya untuk Login (karena initial route)
 import Login from './pages/Login';
@@ -39,10 +40,47 @@ const PrivateRoute: React.FC<{ children: React.ReactNode; allowedRoles?: string[
   return <>{children}</>;
 };
 
+const SyncHandler = () => {
+  React.useEffect(() => {
+    const handleSync = async () => {
+      if (!navigator.onLine) return;
+
+      const pending = JSON.parse(localStorage.getItem('pending_attendance') || '[]');
+      if (pending.length === 0) return;
+
+      console.log(`🌐 Found ${pending.length} pending attendances. Syncing...`);
+      const remaining = [];
+
+      for (const attendance of pending) {
+        try {
+          await api.post('/attendance', { ...attendance, notes: 'Synced from offline' });
+        } catch (error) {
+          console.error('❌ Sync failed for', attendance.employeeId, error);
+          remaining.push(attendance);
+        }
+      }
+
+      localStorage.setItem('pending_attendance', JSON.stringify(remaining));
+      if (remaining.length === 0) {
+        console.log('✅ All pending data synced successfully');
+      }
+    };
+
+    window.addEventListener('online', handleSync);
+    // Also try sync on mount if online
+    handleSync();
+
+    return () => window.removeEventListener('online', handleSync);
+  }, []);
+
+  return null;
+};
+
 function App() {
   return (
     <LanguageProvider>
       <AuthProvider>
+        <SyncHandler />
         <Router>
           <Suspense fallback={<PageLoader />}>
             <Routes>
@@ -100,4 +138,3 @@ function App() {
 }
 
 export default App;
-

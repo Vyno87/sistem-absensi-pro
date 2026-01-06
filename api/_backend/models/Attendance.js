@@ -45,6 +45,9 @@ const attendanceSchema = new mongoose.Schema({
   },
   deviceAuthToken: String,
   hardwareUid: Number,
+  deviceId: String,
+  accuracy: Number,
+  isMocked: { type: Boolean, default: false },
   notes: String
 }, {
   timestamps: true
