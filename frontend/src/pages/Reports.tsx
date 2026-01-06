@@ -16,8 +16,9 @@ const Reports = () => {
     const [statsData, setStatsData] = useState<any[]>([]);
     const [previewLoading, setPreviewLoading] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
-    const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; record: any }>({ show: false, record: null });
+    const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; record: any; type: 'single' | 'bulk' }>({ show: false, record: null, type: 'single' });
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [errorMsg, setErrorMsg] = useState('');
 
     // Set default date range (current month)
     useEffect(() => {
@@ -77,7 +78,7 @@ const Reports = () => {
             window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Error downloading Excel:', error);
-            alert(t('reports.downloadFailed'));
+            setErrorMsg(t('reports.downloadFailed'));
         } finally {
             setLoading({ ...loading, excel: false });
         }
@@ -101,7 +102,7 @@ const Reports = () => {
             window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Error downloading PDF:', error);
-            alert(t('reports.downloadFailed'));
+            setErrorMsg(t('reports.downloadFailed'));
         } finally {
             setLoading({ ...loading, pdf: false });
         }
@@ -116,14 +117,19 @@ const Reports = () => {
         }
     };
 
-    const handleDelete = async (record: any) => {
+    const handleDeleteClick = (record: any) => {
+        setDeleteConfirm({ show: true, record, type: 'single' });
+    };
+
+    const executeDelete = async (record: any) => {
         try {
             await api.delete(`/attendance/${record._id}`);
-            setDeleteConfirm({ show: false, record: null });
+            setDeleteConfirm({ show: false, record: null, type: 'single' });
             fetchData(false); // Refresh data after delete
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting attendance:', error);
-            alert('Gagal menghapus data absensi');
+            setDeleteConfirm({ show: false, record: null, type: 'single' });
+            setErrorMsg(error.response?.data?.msg || 'Gagal menghapus data absensi');
         }
     };
 
@@ -141,16 +147,20 @@ const Reports = () => {
         }
     };
 
-    const handleBulkDelete = async () => {
-        if (!window.confirm(`Hapus ${selectedIds.length} data absensi?`)) return;
+    const handleBulkDeleteClick = () => {
+        setDeleteConfirm({ show: true, record: null, type: 'bulk' });
+    };
 
+    const executeBulkDelete = async () => {
         try {
             await Promise.all(selectedIds.map(id => api.delete(`/attendance/${id}`)));
             setSelectedIds([]);
+            setDeleteConfirm({ show: false, record: null, type: 'single' });
             fetchData(false);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error bulk deleting:', error);
-            alert('Gagal menghapus beberapa data');
+            setDeleteConfirm({ show: false, record: null, type: 'single' });
+            setErrorMsg(error.response?.data?.msg || 'Gagal menghapus beberapa data');
         }
     };
 
@@ -355,7 +365,7 @@ const Reports = () => {
                         <span className="text-white font-bold">{selectedIds.length} data dipilih</span>
                     </div>
                     <Button
-                        onClick={handleBulkDelete}
+                        onClick={handleBulkDeleteClick}
                         className="bg-red-500 hover:bg-red-600 border-none"
                         icon={<Trash2 className="w-4 h-4" />}
                     >
@@ -434,7 +444,7 @@ const Reports = () => {
                                         </td>
                                         <td className="py-2 px-2 text-center">
                                             <button
-                                                onClick={() => setDeleteConfirm({ show: true, record })}
+                                                onClick={() => handleDeleteClick(record)}
                                                 className="p-2 hover:bg-red-500/20 rounded-lg transition-colors group"
                                                 title="Hapus"
                                             >
@@ -472,23 +482,25 @@ const Reports = () => {
                 </div>
             )}
 
-            {/* Delete Confirmation Dialog */}
-            {deleteConfirm.show && (
+            {/* Bulk Delete Confirmation Dialog */}
+            {deleteConfirm.show && deleteConfirm.type === 'bulk' && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
                     <GlassCard className="max-w-md w-full p-6">
-                        <h3 className="text-xl font-bold text-white mb-4">Konfirmasi Hapus</h3>
+                        <h3 className="text-xl font-bold text-white mb-4">Konfirmasi Hapus Massal</h3>
                         <p className="text-gray-300 mb-6">
-                            Yakin hapus data absensi <span className="font-bold text-white">{deleteConfirm.record?.name}</span> pada tanggal <span className="font-bold text-white">{deleteConfirm.record?.date}</span>?
+                            Yakin hapus <span className="font-bold text-white">{selectedIds.length} data</span> absensi yang dipilih?
+                            <br />
+                            <span className="text-red-400 text-xs italic">Tindakan ini tidak dapat dibatalkan.</span>
                         </p>
                         <div className="flex gap-3">
                             <Button
-                                onClick={() => handleDelete(deleteConfirm.record)}
+                                onClick={executeBulkDelete}
                                 className="flex-1 bg-red-500 hover:bg-red-600 border-none"
                             >
-                                Hapus
+                                Ya, Hapus Semua
                             </Button>
                             <Button
-                                onClick={() => setDeleteConfirm({ show: false, record: null })}
+                                onClick={() => setDeleteConfirm({ show: false, record: null, type: 'single' })}
                                 variant="secondary"
                                 className="flex-1"
                             >
@@ -498,6 +510,46 @@ const Reports = () => {
                     </GlassCard>
                 </div>
             )}
+
+            {/* Single Delete Confirmation Dialog */}
+            {deleteConfirm.show && deleteConfirm.type === 'single' && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <GlassCard className="max-w-md w-full p-6">
+                        <h3 className="text-xl font-bold text-white mb-4">Konfirmasi Hapus</h3>
+                        <p className="text-gray-300 mb-6">
+                            Yakin hapus data absensi <span className="font-bold text-white">{deleteConfirm.record?.name}</span> pada tanggal <span className="font-bold text-white">{deleteConfirm.record && formatDate(deleteConfirm.record.date)}</span>?
+                        </p>
+                        <div className="flex gap-3">
+                            <Button
+                                onClick={() => executeDelete(deleteConfirm.record)}
+                                className="flex-1 bg-red-500 hover:bg-red-600 border-none"
+                            >
+                                Hapus
+                            </Button>
+                            <Button
+                                onClick={() => setDeleteConfirm({ show: false, record: null, type: 'single' })}
+                                variant="secondary"
+                                className="flex-1"
+                            >
+                                Batal
+                            </Button>
+                        </div>
+                    </GlassCard>
+                </div>
+            )}
+
+            {/* Error/Access Denied Modal */}
+            <Modal isOpen={!!errorMsg} onClose={() => setErrorMsg('')} title="Gagal">
+                <div className="text-center">
+                    <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Trash2 className="w-8 h-8 text-red-500" />
+                    </div>
+                    <p className="text-gray-300 mb-6">{errorMsg}</p>
+                    <Button onClick={() => setErrorMsg('')} className="w-full">
+                        Tutup
+                    </Button>
+                </div>
+            </Modal>
         </MainLayout>
     );
 };
