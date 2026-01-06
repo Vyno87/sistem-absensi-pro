@@ -188,8 +188,8 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-3 bg-white/5 px-4 py-3 rounded-lg border border-white/10">
                             <MapPin className={`w-5 h-5 ${enableGPS ? 'text-green-400' : 'text-gray-500'}`} />
                             <div className="flex flex-col">
-                                <span className="text-white text-sm font-medium">GPS Enforcement</span>
-                                <span className="text-gray-400 text-xs">{enableGPS ? 'Active' : 'Disabled'}</span>
+                                <span className="text-white text-sm font-medium">{t('common.gpsEnforcement')}</span>
+                                <span className="text-gray-400 text-xs">{enableGPS ? t('common.active') : t('common.disabled')}</span>
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
@@ -257,7 +257,7 @@ const Dashboard = () => {
                                 <div className="flex items-center justify-between mb-6">
                                     <h3 className="text-xl font-bold text-white flex items-center gap-2">
                                         <Clock className="w-5 h-5 text-blue-400" />
-                                        Recent Activity (Live)
+                                        {t('common.recentActivityLive')}
                                     </h3>
                                     <span className="animate-pulse w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
                                 </div>
@@ -336,7 +336,7 @@ const Dashboard = () => {
                                 {shifts.map((shift: any) => (
                                     <div key={shift._id} className="p-4 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20">
                                         <p className="font-bold text-white mb-1">{shift.name}</p>
-                                        <p className="text-xs text-gray-400 mb-3">{shift.description || 'Regular Shift'}</p>
+                                        <p className="text-xs text-gray-400 mb-3">{shift.description || t('attendance.regularShift')}</p>
                                         <p className="text-lg font-bold text-indigo-400">{shift.startTime} - {shift.endTime}</p>
                                     </div>
                                 ))}

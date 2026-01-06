@@ -70,7 +70,7 @@ const LiveMap = () => {
             <div className="absolute top-4 left-4 z-[400] bg-white/90 backdrop-blur-md px-4 py-2 rounded-lg shadow-md border border-white/20">
                 <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    Live Employee Locations
+                    {t('common.liveEmployeeLocations')}
                 </h3>
             </div>
         </div>

@@ -73,6 +73,7 @@ const translations: Translation = {
     'attendance.onTime': { en: 'On Time', id: 'Tepat Waktu' },
     'attendance.employee': { en: 'Employee', id: 'Karyawan' },
     'attendance.position': { en: 'Software Engineer', id: 'Pengembang Perangkat Lunak' },
+    'attendance.regularShift': { en: 'Regular Shift', id: 'Shift Reguler' },
 
     // Employees
     'employees.title': { en: 'Employee Management', id: 'Manajemen Karyawan' },
@@ -192,6 +193,11 @@ const translations: Translation = {
     'common.edit': { en: 'Edit', id: 'Ubah' },
     'common.active': { en: 'Active', id: 'Aktif' },
     'common.inactive': { en: 'Inactive', id: 'Tidak Aktif' },
+    'common.disabled': { en: 'Disabled', id: 'Nonaktif' },
+    'common.live': { en: 'Live', id: 'Langsung' },
+    'common.gpsEnforcement': { en: 'GPS Enforcement', id: 'Penegakan GPS' },
+    'common.recentActivityLive': { en: 'Recent Activity (Live)', id: 'Aktivitas Terbaru (Langsung)' },
+    'common.liveEmployeeLocations': { en: 'Live Employee Locations', id: 'Lokasi Karyawan (Langsung)' },
     'common.noData': { en: 'No data available', id: 'Tidak ada data' },
 };
 
