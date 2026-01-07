@@ -7,9 +7,15 @@ const { sendEmail } = require('../services/emailService');
 // Verify Cron Secret to prevent unauthorized access
 const verifyCronSecret = (req, res, next) => {
     const cronSecret = process.env.CRON_SECRET;
-    const authHeader = req.headers.authorization;
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    // Accept secret from query parameter OR Authorization header
+    const querySecret = req.query.secret;
+    const authHeader = req.headers.authorization;
+    const headerSecret = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+    const providedSecret = querySecret || headerSecret;
+
+    if (cronSecret && providedSecret !== cronSecret) {
         return res.status(401).json({ msg: 'Unauthorized' });
     }
     next();
