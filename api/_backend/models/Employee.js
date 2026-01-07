@@ -92,6 +92,16 @@ const employeeSchema = new mongoose.Schema({
   shiftId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Shift'
+  },
+  registeredDevices: [{
+    fingerprint: String,
+    name: String,
+    deviceType: String,
+    registeredAt: { type: Date, default: Date.now }
+  }],
+  deviceLockEnabled: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

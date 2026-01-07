@@ -8,6 +8,7 @@ import { Clock, CheckCircle, XCircle, RefreshCw, User, AlertTriangle, Shield } f
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import LivenessDetector from '../components/Security/LivenessDetector';
+import { getDeviceFingerprint } from '../utils/deviceFingerprint';
 
 // Tipe data untuk AttendanceRecord
 interface AttendanceRecord {
@@ -159,19 +160,16 @@ const Attendance = () => {
                 }
             }
 
-            // Simple Device Fingerprinting
-            let deviceId = localStorage.getItem('absensi_device_id');
-            if (!deviceId) {
-                deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + Date.now();
-                localStorage.setItem('absensi_device_id', deviceId);
-            }
+            // Enhanced Device Fingerprinting
+            const deviceFingerprint = getDeviceFingerprint();
 
             const attendancePayload = {
                 type,
                 employeeId,
                 checkIn: new Date(),
                 facePhoto: imgSrc,
-                deviceId,
+                deviceId: deviceFingerprint, // Unified ID
+                deviceFingerprint,
                 livenessScore: livenessVerified ? livenessScore : null,
                 ...locationData
             };

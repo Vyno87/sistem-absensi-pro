@@ -108,6 +108,31 @@ router.post('/', auth, async (req, res) => {
       return res.status(404).json({ msg: 'Employee not found' });
     }
 
+    // ==== DEVICE LOCK VALIDATION ====
+    const deviceFingerprint = req.body.deviceFingerprint;
+    if (deviceFingerprint) {
+      const isRegistered = employee.registeredDevices.some(d => d.fingerprint === deviceFingerprint);
+
+      if (!isRegistered) {
+        // If device lock is active, block unregistered devices
+        if (employee.deviceLockEnabled) {
+          return res.status(403).json({
+            msg: 'Perangkat tidak terdaftar. Hubungi Admin untuk aktivasi perangkat baru.',
+            code: 'DEVICE_LOCKED'
+          });
+        }
+
+        // Auto-register first device or if lock is disabled
+        employee.registeredDevices.push({
+          fingerprint: deviceFingerprint,
+          name: req.body.deviceName || 'Browser',
+          deviceType: req.body.deviceType || 'Web'
+        });
+        await employee.save();
+      }
+    }
+    // ================================
+
     // CHECK OUT LOGIC
     if (type === 'Check Out') {
       const lastRecord = await Attendance.findOne({
