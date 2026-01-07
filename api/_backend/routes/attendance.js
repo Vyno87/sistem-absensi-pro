@@ -227,7 +227,9 @@ router.post('/', auth, async (req, res) => {
       geofenceStatus,
       accuracy,
       deviceId: req.body.deviceId,
-      isMocked
+      isMocked,
+      livenessScore: req.body.livenessScore || null,
+      livenessVerified: req.body.livenessScore ? req.body.livenessScore > 30 : false
     });
 
     const attendance = await newAttendance.save();

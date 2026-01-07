@@ -48,6 +48,8 @@ const attendanceSchema = new mongoose.Schema({
   deviceId: String,
   accuracy: Number,
   isMocked: { type: Boolean, default: false },
+  livenessScore: { type: Number, default: null },
+  livenessVerified: { type: Boolean, default: false },
   notes: String
 }, {
   timestamps: true

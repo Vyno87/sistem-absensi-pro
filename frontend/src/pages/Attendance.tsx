@@ -4,9 +4,10 @@ import GlassCard from '../components/UI/GlassCard';
 import Webcam from 'react-webcam';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { Clock, CheckCircle, XCircle, RefreshCw, User, AlertTriangle } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, RefreshCw, User, AlertTriangle, Shield } from 'lucide-react';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
+import LivenessDetector from '../components/Security/LivenessDetector';
 
 // Tipe data untuk AttendanceRecord
 interface AttendanceRecord {
@@ -29,6 +30,12 @@ const Attendance = () => {
     const [gpsEnabled, setGpsEnabled] = useState(false);
     const [geofenceSettings, setGeofenceSettings] = useState<any>(null);
     const [distanceFromOffice, setDistanceFromOffice] = useState<number | null>(null);
+
+    // Liveness Detection State
+    const [livenessEnabled, setLivenessEnabled] = useState(true); // Can be fetched from settings
+    const [livenessVerified, setLivenessVerified] = useState(false);
+    const [livenessScore, setLivenessScore] = useState<number>(0);
+    const [showLivenessModal, setShowLivenessModal] = useState(false);
 
     // Fetch recent attendance
     const fetchRecent = async () => {
@@ -97,6 +104,12 @@ const Attendance = () => {
             return;
         }
 
+        // Require liveness verification for Check In (if enabled)
+        if (type === 'Check In' && livenessEnabled && !livenessVerified) {
+            setShowLivenessModal(true);
+            return;
+        }
+
         setLoadingAction(type);
         setMessage(null);
 
@@ -155,6 +168,7 @@ const Attendance = () => {
                 checkIn: new Date(),
                 facePhoto: imgSrc,
                 deviceId,
+                livenessScore: livenessVerified ? livenessScore : null,
                 ...locationData
             };
 
@@ -375,6 +389,50 @@ const Attendance = () => {
                     </div>
                 </GlassCard>
             </div>
+
+            {/* Liveness Verification Modal */}
+            {showLivenessModal && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="w-full max-w-lg">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <Shield className="w-6 h-6 text-indigo-400" />
+                                <h2 className="text-xl font-bold text-white">Verifikasi Keamanan</h2>
+                            </div>
+                            <button
+                                onClick={() => setShowLivenessModal(false)}
+                                className="text-gray-400 hover:text-white transition-colors"
+                            >
+                                <XCircle className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        <LivenessDetector
+                            isOptional={false}
+                            onComplete={(passed, score) => {
+                                setLivenessVerified(passed);
+                                setLivenessScore(score);
+                                setShowLivenessModal(false);
+
+                                if (passed) {
+                                    setMessage({
+                                        type: 'success',
+                                        text: 'Verifikasi wajah berhasil! Silakan lanjutkan check-in.'
+                                    });
+                                } else {
+                                    setMessage({
+                                        type: 'error',
+                                        text: 'Verifikasi wajah gagal. Silakan coba lagi.'
+                                    });
+                                }
+                            }}
+                            onSkip={() => {
+                                setShowLivenessModal(false);
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
         </MainLayout>
     );
 };
