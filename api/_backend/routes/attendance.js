@@ -284,6 +284,8 @@ router.post('/', auth, async (req, res) => {
       mockReason,
       livenessScore: req.body.livenessScore || null,
       livenessVerified: req.body.livenessScore ? req.body.livenessScore > 30 : false,
+      faceMatchScore: req.body.faceMatchScore || null,
+      isFaceVerified: req.body.faceMatchScore ? req.body.faceMatchScore > 0.6 : false, // Default 60% threshold
       speed,
       altitude,
       heading,

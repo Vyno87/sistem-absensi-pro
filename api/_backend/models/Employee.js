@@ -102,6 +102,10 @@ const employeeSchema = new mongoose.Schema({
   deviceLockEnabled: {
     type: Boolean,
     default: false
+  },
+  profilePhoto: {
+    type: String, // Base64 or URL
+    default: null
   }
 }, {
   timestamps: true

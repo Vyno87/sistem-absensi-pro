@@ -16,11 +16,27 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+// @route    GET api/employees/verify/:employeeId
+// @desc     Get basic info for attendance verification (Public-ish)
+// @access   Public (Rate limited)
+router.get('/verify/:employeeId', async (req, res) => {
+  try {
+    const employee = await Employee.findOne({ employeeId: req.params.employeeId }).select('name profilePhoto');
+    if (!employee) {
+      return res.status(404).json({ msg: 'Karyawan tidak ditemukan' });
+    }
+    res.json(employee);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route    POST api/employees  
 // @desc     Add new employee  
 // @access   Private  
 router.post('/', auth, async (req, res) => {
-  const { employeeId, name, position, status, department, email, phone, salary, fingerprintId, shiftId } = req.body;
+  const { employeeId, name, position, status, department, email, phone, salary, fingerprintId, shiftId, profilePhoto } = req.body;
 
   try {
     const employeeData = {
@@ -31,7 +47,8 @@ router.post('/', auth, async (req, res) => {
       department,
       email,
       phone,
-      salary
+      salary,
+      profilePhoto
     };
 
     // Only add optional fields if they have valid values
@@ -63,6 +80,7 @@ router.put('/:id', auth, async (req, res) => {
   if (email) employeeFields.email = email;
   if (phone) employeeFields.phone = phone;
   if (salary) employeeFields.salary = salary;
+  if (profilePhoto) employeeFields.profilePhoto = profilePhoto;
 
   if (fingerprintId) employeeFields.fingerprintId = fingerprintId;
   if (shiftId && shiftId !== '') employeeFields.shiftId = shiftId;

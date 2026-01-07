@@ -3,7 +3,8 @@ import MainLayout from '../components/Layout/MainLayout';
 import GlassCard from '../components/UI/GlassCard';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { UserPlus, Search, Trash2, Shield, Smartphone, HardDrive } from 'lucide-react';
+import { UserPlus, Search, Trash2, Shield, Smartphone, HardDrive, Camera, Upload } from 'lucide-react';
+import Webcam from 'react-webcam';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import Modal from '../components/UI/Modal';
@@ -26,8 +27,11 @@ const Employees = () => {
         status: 'Harian Lepas',
         shiftId: '',
         fingerprintId: '',
+        profilePhoto: '',
         isKeyPerson: false
     });
+    const [showCamera, setShowCamera] = useState(false);
+    const webcamRef = React.useRef<any>(null);
     const [formLoading, setFormLoading] = useState(false);
     const [selectedDeviceEmp, setSelectedDeviceEmp] = useState<any | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -91,9 +95,11 @@ const Employees = () => {
                 status: 'Harian Lepas',
                 shiftId: '',
                 fingerprintId: '',
+                profilePhoto: '',
                 isKeyPerson: false
             });
             setIsModalOpen(false);
+            setShowCamera(false);
 
             // Refresh employee list
             fetchEmployees();
@@ -178,9 +184,13 @@ const Employees = () => {
                             </div>
 
                             <div className="flex flex-col items-center text-center pt-4">
-                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[2px] mb-4">
-                                    <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
-                                        <span className="text-2xl font-bold text-white">{emp.name.charAt(0)}</span>
+                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[2px] mb-4 relative group/avatar">
+                                    <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
+                                        {emp.profilePhoto ? (
+                                            <img src={emp.profilePhoto} alt={emp.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="text-2xl font-bold text-white">{emp.name.charAt(0)}</span>
+                                        )}
                                     </div>
                                 </div>
 
@@ -233,8 +243,74 @@ const Employees = () => {
                 )}
             </div>
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('employees.addTitle')}>
+            <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setShowCamera(false); }} title={t('employees.addTitle')}>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Profile Photo Upload Section */}
+                    <div className="flex flex-col items-center mb-6">
+                        <div className="w-24 h-24 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden bg-white/5 mb-3 relative">
+                            {showCamera ? (
+                                <Webcam
+                                    audio={false}
+                                    ref={webcamRef}
+                                    screenshotFormat="image/jpeg"
+                                    className="w-full h-full object-cover"
+                                    videoConstraints={{ facingMode: "user" }}
+                                />
+                            ) : formData.profilePhoto ? (
+                                <img src={formData.profilePhoto} alt="Preview" className="w-full h-full object-cover" />
+                            ) : (
+                                <Camera className="w-8 h-8 text-gray-500" />
+                            )}
+                        </div>
+                        <div className="flex gap-2">
+                            {!showCamera ? (
+                                <>
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        icon={<Camera size={14} />}
+                                        onClick={() => setShowCamera(true)}
+                                    >
+                                        Ambil Foto
+                                    </Button>
+                                    <label className="cursor-pointer">
+                                        <div className="flex items-center gap-2 px-4 py-2 border border-white/10 rounded-xl hover:bg-white/5 transition-colors text-xs text-white">
+                                            <Upload size={14} /> Pilih File
+                                        </div>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onloadend = () => {
+                                                        setFormData({ ...formData, profilePhoto: reader.result as string });
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }}
+                                        />
+                                    </label>
+                                </>
+                            ) : (
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={() => {
+                                        const imageSrc = webcamRef.current.getScreenshot();
+                                        setFormData({ ...formData, profilePhoto: imageSrc });
+                                        setShowCamera(false);
+                                    }}
+                                >
+                                    Tangkap
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+
                     <Input
                         placeholder="Employee ID (8 Digits)"
                         value={formData.employeeId}

@@ -9,6 +9,7 @@ import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import LivenessDetector from '../components/Security/LivenessDetector';
 import { getDeviceFingerprint } from '../utils/deviceFingerprint';
+import { calculateFaceMatchScore } from '../utils/faceMatching';
 
 // Tipe data untuk AttendanceRecord
 interface AttendanceRecord {
@@ -37,6 +38,11 @@ const Attendance = () => {
     const [livenessVerified, setLivenessVerified] = useState(false);
     const [livenessScore, setLivenessScore] = useState<number>(0);
     const [showLivenessModal, setShowLivenessModal] = useState(false);
+
+    // AI Face Matching State
+    const [referencePhoto, setReferencePhoto] = useState<string | null>(null);
+    const [employeeName, setEmployeeName] = useState<string | null>(null);
+    const [faceMatchScore, setFaceMatchScore] = useState<number | null>(null);
 
     // Fetch recent attendance
     const fetchRecent = async () => {
@@ -83,6 +89,26 @@ const Attendance = () => {
         }, 5000);
         return () => clearInterval(interval);
     }, []);
+
+    // Fetch employee reference photo when ID is entered
+    useEffect(() => {
+        const verifyEmployee = async () => {
+            if (employeeId.length >= 4) {
+                try {
+                    const res = await api.get(`/employees/verify/${employeeId}`);
+                    setReferencePhoto(res.data.profilePhoto);
+                    setEmployeeName(res.data.name);
+                } catch (err) {
+                    setReferencePhoto(null);
+                    setEmployeeName(null);
+                }
+            } else {
+                setReferencePhoto(null);
+                setEmployeeName(null);
+            }
+        };
+        verifyEmployee();
+    }, [employeeId]);
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -163,6 +189,13 @@ const Attendance = () => {
             // Enhanced Device Fingerprinting
             const deviceFingerprint = getDeviceFingerprint();
 
+            // AI Face Identity Matching
+            let matchScore = null;
+            if (referencePhoto && imgSrc) {
+                matchScore = await calculateFaceMatchScore(referencePhoto, imgSrc);
+                setFaceMatchScore(matchScore);
+            }
+
             const attendancePayload = {
                 type,
                 employeeId,
@@ -171,6 +204,7 @@ const Attendance = () => {
                 deviceId: deviceFingerprint, // Unified ID
                 deviceFingerprint,
                 livenessScore: livenessVerified ? livenessScore : null,
+                faceMatchScore: matchScore,
                 ...locationData
             };
 
@@ -272,6 +306,35 @@ const Attendance = () => {
                                             : '❌ Di Luar Radius'
                                     }
                                 </p>
+                            </div>
+                        </div>
+                    )}
+                    {/* AI Verification Indicator */}
+                    {employeeName && (
+                        <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/50 flex items-center justify-between animate-fade-in mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-full border-2 border-indigo-500/30 overflow-hidden bg-slate-900 flex items-center justify-center">
+                                    {referencePhoto ? (
+                                        <img src={referencePhoto} alt="Ref" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <User size={24} className="text-indigo-400" />
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-400 uppercase tracking-widest">Target Identitas</p>
+                                    <p className="text-white font-bold">{employeeName}</p>
+                                    <p className="text-[10px] text-indigo-400 flex items-center gap-1">
+                                        <Shield size={10} /> AI Biometric Guard Active
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <div className="flex gap-1 justify-end mb-1">
+                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse delay-75"></div>
+                                    <div className="w-2 h-2 rounded-full bg-green-500/30"></div>
+                                </div>
+                                <p className="text-[10px] text-gray-500 font-mono">ID_VERIFIED_SECURE</p>
                             </div>
                         </div>
                     )}

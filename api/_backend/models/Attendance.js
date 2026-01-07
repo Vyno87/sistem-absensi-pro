@@ -51,6 +51,8 @@ const attendanceSchema = new mongoose.Schema({
   mockReason: String,
   livenessScore: { type: Number, default: null },
   livenessVerified: { type: Boolean, default: false },
+  faceMatchScore: { type: Number, default: null },
+  isFaceVerified: { type: Boolean, default: false },
   notes: String
 }, {
   timestamps: true
