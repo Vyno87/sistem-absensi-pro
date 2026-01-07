@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+    size?: 'sm' | 'md' | 'lg';
     isLoading?: boolean;
     icon?: React.ReactNode;
 }
@@ -10,12 +11,19 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const Button: React.FC<ButtonProps> = ({
     children,
     variant = 'primary',
+    size = 'md',
     isLoading = false,
     icon,
     className = '',
     ...props
 }) => {
-    const baseStyles = "relative inline-flex items-center justify-center px-6 py-3 font-medium transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group";
+    const baseStyles = "relative inline-flex items-center justify-center font-medium transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group";
+
+    const sizes = {
+        sm: "px-4 py-2 text-xs",
+        md: "px-6 py-3 text-base",
+        lg: "px-8 py-4 text-lg"
+    };
 
     const variants = {
         primary: "bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_20px_rgba(99,102,241,0.5)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] border border-indigo-500/50",
@@ -26,7 +34,7 @@ const Button: React.FC<ButtonProps> = ({
 
     return (
         <button
-            className={`${baseStyles} ${variants[variant]} ${className}`}
+            className={`${baseStyles} ${sizes[size]} ${variants[variant]} ${className}`}
             disabled={isLoading || props.disabled}
             {...props}
         >
