@@ -112,4 +112,40 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+// @route    PUT api/employees/:id/device-lock
+// @desc     Toggle device lock for employee
+// @access   Private (Admin)
+router.put('/:id/device-lock', auth, async (req, res) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee) return res.status(404).json({ msg: 'Employee not found' });
+
+    employee.deviceLockEnabled = !employee.deviceLockEnabled;
+    await employee.save();
+
+    res.json({ msg: `Device lock ${employee.deviceLockEnabled ? 'enabled' : 'disabled'}`, enabled: employee.deviceLockEnabled });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route    DELETE api/employees/:id/devices
+// @desc     Clear registered devices for employee
+// @access   Private (Admin)
+router.delete('/:id/devices', auth, async (req, res) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee) return res.status(404).json({ msg: 'Employee not found' });
+
+    employee.registeredDevices = [];
+    await employee.save();
+
+    res.json({ msg: 'Registered devices cleared' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router; 

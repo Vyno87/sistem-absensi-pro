@@ -3,7 +3,7 @@ import MainLayout from '../components/Layout/MainLayout';
 import GlassCard from '../components/UI/GlassCard';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { UserPlus, Search, Trash2 } from 'lucide-react';
+import { UserPlus, Search, Trash2, Shield, Smartphone, HardDrive } from 'lucide-react';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import Modal from '../components/UI/Modal';
@@ -29,6 +29,7 @@ const Employees = () => {
         isKeyPerson: false
     });
     const [formLoading, setFormLoading] = useState(false);
+    const [selectedDeviceEmp, setSelectedDeviceEmp] = useState<any | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
     const [errorMsg, setErrorMsg] = useState('');
@@ -115,6 +116,30 @@ const Employees = () => {
         }
     };
 
+    const handleToggleDeviceLock = async () => {
+        if (!selectedDeviceEmp) return;
+        try {
+            const res = await api.put(`/employees/${selectedDeviceEmp._id}/device-lock`);
+            setSelectedDeviceEmp({ ...selectedDeviceEmp, deviceLockEnabled: res.data.enabled });
+            fetchEmployees();
+        } catch (error: any) {
+            setErrorMsg(error.response?.data?.msg || 'Gagal mengubah pengaturan kunci perangkat');
+        }
+    };
+
+    const handleClearDevices = async () => {
+        if (!selectedDeviceEmp) return;
+        if (!window.confirm('Hapus semua perangkat terdaftar? Karyawan harus mendaftarkan ulang saat absen berikutnya.')) return;
+
+        try {
+            await api.delete(`/employees/${selectedDeviceEmp._id}/devices`);
+            setSelectedDeviceEmp({ ...selectedDeviceEmp, registeredDevices: [] });
+            fetchEmployees();
+        } catch (error: any) {
+            setErrorMsg(error.response?.data?.msg || 'Gagal menghapus daftar perangkat');
+        }
+    };
+
     // Filter employees based on search query (name or ID)
     const filteredEmployees = employees.filter(emp =>
         emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -190,6 +215,17 @@ const Employees = () => {
                                         <p className="text-gray-400">{t('employees.performance')}</p>
                                         <p className="text-white font-bold text-lg">{emp.performanceScore || 0}%</p>
                                     </div>
+                                </div>
+
+                                <div className="mt-4 w-full">
+                                    <Button
+                                        variant="secondary"
+                                        className="w-full text-xs flex items-center justify-center gap-2 border-dashed border-indigo-500/30 hover:border-indigo-500"
+                                        onClick={() => setSelectedDeviceEmp(emp)}
+                                    >
+                                        <Shield size={14} className={emp.deviceLockEnabled ? 'text-green-400' : 'text-gray-400'} />
+                                        Device Security
+                                    </Button>
                                 </div>
                             </div>
                         </GlassCard>
@@ -322,6 +358,75 @@ const Employees = () => {
                         </Button>
                     </div>
                 </div>
+            </Modal>
+
+            {/* Device Management Modal */}
+            <Modal isOpen={!!selectedDeviceEmp} onClose={() => setSelectedDeviceEmp(null)} title="Device Security Management">
+                {selectedDeviceEmp && (
+                    <div className="space-y-6 p-2">
+                        <div className="flex items-center justify-between p-4 bg-indigo-500/10 rounded-2xl border border-indigo-500/20">
+                            <div className="flex items-center gap-3">
+                                <Shield className={selectedDeviceEmp.deviceLockEnabled ? 'text-green-400' : 'text-gray-400'} />
+                                <div>
+                                    <p className="text-white font-bold">Device Lock (Kunci Perangkat)</p>
+                                    <p className="text-xs text-gray-400">Batasi absensi hanya dari perangkat terdaftar</p>
+                                </div>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedDeviceEmp.deviceLockEnabled}
+                                    onChange={handleToggleDeviceLock}
+                                    className="sr-only peer"
+                                />
+                                <div className="w-11 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-green-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                            </label>
+                        </div>
+
+                        <div>
+                            <div className="flex justify-between items-center mb-4">
+                                <h4 className="text-sm font-bold text-gray-300 flex items-center gap-2">
+                                    <Smartphone size={16} /> Registered Devices ({selectedDeviceEmp.registeredDevices?.length || 0})
+                                </h4>
+                                {selectedDeviceEmp.registeredDevices?.length > 0 && (
+                                    <button onClick={handleClearDevices} className="text-xs text-red-400 hover:text-red-300 font-medium">Reset All</button>
+                                )}
+                            </div>
+
+                            <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                                {selectedDeviceEmp.registeredDevices?.length === 0 ? (
+                                    <div className="text-center py-6 bg-white/5 rounded-xl border border-dashed border-white/10">
+                                        <p className="text-xs text-gray-500 italic">Belum ada perangkat terdaftar</p>
+                                    </div>
+                                ) : (
+                                    selectedDeviceEmp.registeredDevices.map((dev: any, idx: number) => (
+                                        <div key={idx} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 text-xs">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-slate-800 rounded-lg">
+                                                    <HardDrive size={14} className="text-indigo-400" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-white font-mono">{dev.fingerprint}</p>
+                                                    <p className="text-gray-500">{dev.name} • {new Date(dev.registeredAt).toLocaleDateString()}</p>
+                                                </div>
+                                            </div>
+                                            <span className="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full">{dev.deviceType}</span>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl">
+                            <p className="text-[10px] text-yellow-500 leading-relaxed">
+                                <b>Catatan:</b> Jika Device Lock AKTIF, karyawan hanya bisa absen dari perangkat di atas.
+                                Jika nonaktif, sistem akan otomatis mendaftarkan perangkat baru saat mereka absen (Automatic Learning).
+                            </p>
+                        </div>
+
+                        <Button onClick={() => setSelectedDeviceEmp(null)} className="w-full">Tutup</Button>
+                    </div>
+                )}
             </Modal>
 
             {/* Error Modal */}
