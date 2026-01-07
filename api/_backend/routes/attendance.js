@@ -203,17 +203,45 @@ router.post('/', auth, async (req, res) => {
     }
     // ==== END GEOFENCE VALIDATION ====
 
-    // ==== ANTI-FAKE GPS DETECTION ====
+    // ==== ENHANCED ANTI-FAKE GPS DETECTION ====
     let isMocked = false;
-    const accuracy = req.body.accuracy;
+    let mockReason = null;
+    const { accuracy, speed, heading, altitude, gpsTimestamp } = req.body;
 
-    // High-accuracy spoof detection: standard GPS rarely below 3m. 
-    // If it's exactly 0 or extremely low (< 0.5), it's likely mocked.
-    if (accuracy !== undefined && (accuracy === 0 || accuracy < 0.5)) {
+    // Layer 1: Accuracy anomaly (< 0.5m is very rare for mobile GPS)
+    if (accuracy !== undefined && (accuracy === 0 || (accuracy > 0 && accuracy < 0.5))) {
       isMocked = true;
-      console.warn(`⚠️ Potential Fake GPS detected for employee ${employeeId}. Accuracy: ${accuracy}`);
+      mockReason = 'Extreme accuracy anomaly';
     }
-    // ================================
+
+    // Layer 2: Speed Anomaly (Calculate speed from last check-in)
+    const lastRecord = await Attendance.findOne({ employeeId }).sort({ createdAt: -1 });
+    if (lastRecord && lastRecord.latitude && latitude) {
+      const dist = calculateDistance(lastRecord.latitude, lastRecord.longitude, latitude, longitude);
+      const timeDiff = (new Date() - new Date(lastRecord.createdAt)) / 1000; // in seconds
+
+      if (timeDiff > 0) {
+        const calculatedSpeed = dist / timeDiff; // m/s
+        // If speed > 300 m/s (approx 1000 km/h) - Humanly impossible for normal travel
+        if (calculatedSpeed > 300 && dist > 1000) {
+          isMocked = true;
+          mockReason = 'Impossible travel speed detected';
+        }
+      }
+    }
+
+    // Layer 3: Metadata Check
+    // Most mock apps don't provide altitude, heading, or speed correctly
+    if (latitude && longitude && altitude === null && speed === null) {
+      // This is common for many simple mock apps, but could be false positive on some devices.
+      // We'll flag it for review but not always block unless accuracy is also suspicious.
+      console.log(`ℹ️ Missing GPS metadata for ${employeeId}`);
+    }
+
+    if (isMocked) {
+      console.warn(`⚠️ Fake GPS detected for ${employeeId}: ${mockReason}`);
+    }
+    // ==========================================
 
     // Create new attendance record  
     const newAttendance = new Attendance({
@@ -228,8 +256,13 @@ router.post('/', auth, async (req, res) => {
       accuracy,
       deviceId: req.body.deviceId,
       isMocked,
+      mockReason,
       livenessScore: req.body.livenessScore || null,
-      livenessVerified: req.body.livenessScore ? req.body.livenessScore > 30 : false
+      livenessVerified: req.body.livenessScore ? req.body.livenessScore > 30 : false,
+      speed,
+      altitude,
+      heading,
+      gpsTimestamp
     });
 
     const attendance = await newAttendance.save();

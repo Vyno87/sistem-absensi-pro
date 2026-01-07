@@ -125,8 +125,8 @@ const Attendance = () => {
                 // Add timeout handling specifically for UI feedback
                 const position = await new Promise<GeolocationPosition>((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(resolve, reject, {
-                        enableHighAccuracy: false, // Changed to false for faster lock
-                        timeout: 5000, // Reduced timeout to 5s
+                        enableHighAccuracy: true, // Use High Accuracy for more meta-data
+                        timeout: 10000,
                         maximumAge: 0
                     });
                 });
@@ -134,7 +134,11 @@ const Attendance = () => {
                 locationData = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
-                    accuracy: position.coords.accuracy
+                    accuracy: position.coords.accuracy,
+                    altitude: position.coords.altitude,
+                    speed: position.coords.speed,
+                    heading: position.coords.heading,
+                    gpsTimestamp: position.timestamp
                 };
 
                 // Calculate distance if geofencing is enabled
