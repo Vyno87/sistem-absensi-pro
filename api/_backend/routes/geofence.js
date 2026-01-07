@@ -27,10 +27,10 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
     return R * c; // Distance in meters
 };
 
-// @route    GET /api/settings/geofence
+// @route    GET /api/geofence
 // @desc     Get geofence settings
 // @access   Private
-router.get('/geofence', auth, async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const settings = await GeofenceSettings.getSettings();
         res.json(settings);
@@ -40,10 +40,10 @@ router.get('/geofence', auth, async (req, res) => {
     }
 });
 
-// @route    POST /api/settings/geofence
+// @route    POST /api/geofence
 // @desc     Update geofence settings
 // @access   Private (Admin only)
-router.post('/geofence', auth, adminOnly, async (req, res) => {
+router.post('/', auth, adminOnly, async (req, res) => {
     try {
         const { enabled, centerLat, centerLng, radiusMeters, blockOutOfRange } = req.body;
 

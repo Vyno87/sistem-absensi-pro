@@ -4,7 +4,7 @@ import GlassCard from '../components/UI/GlassCard';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import api from '../services/api';
-import { MapPin, Save, ToggleLeft, ToggleRight, Shield } from 'lucide-react';
+import { MapPin, Save, ToggleLeft, ToggleRight, Shield, Crosshair } from 'lucide-react';
 
 const Settings = () => {
     const [loading, setLoading] = useState(true);
@@ -46,6 +46,31 @@ const Settings = () => {
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleGetCurrentLocation = () => {
+        if (!navigator.geolocation) {
+            alert('Geolocation tidak didukung oleh browser Anda');
+            return;
+        }
+
+        setSaving(true);
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setSettings({
+                    ...settings,
+                    centerLat: parseFloat(position.coords.latitude.toFixed(6)),
+                    centerLng: parseFloat(position.coords.longitude.toFixed(6))
+                });
+                setSaving(false);
+            },
+            (error) => {
+                console.error('Error getting location:', error);
+                alert('Gagal mendapatkan lokasi. Pastikan izin lokasi aktif.');
+                setSaving(false);
+            },
+            { enableHighAccuracy: true }
+        );
     };
 
     if (loading) {
@@ -106,7 +131,7 @@ const Settings = () => {
                         <MapPin className="w-5 h-5 text-primary" />
                         Lokasi Kantor
                     </label>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Input
                             label="Latitude"
                             type="number"
@@ -124,8 +149,19 @@ const Settings = () => {
                             placeholder="106.8456"
                         />
                     </div>
+                    <div className="mt-3">
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            icon={<Crosshair className="w-4 h-4" />}
+                            onClick={handleGetCurrentLocation}
+                            className="w-full md:w-auto text-xs"
+                        >
+                            Gunakan Lokasi Saya Saat Ini
+                        </Button>
+                    </div>
                     <p className="text-gray-400 text-xs mt-2">
-                        💡 Tip: Buka Google Maps, klik lokasi kantor, copy koordinat
+                        💡 Tip: Berdirilah di titik pusat kantor, lalu klik tombol di atas atau masukkan koordinat manual dari Google Maps.
                     </p>
                 </div>
 
