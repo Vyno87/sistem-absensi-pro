@@ -24,10 +24,10 @@ Berikut adalah perkembangan dan rencana fitur canggih untuk sistem Anda:
 *   [x] **Biometric Login:** Login pakai Fingerprint/FaceID HP. ✅
 *   [x] UI Responsif Full Mobile. ✅
 
-## Phase 6: AI & High Security (NEW - 🔥)
-*   [x] **Face Liveness:** Anti-Foto/Layar (Kedip Mata).
-*   [x] **AI Face ID:** Mencocokkan wajah dengan foto profil.
-*   [x] **Device Lock:** Mengunci akun ke HP tertentu.
+## Phase 6: AI & High Security (Completed) ✅
+*   [x] **Face Liveness:** Anti-Foto/Layar (Kedip Mata). ✅
+*   [x] **AI Face ID:** Mencocokkan wajah dengan foto profil. ✅
+*   [x] **Device Lock:** Mengunci akun ke HP tertentu. ✅
 
 ## Phase 7: Advanced Intelligence & Operations (PLANNED)
 *   [ ] Digital Leave & Permission Workflow.
