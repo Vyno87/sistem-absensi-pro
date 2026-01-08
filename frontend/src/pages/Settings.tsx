@@ -4,9 +4,11 @@ import GlassCard from '../components/UI/GlassCard';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import api from '../services/api';
-import { MapPin, Save, ToggleLeft, ToggleRight, Shield, Crosshair } from 'lucide-react';
+import { MapPin, Save, ToggleLeft, ToggleRight, Shield, Crosshair, Fingerprint } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Settings = () => {
+    const { registerBiometric } = useAuth();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [settings, setSettings] = useState({
@@ -223,7 +225,6 @@ const Settings = () => {
                         Simpan Pengaturan
                     </Button>
                 </div>
-
                 {/* Message */}
                 {message && (
                     <div className={`mt-4 p-4 rounded-xl text-center font-semibold ${message.includes('✅') ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
@@ -231,6 +232,50 @@ const Settings = () => {
                         {message}
                     </div>
                 )}
+
+                {/* Biometric Security Section */}
+                <div className="mt-8 pt-8 border-t border-white/10">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500">
+                            <Fingerprint className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-bold text-white">Biometric Security</h2>
+                            <p className="text-gray-400 text-sm">Login cepat menggunakan Sidik Jari / Wajah</p>
+                        </div>
+                    </div>
+
+                    <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="text-center md:text-left">
+                                <h3 className="text-white font-semibold flex items-center gap-2 justify-center md:justify-start">
+                                    Status Biometrik
+                                </h3>
+                                <p className="text-gray-400 text-sm">
+                                    Daftarkan perangkat ini untuk login instan tanpa mengetik kata sandi.
+                                </p>
+                            </div>
+                            <Button
+                                variant="primary"
+                                onClick={async () => {
+                                    try {
+                                        setSaving(true);
+                                        await registerBiometric();
+                                    } catch (err) {
+                                        console.error(err);
+                                        alert("Gagal mendaftarkan biometrik. Pastikan perangkat mendukung.");
+                                    } finally {
+                                        setSaving(false);
+                                    }
+                                }}
+                                icon={<Fingerprint className="w-4 h-4" />}
+                                className="w-full md:w-auto"
+                            >
+                                Aktifkan Fingerprint
+                            </Button>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Info Box */}
                 <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
@@ -242,7 +287,7 @@ const Settings = () => {
                     </ul>
                 </div>
             </GlassCard>
-        </MainLayout>
+        </MainLayout >
     );
 };
 

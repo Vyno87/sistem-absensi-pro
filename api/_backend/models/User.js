@@ -18,6 +18,12 @@ const userSchema = new mongoose.Schema({
   },
   currentSessionToken: {
     type: String
+  },
+  biometricCredentialId: {
+    type: String // WebAuthn Credential ID
+  },
+  biometricPublicKey: {
+    type: String // WebAuthn Public Key (PEM or base64)
   }
 }, {
   timestamps: true

@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import GlassCard from '../components/UI/GlassCard';
 import Input from '../components/UI/Input';
 import Button from '../components/UI/Button';
-import { User, Lock, ArrowRight, Globe, Download, Monitor, Smartphone, Info } from 'lucide-react';
+import { User, Lock, ArrowRight, Globe, Download, Monitor, Smartphone, Info, Fingerprint } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
@@ -14,7 +14,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [deviceType, setDeviceType] = useState<'pc' | 'android' | 'ios'>('pc');
-    const { login } = useAuth();
+    const { login, loginBiometric } = useAuth();
     const { t, language, setLanguage } = useLanguage();
     const navigate = useNavigate();
 
@@ -57,6 +57,19 @@ const Login = () => {
         } else if (deviceType === 'android') {
             // If Android but no deferredPrompt (e.g. already handled by browser)
             alert(t('login.iosInstruction')); // Fallback instruction for Android
+        }
+    };
+
+    const handleBiometricLogin = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            await loginBiometric();
+            navigate('/dashboard');
+        } catch (err: any) {
+            setError(t('login.biometricFailed'));
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -145,6 +158,25 @@ const Login = () => {
                         <Button type="submit" className="w-full text-lg py-6" isLoading={loading} icon={<ArrowRight className="w-6 h-6" />}>
                             {t('login.btn')}
                         </Button>
+
+                        <div className="relative py-4">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-white/10"></div>
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-[#020617] px-2 text-gray-500">OR</span>
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={handleBiometricLogin}
+                            disabled={loading}
+                            className="w-full flex items-center justify-center gap-3 py-4 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 rounded-xl border border-indigo-500/20 transition-all group"
+                        >
+                            <Fingerprint className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                            <span className="font-bold">{t('login.biometricBtn')}</span>
+                        </button>
                     </form>
                 </GlassCard>
 

@@ -27,6 +27,8 @@ const translations: Translation = {
     'login.username': { en: 'Username', id: 'Nama Pengguna' },
     'login.password': { en: 'Password', id: 'Kata Sandi' },
     'login.btn': { en: 'Sign In', id: 'Masuk' },
+    'login.biometricBtn': { en: 'Fingerprint / FaceID', id: 'Biometrik / Fingerprint' },
+    'login.biometricFailed': { en: 'Biometric verification failed', id: 'Verifikasi biometrik gagal' },
     'login.failed': { en: 'Invalid credentials', id: 'Login gagal' },
     'login.adminOnline': { en: 'Admin Account is Currently Online', id: 'Akun Admin Sedang Online' },
     'login.downloadApp': { en: 'Download App', id: 'Unduh Aplikasi' },
@@ -208,6 +210,9 @@ const translations: Translation = {
     'common.gpsEnforcement': { en: 'GPS Enforcement', id: 'Penegakan GPS' },
     'common.recentActivityLive': { en: 'Recent Activity (Live)', id: 'Aktivitas Terbaru (Langsung)' },
     'common.liveEmployeeLocations': { en: 'Live Employee Locations', id: 'Lokasi Karyawan (Langsung)' },
+    'settings.biometricTitle': { en: 'Biometric Security', id: 'Keamanan Biometrik' },
+    'settings.biometricDesc': { en: 'Use your device fingerprint or face for faster login.', id: 'Gunakan sidik jari atau wajah perangkat untuk login lebih cepat.' },
+    'settings.enableBiometric': { en: 'Enable Biometric Login', id: 'Aktifkan Login Biometrik' },
     'common.noData': { en: 'No data available', id: 'Tidak ada data' },
 };
 

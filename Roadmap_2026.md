@@ -1,34 +1,38 @@
-# 🚀 Roadmap Menuju Sistem Absensi 2026 (Fitur Canggih)
+# 🚀 Roadmap Premium - Sistem Absensi 2026
 
-Selamat! Tahap 1 (Modernisasi UI & Online Deployment) sudah selesai.
-Sekarang pondasi kamu sudah kuat: MERN Stack + Glassmorphism + Vercel Deployment.
+Berikut adalah perkembangan dan rencana fitur canggih untuk sistem Anda:
 
-Berikut adalah langkah selanjutnya untuk mencapai tujuan "Advanced Features" kamu:
+## Phase 1: Modernisasi UI & Basics ✅
+*   [x] Premium Glassmorphism UI.
+*   [x] Deployment ke Vercel (Produksi).
 
-## 1. Integrasi PWA (Progressive Web App)
-**Tujuan:** Agar aplikasi bisa diinstall di HP seperti aplikasi native Android/iOS.
-*   [ ] Mengaktifkan Service Workers di React.
-*   [ ] Membuat `manifest.json` (Logo, Nama App, Warna Tema).
-*   [ ] Test install di HP.
+## Phase 2: GPS & Geofencing ✅
+*   [x] Validasi Radius Kantor.
+*   [x] Deteksi Mock GPS Dasar.
 
-## 2. Fitur Biometrik & Geolocation
-**Tujuan:** Absensi anti-titip absen.
-*   [ ] **Geolocation:** Saat klik "Check In", browser wajib meminta izin lokasi (GPS). Jika di luar radius kantor -> Tolak.
-*   [ ] **Face Recognition (Simulasi):** Menggunakan kamera HP untuk memotret wajah saat absen, lalu disimpan ke server. (Bisa menggunakan `react-webcam`).
+## Phase 3: Dashboard & Analytics ✅
+*   [x] Rekap Laporan Absensi.
+*   [x] Statistik Kehadiran Admin.
 
-## 3. Fitur Admin Lanjutan
-**Tujuan:** Kontrol penuh.
-*   [ ] **Rekap Laporan:** Export data absensi ke Excel/PDF.
-*   [ ] **Manajemen Shift:** Mengatur jam kerja yang berbeda-beda.
-*   [ ] **Approval Cuti:** Karyawan request cuti -> Admin approve/reject.
+## Phase 4: Reports & Customizations ✅
+*   [x] Export ke Excel/PDF.
+*   [x] Manajemen Shift Dasar.
 
-## 4. Keamanan Tingkat Lanjut
-*   [ ] **CORS Strict:** Membatasi agar API hanya bisa diakses dari domain frontend kamu saja (sekarang masih open public untuk debugging).
-*   [ ] **Rate Limiting:** Mencegah serangan spam ke API.
+## Phase 5: Mobile-First Experience ✅
+*   [x] Integrasi PWA (Bisa diinstall di HP). ✅
+*   [x] **Offline Check-in:** Absen tanpa sinyal, sync otomatis saat online. ✅
+*   [x] **Biometric Login:** Login pakai Fingerprint/FaceID HP. ✅
+*   [x] UI Responsif Full Mobile. ✅
+
+## Phase 6: AI & High Security (NEW - 🔥)
+*   [x] **Face Liveness:** Anti-Foto/Layar (Kedip Mata).
+*   [x] **AI Face ID:** Mencocokkan wajah dengan foto profil.
+*   [x] **Device Lock:** Mengunci akun ke HP tertentu.
+
+## Phase 7: Advanced Intelligence & Operations (PLANNED)
+*   [ ] Digital Leave & Permission Workflow.
+*   [ ] AI Predictive Analytics.
+*   [ ] Payroll Integration.
 
 ---
-
-**Saran Saya:**
-Fokus ke **Nomor 1 (PWA)** dan **Nomor 2 (Geo/Biometrik)** dulu, karena itu yang paling terlihat "Wah" untuk skripsi/presentasi.
-
-*File ini disimpan di: `Roadmap_2026.md`*
+*File ini adalah representasi dari "Roadmap Premium" Bapak.*
