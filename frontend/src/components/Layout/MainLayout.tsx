@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar, FileSpreadsheet, RefreshCw, Settings, DollarSign, Moon, Sun, Menu, X, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar, FileSpreadsheet, RefreshCw, Settings, DollarSign, Moon, Sun, Menu, X, ChevronRight, Layers } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -8,7 +8,7 @@ import { useTheme } from '../../context/ThemeContext';
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user, logout } = useAuth();
     const { t } = useLanguage();
-    const { theme, toggleTheme } = useTheme();
+    const { theme, uiStyle, toggleTheme, toggleUIStyle } = useTheme();
     const location = useLocation();
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default closed for "slide pane" feel
@@ -151,7 +151,18 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        {/* Theme Toggle - Moved to Top Right as requested */}
+                        {/* Design System Toggle */}
+                        <button
+                            onClick={toggleUIStyle}
+                            className="p-3 rounded-2xl glass-panel text-[var(--text-main)] hover:bg-[var(--glass-shine)] transition-all shadow-lg flex items-center gap-3 group"
+                            title={uiStyle === 'glass' ? 'Switch to Neumorphic Design' : 'Switch to Glassmorphism Design'}
+                        >
+                            <Layers className={`w-6 h-6 ${uiStyle === 'neumorph' ? 'text-primary' : 'text-gray-400'}`} />
+                            <span className="text-sm font-semibold hidden md:block">
+                                {uiStyle === 'glass' ? 'Glass' : 'Neumorph'}
+                            </span>
+                        </button>
+
                         <button
                             onClick={toggleTheme}
                             className="p-3 rounded-2xl glass-panel text-[var(--text-main)] hover:bg-[var(--glass-shine)] transition-all shadow-lg flex items-center gap-3 group"

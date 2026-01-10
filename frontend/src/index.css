@@ -181,3 +181,50 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }
+
+/* --- Neumorphic Soft UI Design System --- */
+[data-ui-style='neumorph'] {
+  --nm-bg-light: #e0e5ec;
+  --nm-shadow-light: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 1);
+  --nm-inset-light: inset 6px 6px 12px rgba(163, 177, 198, 0.5), inset -6px -6px 12px rgba(255, 255, 255, 1);
+
+  --nm-bg-dark: #0f172a;
+  --nm-shadow-dark: 10px 10px 20px rgba(0, 0, 0, 0.5), -5px -5px 15px rgba(255, 255, 255, 0.05);
+  --nm-inset-dark: inset 6px 6px 12px rgba(0, 0, 0, 0.5), inset -4px -4px 10px rgba(255, 255, 255, 0.03);
+}
+
+[data-ui-style='neumorph'] .glass-panel {
+  background: var(--bg-dark);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.03) !important;
+  box-shadow: var(--nm-shadow-dark) !important;
+}
+
+[data-theme='light'][data-ui-style='neumorph'] .glass-panel {
+  background: var(--nm-bg-light) !important;
+  box-shadow: var(--nm-shadow-light) !important;
+  border: none !important;
+}
+
+[data-ui-style='neumorph'] .glass-morphism {
+  background: var(--bg-darker);
+  backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: var(--nm-inset-dark) !important;
+}
+
+[data-theme='light'][data-ui-style='neumorph'] .glass-morphism {
+  background: var(--nm-bg-light) !important;
+  box-shadow: var(--nm-inset-light) !important;
+}
+
+/* Override animations and other glass-specific assets */
+[data-ui-style='neumorph'] .animate-float-neon,
+[data-ui-style='neumorph'] .animate-float-neon-delayed {
+  display: none !important;
+}
+
+[data-ui-style='neumorph'] .text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-[var(--text-main)] to-[var(--primary)] !important;
+}
