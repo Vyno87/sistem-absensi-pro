@@ -246,9 +246,9 @@ const Payroll = () => {
                             }}
                             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
                         >
-                            <option value="">-- Pilih --</option>
+                            <option value="" className="bg-gray-900 text-white">-- Pilih --</option>
                             {employees.map((emp) => (
-                                <option key={emp.employeeId} value={emp.employeeId}>
+                                <option key={emp.employeeId} value={emp.employeeId} className="bg-gray-900 text-white">
                                     {emp.name} ({emp.employeeId})
                                 </option>
                             ))}
@@ -263,7 +263,7 @@ const Payroll = () => {
                             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
                         >
                             {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                                <option key={m} value={m}>{getMonthName(m)}</option>
+                                <option key={m} value={m} className="bg-gray-900 text-white">{getMonthName(m)}</option>
                             ))}
                         </select>
                     </div>
@@ -400,8 +400,8 @@ const Payroll = () => {
                             onChange={(e) => setSalaryConfig({ ...salaryConfig, type: e.target.value as 'monthly' | 'daily' })}
                             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
                         >
-                            <option value="daily">Harian</option>
-                            <option value="monthly">Bulanan</option>
+                            <option value="daily" className="bg-gray-900 text-white">Harian</option>
+                            <option value="monthly" className="bg-gray-900 text-white">Bulanan</option>
                         </select>
                     </div>
 
