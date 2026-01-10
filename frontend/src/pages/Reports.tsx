@@ -201,7 +201,7 @@ const Reports = () => {
             <GlassCard className="mb-6">
                 <div className="flex flex-col md:flex-row gap-4 items-end">
                     <div className="flex-1">
-                        <label className="block text-sm text-gray-400 mb-2">{t('reports.startDate')}</label>
+                        <label className="block text-sm text-[var(--text-muted)] mb-2">{t('reports.startDate')}</label>
                         <Input
                             type="date"
                             value={startDate}
@@ -210,7 +210,7 @@ const Reports = () => {
                         />
                     </div>
                     <div className="flex-1">
-                        <label className="block text-sm text-gray-400 mb-2">{t('reports.endDate')}</label>
+                        <label className="block text-sm text-[var(--text-muted)] mb-2">{t('reports.endDate')}</label>
                         <Input
                             type="date"
                             value={endDate}
