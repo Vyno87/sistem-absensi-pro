@@ -20,6 +20,8 @@ const Reports = () => {
     const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; record: any; type: 'single' | 'bulk' }>({ show: false, record: null, type: 'single' });
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [errorMsg, setErrorMsg] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
 
     // Set default date range (current month)
     useEffect(() => {
@@ -185,6 +187,14 @@ const Reports = () => {
             hour12: false
         });
     };
+
+    // Calculate pagination data
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = previewData.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(previewData.length / itemsPerPage);
+
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     const eligibleForPromotion = statsData.filter(s => s.isEligibleForPromotion);
 
@@ -379,9 +389,11 @@ const Reports = () => {
 
             {/* Detailed Data Preview - Collapsible or simpler */}
             <GlassCard>
-                <div className="flex items-center gap-2 mb-4">
-                    <FileText className="w-5 h-5 text-[var(--text-muted)]" />
-                    <h3 className="text-lg font-bold text-[var(--text-main)]">{t('reports.preview')} (10 {t('reports.records')})</h3>
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-[var(--text-muted)]" />
+                        <h3 className="text-lg font-bold text-[var(--text-main)]">{t('reports.preview')} ({previewData.length} {t('reports.records')})</h3>
+                    </div>
                 </div>
                 {previewLoading ? (
                     <p className="text-gray-400">{t('common.loading')}</p>
@@ -411,7 +423,7 @@ const Reports = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {previewData.slice(0, 10).map((record, index) => (
+                                {currentItems.map((record, index) => (
                                     <tr key={index} className="border-b border-white/5 hover:bg-white/5">
                                         <td className="py-2 px-2 text-center">
                                             <input
@@ -421,7 +433,7 @@ const Reports = () => {
                                                 className="w-4 h-4 cursor-pointer"
                                             />
                                         </td>
-                                        <td className="py-2 px-2 text-gray-500">{index + 1}</td>
+                                        <td className="py-2 px-2 text-gray-500">{indexOfFirstItem + index + 1}</td>
                                         <td className="py-2 px-2 text-center">
                                             {record.facePhoto ? (
                                                 <img
@@ -460,6 +472,56 @@ const Reports = () => {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                )}
+
+                {/* Pagination Controls */}
+                {!previewLoading && totalPages > 1 && (
+                    <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                        <button
+                            onClick={() => paginate(Math.max(1, currentPage - 1))}
+                            disabled={currentPage === 1}
+                            className="px-3 py-1 rounded-lg bg-[var(--glass-shine)] text-[var(--text-muted)] hover:bg-[var(--glass-border)] disabled:opacity-30 disabled:cursor-not-allowed transition-all text-xs font-bold"
+                        >
+                            Sebelumnya
+                        </button>
+
+                        {[...Array(totalPages)].map((_, i) => {
+                            const pageNum = i + 1;
+                            // Show only limited page numbers if there are too many
+                            if (
+                                pageNum === 1 ||
+                                pageNum === totalPages ||
+                                (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                            ) {
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => paginate(pageNum)}
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${currentPage === pageNum
+                                                ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30'
+                                                : 'bg-[var(--glass-shine)] text-[var(--text-muted)] hover:bg-[var(--glass-border)]'
+                                            }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            } else if (
+                                pageNum === currentPage - 2 ||
+                                pageNum === currentPage + 2
+                            ) {
+                                return <span key={pageNum} className="text-[var(--text-muted)] text-xs">...</span>;
+                            }
+                            return null;
+                        })}
+
+                        <button
+                            onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                            disabled={currentPage === totalPages}
+                            className="px-3 py-1 rounded-lg bg-[var(--glass-shine)] text-[var(--text-muted)] hover:bg-[var(--glass-border)] disabled:opacity-30 disabled:cursor-not-allowed transition-all text-xs font-bold"
+                        >
+                            Berikutnya
+                        </button>
                     </div>
                 )}
             </GlassCard>
