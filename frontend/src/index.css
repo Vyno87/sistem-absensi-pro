@@ -43,7 +43,10 @@
   --glass-shine: rgba(99, 102, 241, 0.05);
 
   --text-main: #0f172a;
+  --text-main: #0f172a;
   --text-muted: #475569;
+  /* Darker gray for better contrast against white/light backgrounds */
+  --text-inverse: #f8fafc;
   --text-inverse: #f8fafc;
 }
 
