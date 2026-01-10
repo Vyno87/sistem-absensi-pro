@@ -213,6 +213,7 @@ const translations: Translation = {
     'reports.subtitle': { en: 'Export attendance data in Excel or PDF format', id: 'Ekspor data absensi dalam format Excel atau PDF' },
     'reports.startDate': { en: 'Start Date', id: 'Tanggal Mulai' },
     'reports.endDate': { en: 'End Date', id: 'Tanggal Akhir' },
+    'reports.employeeId': { en: 'Employee ID', id: 'ID Karyawan' },
     'reports.refresh': { en: 'Refresh', id: 'Segarkan' },
     'reports.totalRecords': { en: 'Total Records', id: 'Total Data' },
     'reports.present': { en: 'Present', id: 'Hadir' },

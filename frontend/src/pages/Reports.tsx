@@ -266,6 +266,7 @@ const Reports = () => {
                             <thead>
                                 <tr className="border-b border-[var(--glass-border)] text-[var(--text-muted)] uppercase">
                                     <th className="py-3 px-2 text-left font-semibold">{t('reports.name')}</th>
+                                    <th className="py-3 px-2 text-left font-semibold">{t('reports.employeeId')}</th>
                                     <th className="py-3 px-2 text-center font-semibold">{t('reports.attendanceRate')}</th>
                                     <th className="py-3 px-2 text-center font-semibold">{t('reports.punctualityRate')}</th>
                                     <th className="py-3 px-2 text-center font-semibold">{t('reports.performanceScore')}</th>
@@ -281,6 +282,7 @@ const Reports = () => {
                                             <p className="text-[var(--text-main)] font-medium">{stat.name}</p>
                                             <p className="text-[var(--text-muted)] text-[10px]">{stat.position}</p>
                                         </td>
+                                        <td className="py-3 px-2 font-mono text-indigo-400 font-bold">{stat.employeeId}</td>
                                         <td className="py-3 px-2 text-center font-bold text-[var(--text-main)]">{stat.attendanceRate}%</td>
                                         <td className="py-3 px-2 text-center text-[var(--text-muted)]">{stat.punctualityRate}%</td>
                                         <td className="py-3 px-2 text-center text-[var(--text-muted)]">{stat.performanceScore}%</td>
@@ -399,6 +401,7 @@ const Reports = () => {
                                     <th className="py-2 px-2 text-left">No</th>
                                     <th className="py-2 px-2 text-center">Foto</th>
                                     <th className="py-2 px-2 text-left">{t('reports.name')}</th>
+                                    <th className="py-2 px-2 text-left">{t('reports.employeeId')}</th>
                                     <th className="py-2 px-2 text-left">{t('reports.date')}</th>
                                     <th className="py-2 px-2 text-center">Masuk</th>
                                     <th className="py-2 px-2 text-center">Keluar</th>
@@ -436,6 +439,7 @@ const Reports = () => {
                                         <td className="py-2 px-2">
                                             <p className="text-[var(--text-main)]">{record.name}</p>
                                         </td>
+                                        <td className="py-2 px-2 text-indigo-400 font-mono font-bold">{record.employeeId}</td>
                                         <td className="py-2 px-2 text-[var(--text-muted)]">{formatDate(record.date)}</td>
                                         <td className="py-2 px-2 text-center text-green-400 font-mono">{formatTime(record.checkIn)}</td>
                                         <td className="py-2 px-2 text-center text-red-400 font-mono">{formatTime(record.checkOut)}</td>
