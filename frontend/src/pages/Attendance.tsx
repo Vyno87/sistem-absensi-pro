@@ -4,7 +4,7 @@ import GlassCard from '../components/UI/GlassCard';
 import Webcam from 'react-webcam';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { Clock, CheckCircle, XCircle, RefreshCw, User, AlertTriangle, Shield } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, RefreshCw, User, AlertTriangle, Shield, MapPin } from 'lucide-react';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import LivenessDetector from '../components/Security/LivenessDetector';

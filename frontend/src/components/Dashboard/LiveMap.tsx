@@ -113,7 +113,10 @@ const LiveMap = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 {markers.map((marker: any, idx: number) => (
-                    <Marker key={idx} position={[marker.latitude, marker.longitude]}>
+                    <Marker
+                        key={idx}
+                        position={[Number(marker.latitude), Number(marker.longitude)]}
+                    >
                         <Popup className="custom-popup">
                             <div className="p-1 min-w-[200px]">
                                 <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100">

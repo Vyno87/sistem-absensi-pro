@@ -62,7 +62,7 @@ router.get('/today', auth, async (req, res) => {
     wibTime.setUTCHours(0, 0, 0, 0);
     const startOfTodayWib = new Date(wibTime.getTime() - wibOffset);
 
-    console.log(`Searching for map records since: ${startOfTodayWib.toISOString()}`);
+    console.log(`[MAP] Fetching records since ${startOfTodayWib.toISOString()} (Jakarta Midnight)`);
 
     const records = await Attendance.find({
       createdAt: { $gte: startOfTodayWib },
@@ -71,6 +71,8 @@ router.get('/today', auth, async (req, res) => {
     })
       .sort({ createdAt: -1 })
       .lean();
+
+    console.log(`[MAP] Found ${records.length} records with coordinates`);
 
     const populatedRecords = await Promise.all(
       records.map(async (record) => {
@@ -286,8 +288,8 @@ router.post('/', auth, async (req, res) => {
       employeeId,
       checkIn,
       status: finalStatus,
-      latitude: latitude || null,
-      longitude: longitude || null,
+      latitude: (latitude !== undefined && latitude !== null) ? Number(latitude) : null,
+      longitude: (longitude !== undefined && longitude !== null) ? Number(longitude) : null,
       facePhoto: facePhoto || null,
       distanceFromOffice,
       geofenceStatus,
