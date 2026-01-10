@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import GlassCard from '../UI/GlassCard';
 import api from '../../services/api';
 import { TrendingUp, AlertTriangle, Star, UserX, RefreshCw } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface Insight {
     type: string;
@@ -27,6 +28,7 @@ interface InsightsData {
 }
 
 const SmartInsights: React.FC = () => {
+    const { t, language } = useLanguage();
     const [data, setData] = useState<InsightsData | null>(null);
     const [loading, setLoading] = useState(true);
     const [expanded, setExpanded] = useState(false);
@@ -86,12 +88,12 @@ const SmartInsights: React.FC = () => {
                         <TrendingUp className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-[var(--text-main)]">Smart Insights</h3>
-                        <p className="text-xs text-[var(--text-muted)]">AI-Powered Analytics</p>
+                        <h3 className="text-lg font-bold text-[var(--text-main)]">{t('dashboard.smartInsights')}</h3>
+                        <p className="text-xs text-[var(--text-muted)]">{t('dashboard.aiPowered')}</p>
                     </div>
                 </div>
                 <p className="text-[var(--text-muted)] text-sm text-center py-4">
-                    ✅ Semua berjalan lancar! Tidak ada insight yang perlu perhatian.
+                    ✅ {t('dashboard.allGood')}
                 </p>
             </GlassCard>
         );
@@ -108,8 +110,8 @@ const SmartInsights: React.FC = () => {
                         <TrendingUp className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-[var(--text-main)]">Smart Insights</h3>
-                        <p className="text-xs text-[var(--text-muted)]">AI-Powered Analytics • 30 Hari Terakhir</p>
+                        <h3 className="text-lg font-bold text-[var(--text-main)]">{t('dashboard.smartInsights')}</h3>
+                        <p className="text-xs text-[var(--text-muted)]">{t('dashboard.aiPowered')} • {t('dashboard.last30Days')}</p>
                     </div>
                 </div>
 
@@ -153,7 +155,7 @@ const SmartInsights: React.FC = () => {
                                 </p>
                                 {insight.actionRequired && (
                                     <div className="mt-2 text-xs font-semibold opacity-90">
-                                        ⚡ Tindak lanjut diperlukan
+                                        ⚡ {t('dashboard.actionRequired')}
                                     </div>
                                 )}
                             </div>
@@ -168,13 +170,13 @@ const SmartInsights: React.FC = () => {
                     onClick={() => setExpanded(!expanded)}
                     className="mt-4 w-full py-2 text-sm font-semibold text-primary hover:text-[var(--text-main)] transition-colors"
                 >
-                    {expanded ? '↑ Tampilkan Lebih Sedikit' : `↓ Lihat ${data.insights.length - 3} Insight Lainnya`}
+                    {expanded ? `↑ ${t('dashboard.showLess')}` : `↓ ${t('dashboard.showMore')} (${data.insights.length - 3})`}
                 </button>
             )}
 
             {/* Footer */}
             <div className="mt-4 pt-3 border-t border-[var(--glass-border)] text-xs text-[var(--text-muted)] text-center">
-                Terakhir diperbarui: {new Date(data.generatedAt).toLocaleString('id-ID')}
+                {t('dashboard.lastUpdated')}: {new Date(data.generatedAt).toLocaleString(language === 'id' ? 'id-ID' : 'en-US')}
             </div>
         </GlassCard>
     );

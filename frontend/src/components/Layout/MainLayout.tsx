@@ -166,7 +166,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                                 />
                             </div>
                             <span className="text-sm font-semibold hidden md:block">
-                                {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                                {theme === 'dark' ? t('nav.mode.dark') : t('nav.mode.light')}
                             </span>
                         </button>
                     </div>

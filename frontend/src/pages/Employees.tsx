@@ -401,8 +401,8 @@ const Employees = () => {
                     {/* Key Person Toggle */}
                     <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:border-yellow-500/30 transition-colors">
                         <div>
-                            <label className="text-white font-semibold block mb-1">⭐ Key Person</label>
-                            <p className="text-xs text-gray-400">Enable late alerts for this employee</p>
+                            <label className="text-white font-semibold block mb-1">⭐ {t('employees.keyPerson')}</label>
+                            <p className="text-xs text-gray-400">{t('employees.enableLateAlerts')}</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
@@ -444,8 +444,8 @@ const Employees = () => {
                             <div className="flex items-center gap-3">
                                 <Shield className={selectedDeviceEmp.deviceLockEnabled ? 'text-green-400' : 'text-gray-400'} />
                                 <div>
-                                    <p className="text-white font-bold">Device Lock (Kunci Perangkat)</p>
-                                    <p className="text-xs text-gray-400">Batasi absensi hanya dari perangkat terdaftar</p>
+                                    <p className="text-white font-bold">{t('employees.deviceLock')}</p>
+                                    <p className="text-xs text-gray-400">{t('employees.restrictToRegistered')}</p>
                                 </div>
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
@@ -462,10 +462,10 @@ const Employees = () => {
                         <div>
                             <div className="flex justify-between items-center mb-4">
                                 <h4 className="text-sm font-bold text-gray-300 flex items-center gap-2">
-                                    <Smartphone size={16} /> Registered Devices ({selectedDeviceEmp.registeredDevices?.length || 0})
+                                    <Smartphone size={16} /> {t('employees.registeredDevices')} ({selectedDeviceEmp.registeredDevices?.length || 0})
                                 </h4>
                                 {selectedDeviceEmp.registeredDevices?.length > 0 && (
-                                    <button onClick={handleClearDevices} className="text-xs text-red-400 hover:text-red-300 font-medium">Reset All</button>
+                                    <button onClick={handleClearDevices} className="text-xs text-red-400 hover:text-red-300 font-medium">{t('employees.resetAll')}</button>
                                 )}
                             </div>
 
@@ -495,12 +495,11 @@ const Employees = () => {
 
                         <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl">
                             <p className="text-[10px] text-yellow-500 leading-relaxed">
-                                <b>Catatan:</b> Jika Device Lock AKTIF, karyawan hanya bisa absen dari perangkat di atas.
-                                Jika nonaktif, sistem akan otomatis mendaftarkan perangkat baru saat mereka absen (Automatic Learning).
+                                {t('employees.deviceLockNote')}
                             </p>
                         </div>
 
-                        <Button onClick={() => setSelectedDeviceEmp(null)} className="w-full">Tutup</Button>
+                        <Button onClick={() => setSelectedDeviceEmp(null)} className="w-full">{t('employees.close')}</Button>
                     </div>
                 )}
             </Modal>

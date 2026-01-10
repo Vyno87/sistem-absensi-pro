@@ -220,7 +220,7 @@ const Attendance = () => {
 
                 setMessage({
                     type: 'success',
-                    text: type === 'Check In' ? 'Check-in Berhasil!' : 'Check-out Berhasil!'
+                    text: type === 'Check In' ? t('attendance.checkInSuccess') : t('attendance.checkOutSuccess')
                 });
 
                 // Clear any pending sync for this employee if successful
@@ -237,7 +237,7 @@ const Attendance = () => {
 
                     setMessage({
                         type: 'warning',
-                        text: 'Offline! Absensi disimpan secara lokal dan akan disinkronisasi saat internet aktif.'
+                        text: t('attendance.offlineStorage')
                     });
                 } else {
                     throw error;

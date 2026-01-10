@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import GlassCard from '../UI/GlassCard';
 import api from '../../services/api';
 import { AlertTriangle, X, Clock, User } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface Alert {
     _id: string;
@@ -14,6 +15,7 @@ interface Alert {
 }
 
 const AlertPanel: React.FC = () => {
+    const { t, language } = useLanguage();
     const [alerts, setAlerts] = useState<Alert[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -60,8 +62,8 @@ const AlertPanel: React.FC = () => {
                     <AlertTriangle className="w-5 h-5 text-red-400" />
                 </div>
                 <div className="flex-1">
-                    <h3 className="text-lg font-bold text-red-400">Late Alerts</h3>
-                    <p className="text-xs text-gray-400">{alerts.length} Key Employee{alerts.length > 1 ? 's' : ''} Belum Hadir</p>
+                    <h3 className="text-lg font-bold text-red-400">{t('dashboard.lateAlerts')}</h3>
+                    <p className="text-xs text-gray-400">{alerts.length} {t('dashboard.keyEmployeesNotPresent')}</p>
                 </div>
                 <div className="px-3 py-1 bg-red-500/20 text-red-400 font-bold text-sm rounded-lg border border-red-500/50">
                     🔔 {alerts.length}
@@ -92,7 +94,7 @@ const AlertPanel: React.FC = () => {
                                 <div className="flex items-center gap-2 text-xs text-yellow-400">
                                     <Clock className="w-3 h-3" />
                                     <span>
-                                        Expected: {alert.expectedTime} | Alert: {new Date(alert.alertTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                                        {t('dashboard.expected')}: {alert.expectedTime} | {t('dashboard.alertAt')}: {new Date(alert.alertTime).toLocaleTimeString(language === 'id' ? 'id-ID' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
                                     </span>
                                 </div>
                             </div>
@@ -112,7 +114,7 @@ const AlertPanel: React.FC = () => {
 
             {/* Footer Info */}
             <div className="mt-4 pt-3 border-t border-red-500/30 text-xs text-center text-gray-400">
-                💡 Alerts auto-refresh setiap 1 menit • Tandai key employees di halaman Employees
+                💡 {t('dashboard.alertsAutoRefresh')} • {t('dashboard.markKeyEmployees')}
             </div>
         </GlassCard>
     );

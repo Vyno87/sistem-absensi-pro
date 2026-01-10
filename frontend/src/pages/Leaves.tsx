@@ -151,14 +151,14 @@ const Leaves = () => {
                 <GlassCard className="mb-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-[var(--text-main)] font-semibold mb-2">Sisa Cuti Tahunan</h3>
+                            <h3 className="text-[var(--text-main)] font-semibold mb-2">{t('leaves.annualBalance')}</h3>
                             <p className="text-3xl font-bold text-primary">{leaveBalance.annual - leaveBalance.used}</p>
-                            <p className="text-sm text-[var(--text-muted)]">dari {leaveBalance.annual} hari</p>
+                            <p className="text-sm text-[var(--text-muted)]">{t('leaves.from')} {leaveBalance.annual} {t('leaves.days')}</p>
                         </div>
                         <div className="text-right">
-                            <p className="text-sm text-[var(--text-muted)] mb-1">Cuti Sakit Tersedia</p>
+                            <p className="text-sm text-[var(--text-muted)] mb-1">{t('leaves.sickBalance')}</p>
                             <p className="text-2xl font-bold text-green-400">{leaveBalance.sick}</p>
-                            <p className="text-xs text-[var(--text-muted)]">hari</p>
+                            <p className="text-xs text-[var(--text-muted)]">{t('leaves.days')}</p>
                         </div>
                     </div>
                 </GlassCard>
@@ -264,12 +264,12 @@ const Leaves = () => {
                     <div className="space-y-2">
                         <label className="text-sm text-gray-400 flex items-center gap-2">
                             <FileText className="w-4 h-4" />
-                            Dokumen Pendukung (Opsional)
+                            {t('leaves.supportingDocs')}
                         </label>
                         <div className="flex gap-2">
                             <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--glass-shine)] border border-[var(--glass-border)] rounded-xl text-[var(--text-main)] hover:bg-[var(--glass-border)] cursor-pointer transition-all">
                                 <Camera className="w-5 h-5 text-primary" />
-                                <span className="text-sm">Ambil Foto</span>
+                                <span className="text-sm">{t('leaves.takePhoto')}</span>
                                 <input
                                     type="file"
                                     accept="image/*"

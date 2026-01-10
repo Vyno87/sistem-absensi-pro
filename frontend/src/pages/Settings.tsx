@@ -6,9 +6,11 @@ import Input from '../components/UI/Input';
 import api from '../services/api';
 import { MapPin, Save, ToggleLeft, ToggleRight, Shield, Crosshair, Fingerprint } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const Settings = () => {
     const { registerBiometric } = useAuth();
+    const { t } = useLanguage();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [settings, setSettings] = useState({
@@ -40,10 +42,10 @@ const Settings = () => {
         setMessage('');
         try {
             await api.post('/geofence', settings);
-            setMessage('✅ Pengaturan berhasil disimpan!');
+            setMessage(`✅ ${t('settings.saveSuccess')}`);
             setTimeout(() => setMessage(''), 3000);
         } catch (error) {
-            setMessage('❌ Gagal menyimpan pengaturan');
+            setMessage(`❌ ${t('settings.saveFailed')}`);
             console.error('Error saving settings:', error);
         } finally {
             setSaving(false);
@@ -78,7 +80,7 @@ const Settings = () => {
     if (loading) {
         return (
             <MainLayout>
-                <div className="flex items-center justify-center h-full text-white">Memuat...</div>
+                <div className="flex items-center justify-center h-full text-white">{t('common.loading')}...</div>
             </MainLayout>
         );
     }
@@ -86,8 +88,8 @@ const Settings = () => {
     return (
         <MainLayout>
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">⚙️ Pengaturan Sistem</h1>
-                <p className="text-[var(--text-muted)]">Konfigurasi geofencing dan keamanan</p>
+                <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">⚙️ {t('settings.title')}</h1>
+                <p className="text-[var(--text-muted)]">{t('settings.subtitle')}</p>
             </div>
 
             <GlassCard className="max-w-3xl mx-auto">
@@ -97,7 +99,7 @@ const Settings = () => {
                     </div>
                     <div>
                         <h2 className="text-xl font-bold text-[var(--text-main)]">Smart Geofencing</h2>
-                        <p className="text-[var(--text-muted)] text-sm">Validasi lokasi karyawan saat absen</p>
+                        <p className="text-[var(--text-muted)] text-sm">{t('settings.geofenceDesc')}</p>
                     </div>
                 </div>
 
@@ -111,8 +113,8 @@ const Settings = () => {
                                 <ToggleLeft className="w-8 h-8 text-gray-400" />
                             )}
                             <div>
-                                <h3 className="text-[var(--text-main)] font-semibold">Aktifkan Geofencing</h3>
-                                <p className="text-[var(--text-muted)] text-sm">Validasi jarak karyawan dari kantor</p>
+                                <h3 className="text-[var(--text-main)] font-semibold">{t('settings.geofenceActive')}</h3>
+                                <p className="text-[var(--text-muted)] text-sm">{t('settings.geofenceDesc')}</p>
                             </div>
                         </div>
                         <button
@@ -131,11 +133,11 @@ const Settings = () => {
                 <div className="mb-6">
                     <label className="text-[var(--text-main)] font-semibold mb-2 block flex items-center gap-2">
                         <MapPin className="w-5 h-5 text-primary" />
-                        Lokasi Kantor
+                        {t('settings.officeLocation')}
                     </label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Input
-                            label="Latitude"
+                            label={t('settings.lat')}
                             type="number"
                             step="0.000001"
                             value={settings.centerLat}
@@ -143,7 +145,7 @@ const Settings = () => {
                             placeholder="-6.2088"
                         />
                         <Input
-                            label="Longitude"
+                            label={t('settings.lng')}
                             type="number"
                             step="0.000001"
                             value={settings.centerLng}
@@ -159,18 +161,18 @@ const Settings = () => {
                             onClick={handleGetCurrentLocation}
                             className="w-full md:w-auto text-xs"
                         >
-                            Gunakan Lokasi Saya Saat Ini
+                            {t('settings.useCurrentLocation')}
                         </Button>
                     </div>
                     <p className="text-gray-400 text-xs mt-2">
-                        💡 Tip: Berdirilah di titik pusat kantor, lalu klik tombol di atas atau masukkan koordinat manual dari Google Maps.
+                        💡 {t('settings.locationTip')}
                     </p>
                 </div>
 
                 {/* Radius Setting */}
                 <div className="mb-6">
                     <label className="text-[var(--text-main)] font-semibold mb-2 block">
-                        Radius (meter)
+                        {t('settings.radius')}
                     </label>
                     <div className="flex items-center gap-4">
                         <input
@@ -187,7 +189,7 @@ const Settings = () => {
                         </div>
                     </div>
                     <p className="text-gray-400 text-xs mt-2">
-                        Karyawan harus berada dalam radius {settings.radiusMeters} meter dari kantor
+                        {t('settings.radiusDesc')}: {settings.radiusMeters} m
                     </p>
                 </div>
 
@@ -195,7 +197,7 @@ const Settings = () => {
                 <div className="mb-6">
                     <div className="p-4 bg-[var(--glass-shine)] rounded-xl">
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-[var(--text-main)] font-semibold">Mode Blokir</h3>
+                            <h3 className="text-[var(--text-main)] font-semibold">{t('settings.blockMode')}</h3>
                             <button
                                 onClick={() => setSettings({ ...settings, blockOutOfRange: !settings.blockOutOfRange })}
                                 className={`px-4 py-1 rounded-lg text-sm font-semibold transition-all ${settings.blockOutOfRange
@@ -208,8 +210,8 @@ const Settings = () => {
                         </div>
                         <p className="text-[var(--text-muted)] text-sm">
                             {settings.blockOutOfRange
-                                ? '🚫 Tolak absensi jika di luar radius'
-                                : '⚠️ Izinkan tapi tandai "out-of-range"'}
+                                ? `🚫 ${t('settings.blockDesc')}`
+                                : `⚠️ ${t('settings.warnDesc')}`}
                         </p>
                     </div>
                 </div>
@@ -222,7 +224,7 @@ const Settings = () => {
                         isLoading={saving}
                         className="flex-1"
                     >
-                        Simpan Pengaturan
+                        {t('common.save')}
                     </Button>
                 </div>
                 {/* Message */}
@@ -240,8 +242,8 @@ const Settings = () => {
                             <Fingerprint className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-[var(--text-main)]">Biometric Security</h2>
-                            <p className="text-[var(--text-muted)] text-sm">Login cepat menggunakan Sidik Jari / Wajah</p>
+                            <h2 className="text-xl font-bold text-[var(--text-main)]">{t('settings.biometricTitle')}</h2>
+                            <p className="text-[var(--text-muted)] text-sm">{t('settings.biometricDesc')}</p>
                         </div>
                     </div>
 
@@ -249,10 +251,10 @@ const Settings = () => {
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div className="text-center md:text-left">
                                 <h3 className="text-[var(--text-main)] font-semibold flex items-center gap-2 justify-center md:justify-start">
-                                    Status Biometrik
+                                    {t('settings.biometricStatus')}
                                 </h3>
                                 <p className="text-[var(--text-muted)] text-sm">
-                                    Daftarkan perangkat ini untuk login instan tanpa mengetik kata sandi.
+                                    {t('settings.biometricRegisterDesc')}
                                 </p>
                             </div>
                             <Button
@@ -263,7 +265,7 @@ const Settings = () => {
                                         await registerBiometric();
                                     } catch (err) {
                                         console.error(err);
-                                        alert("Gagal mendaftarkan biometrik. Pastikan perangkat mendukung.");
+                                        alert(t('settings.failedRegisterBiometric'));
                                     } finally {
                                         setSaving(false);
                                     }
@@ -271,7 +273,7 @@ const Settings = () => {
                                 icon={<Fingerprint className="w-4 h-4" />}
                                 className="w-full md:w-auto"
                             >
-                                Aktifkan Fingerprint
+                                {t('settings.activateFingerprint')}
                             </Button>
                         </div>
                     </div>
@@ -279,11 +281,11 @@ const Settings = () => {
 
                 {/* Info Box */}
                 <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
-                    <h4 className="text-blue-400 font-semibold mb-2">ℹ️ Informasi</h4>
-                    <ul className="text-gray-400 text-sm space-y-1">
-                        <li>• Geofencing menggunakan formula Haversine untuk akurasi tinggi</li>
-                        <li>• Rekomendasi radius: 50-200m untuk kantor, 500m untuk area luas</li>
-                        <li>• Distance akan tercatat di database untuk audit</li>
+                    <h4 className="text-blue-400 font-semibold mb-2">ℹ️ {t('settings.info')}</h4>
+                    <ul className="text-[var(--text-muted)] text-sm space-y-1">
+                        <li>• {t('settings.info1')}</li>
+                        <li>• {t('settings.info2')}</li>
+                        <li>• {t('settings.info3')}</li>
                     </ul>
                 </div>
             </GlassCard>
