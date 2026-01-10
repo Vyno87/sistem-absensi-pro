@@ -162,7 +162,6 @@ const Attendance = () => {
             return;
         }
 
-        // Require liveness verification for Check In (if enabled)
         if (type === 'Check In' && livenessEnabled && !livenessVerified) {
             setShowLivenessModal(true);
             return;
@@ -174,51 +173,50 @@ const Attendance = () => {
         try {
             let locationData = {};
 
-            // Only request GPS if enabled by Admin
             if (gpsEnabled) {
                 if (!navigator.geolocation) {
                     throw new Error('Geolocation not supported');
                 }
 
-                // Add timeout handling specifically for UI feedback
-                const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 0
+                try {
+                    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: true,
+                            timeout: 8000,
+                            maximumAge: 0
+                        });
                     });
-                });
 
-                locationData = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    accuracy: position.coords.accuracy,
-                    altitude: position.coords.altitude,
-                    speed: position.coords.speed,
-                    heading: position.coords.heading,
-                    gpsTimestamp: position.timestamp
-                };
+                    locationData = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy,
+                        altitude: position.coords.altitude,
+                        speed: position.coords.speed,
+                        heading: position.coords.heading,
+                        gpsTimestamp: position.timestamp
+                    };
 
-                // Final Re-calculate distance for verification
-                if (geofenceSettings?.enabled) {
-                    const R = 6371e3;
-                    const φ1 = geofenceSettings.centerLat * Math.PI / 180;
-                    const φ2 = position.coords.latitude * Math.PI / 180;
-                    const Δφ = (position.coords.latitude - geofenceSettings.centerLat) * Math.PI / 180;
-                    const Δλ = (position.coords.longitude - geofenceSettings.centerLng) * Math.PI / 180;
-                    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                        Math.cos(φ1) * Math.cos(φ2) *
-                        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-                    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                    const finalDistance = Math.round(R * c);
-                    setDistanceFromOffice(finalDistance);
+                    if (geofenceSettings?.enabled) {
+                        const R = 6371e3;
+                        const φ1 = geofenceSettings.centerLat * Math.PI / 180;
+                        const φ2 = position.coords.latitude * Math.PI / 180;
+                        const Δφ = (position.coords.latitude - geofenceSettings.centerLat) * Math.PI / 180;
+                        const Δλ = (position.coords.longitude - geofenceSettings.centerLng) * Math.PI / 180;
+                        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                            Math.cos(φ1) * Math.cos(φ2) *
+                            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+                        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                        const finalDistance = Math.round(R * c);
+                        setDistanceFromOffice(finalDistance);
+                    }
+                } catch (gpsError) {
+                    console.error("Critical GPS fetch failed at submission:", gpsError);
                 }
             }
 
-            // Enhanced Device Fingerprinting
             const deviceFingerprint = getDeviceFingerprint();
 
-            // AI Face Identity Matching
             let matchScore = null;
             if (referencePhoto && imgSrc) {
                 matchScore = await calculateFaceMatchScore(referencePhoto, imgSrc);
@@ -230,7 +228,7 @@ const Attendance = () => {
                 employeeId,
                 checkIn: new Date(),
                 facePhoto: imgSrc,
-                deviceId: deviceFingerprint, // Unified ID
+                deviceId: deviceFingerprint,
                 deviceFingerprint,
                 livenessScore: livenessVerified ? livenessScore : null,
                 faceMatchScore: matchScore,
@@ -240,11 +238,9 @@ const Attendance = () => {
             try {
                 const res = await api.post('/attendance', attendancePayload);
 
-                if (res.data.msg) {
-                    if (res.data.msg.includes('outside')) {
-                        setMessage({ type: 'error', text: res.data.msg });
-                        return;
-                    }
+                if (res.data.msg?.includes('outside')) {
+                    setMessage({ type: 'error', text: res.data.msg });
+                    return;
                 }
 
                 setMessage({
@@ -252,14 +248,12 @@ const Attendance = () => {
                     text: type === 'Check In' ? t('attendance.checkInSuccess') : t('attendance.checkOutSuccess')
                 });
 
-                // Clear any pending sync for this employee if successful
                 const pending = JSON.parse(localStorage.getItem('pending_attendance') || '[]');
                 const remaining = pending.filter((p: any) => p.employeeId !== employeeId);
                 localStorage.setItem('pending_attendance', JSON.stringify(remaining));
 
             } catch (error: any) {
                 if (!navigator.onLine || error.code === 'ERR_NETWORK') {
-                    // Offline handling
                     const pending = JSON.parse(localStorage.getItem('pending_attendance') || '[]');
                     pending.push({ ...attendancePayload, offlineTimestamp: new Date() });
                     localStorage.setItem('pending_attendance', JSON.stringify(pending));
@@ -277,7 +271,6 @@ const Attendance = () => {
             setImgSrc(null);
         } catch (err: any) {
             console.error("Attendance Error:", err);
-
             if (err.code === 1 || err.message === 'User denied Geolocation') {
                 setMessage({ type: 'error', text: t('attendance.locationDenied') });
             } else if (err.code === 2) {

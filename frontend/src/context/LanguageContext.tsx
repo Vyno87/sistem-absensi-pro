@@ -78,6 +78,7 @@ const translations: Translation = {
     'dashboard.markKeyEmployees': { en: 'Mark key employees in Employees page', id: 'Tandai karyawan kunci di halaman Karyawan' },
     'dashboard.expected': { en: 'Expected', id: 'Seharusnya' },
     'dashboard.alertAt': { en: 'Alert at', id: 'Peringatan pada' },
+    'dashboard.noActiveLocations': { en: 'No active attendance locations yet today', id: 'Belum ada posisi absen aktif hari ini' },
 
     // Attendance
     'attendance.faceVerification': { en: 'Face Verification', id: 'Verifikasi Wajah' },
