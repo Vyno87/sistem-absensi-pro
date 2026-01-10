@@ -86,11 +86,11 @@ const SmartInsights: React.FC = () => {
                         <TrendingUp className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-white">Smart Insights</h3>
-                        <p className="text-xs text-gray-400">AI-Powered Analytics</p>
+                        <h3 className="text-lg font-bold text-[var(--text-main)]">Smart Insights</h3>
+                        <p className="text-xs text-[var(--text-muted)]">AI-Powered Analytics</p>
                     </div>
                 </div>
-                <p className="text-gray-400 text-sm text-center py-4">
+                <p className="text-[var(--text-muted)] text-sm text-center py-4">
                     ✅ Semua berjalan lancar! Tidak ada insight yang perlu perhatian.
                 </p>
             </GlassCard>
@@ -108,8 +108,8 @@ const SmartInsights: React.FC = () => {
                         <TrendingUp className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-white">Smart Insights</h3>
-                        <p className="text-xs text-gray-400">AI-Powered Analytics • 30 Hari Terakhir</p>
+                        <h3 className="text-lg font-bold text-[var(--text-main)]">Smart Insights</h3>
+                        <p className="text-xs text-[var(--text-muted)]">AI-Powered Analytics • 30 Hari Terakhir</p>
                     </div>
                 </div>
 
@@ -166,14 +166,14 @@ const SmartInsights: React.FC = () => {
             {data.insights.length > 3 && (
                 <button
                     onClick={() => setExpanded(!expanded)}
-                    className="mt-4 w-full py-2 text-sm font-semibold text-primary hover:text-white transition-colors"
+                    className="mt-4 w-full py-2 text-sm font-semibold text-primary hover:text-[var(--text-main)] transition-colors"
                 >
                     {expanded ? '↑ Tampilkan Lebih Sedikit' : `↓ Lihat ${data.insights.length - 3} Insight Lainnya`}
                 </button>
             )}
 
             {/* Footer */}
-            <div className="mt-4 pt-3 border-t border-white/10 text-xs text-gray-400 text-center">
+            <div className="mt-4 pt-3 border-t border-[var(--glass-border)] text-xs text-[var(--text-muted)] text-center">
                 Terakhir diperbarui: {new Date(data.generatedAt).toLocaleString('id-ID')}
             </div>
         </GlassCard>
