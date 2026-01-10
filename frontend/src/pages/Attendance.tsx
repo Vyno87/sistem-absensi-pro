@@ -354,8 +354,8 @@ const Attendance = () => {
                                     />
                                     {/* Face Guide Overlay */}
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="w-[180px] h-[240px] border-2 border-dashed border-white/50 rounded-[50%] shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"></div>
-                                        <p className="absolute bottom-16 text-white text-xs font-semibold bg-black/50 px-3 py-1 rounded-full border border-white/20">
+                                        <div className="w-[220px] h-[280px] border-4 border-dashed border-white/60 rounded-[50%] shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"></div>
+                                        <p className="absolute bottom-16 text-white text-sm font-semibold bg-black/50 px-4 py-2 rounded-full border border-white/20">
                                             Posisikan wajah dalam area oval
                                         </p>
                                     </div>
