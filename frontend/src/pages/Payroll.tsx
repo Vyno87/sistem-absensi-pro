@@ -193,15 +193,15 @@ const Payroll = () => {
     return (
         <MainLayout>
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-white mb-2">💰 Payroll Management</h1>
-                <p className="text-gray-400">Kelola gaji dan slip gaji karyawan</p>
+                <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">💰 Payroll Management</h1>
+                <p className="text-[var(--text-muted)]">Kelola gaji dan slip gaji karyawan</p>
             </div>
 
             {/* Employee Salary Configuration */}
             <GlassCard className="mb-6">
-                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/10">
+                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[var(--glass-border)]">
                     <Settings className="w-6 h-6 text-primary" />
-                    <h2 className="text-xl font-bold text-white">Konfigurasi Gaji Karyawan</h2>
+                    <h2 className="text-xl font-bold text-[var(--text-main)]">Konfigurasi Gaji Karyawan</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -230,9 +230,9 @@ const Payroll = () => {
 
             {/* Payroll Calculator */}
             <GlassCard className="mb-6">
-                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/10">
+                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[var(--glass-border)]">
                     <Calculator className="w-6 h-6 text-primary" />
-                    <h2 className="text-xl font-bold text-white">Hitung Gaji</h2>
+                    <h2 className="text-xl font-bold text-[var(--text-main)]">Hitung Gaji</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -244,11 +244,11 @@ const Payroll = () => {
                                 setSelectedEmployee(e.target.value);
                                 if (e.target.value) fetchPayrollHistory(e.target.value);
                             }}
-                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
+                            className="w-full px-4 py-3 bg-[var(--glass-shine)] border border-[var(--glass-border)] rounded-xl text-[var(--text-main)] focus:border-primary focus:outline-none"
                         >
-                            <option value="" className="bg-gray-900 text-white">-- Pilih --</option>
+                            <option value="" className="bg-[var(--bg-card)] text-[var(--text-main)]">-- Pilih --</option>
                             {employees.map((emp) => (
-                                <option key={emp.employeeId} value={emp.employeeId} className="bg-gray-900 text-white">
+                                <option key={emp.employeeId} value={emp.employeeId} className="bg-[var(--bg-card)] text-[var(--text-main)]">
                                     {emp.name} ({emp.employeeId})
                                 </option>
                             ))}
@@ -260,10 +260,10 @@ const Payroll = () => {
                         <select
                             value={selectedMonth}
                             onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
+                            className="w-full px-4 py-3 bg-[var(--glass-shine)] border border-[var(--glass-border)] rounded-xl text-[var(--text-main)] focus:border-primary focus:outline-none"
                         >
                             {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                                <option key={m} value={m} className="bg-gray-900 text-white">{getMonthName(m)}</option>
+                                <option key={m} value={m} className="bg-[var(--bg-card)] text-[var(--text-main)]">{getMonthName(m)}</option>
                             ))}
                         </select>
                     </div>
