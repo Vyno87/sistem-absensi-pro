@@ -62,10 +62,10 @@ router.get('/today', auth, async (req, res) => {
     // We include facePhoto here? No, let's exclude it to keep map fast. 
     // Or maybe include a small version? For now exclude, use placeholder in map.
     const records = await Attendance.find({
-      date: { $gte: today },
+      createdAt: { $gte: today },
       latitude: { $ne: null },
       longitude: { $ne: null }
-    }, { facePhoto: 0 })
+    })
       .sort({ createdAt: -1 })
       .lean();
 

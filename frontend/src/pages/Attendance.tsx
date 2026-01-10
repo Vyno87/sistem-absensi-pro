@@ -87,8 +87,39 @@ const Attendance = () => {
             fetchRecent();
             fetchGPSSetting();
         }, 5000);
-        return () => clearInterval(interval);
-    }, []);
+
+        // REAL-TIME LOCATION WATCHING
+        let watcher: number | null = null;
+        if (navigator.geolocation) {
+            watcher = navigator.geolocation.watchPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+
+                    // Update distance if geofence is loaded
+                    if (geofenceSettings?.enabled) {
+                        const R = 6371e3;
+                        const φ1 = geofenceSettings.centerLat * Math.PI / 180;
+                        const φ2 = lat * Math.PI / 180;
+                        const Δφ = (lat - geofenceSettings.centerLat) * Math.PI / 180;
+                        const Δλ = (lng - geofenceSettings.centerLng) * Math.PI / 180;
+                        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                            Math.cos(φ1) * Math.cos(φ2) *
+                            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+                        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                        setDistanceFromOffice(Math.round(R * c));
+                    }
+                },
+                (err) => console.error("Real-time GPS Error:", err),
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            );
+        }
+
+        return () => {
+            clearInterval(interval);
+            if (watcher !== null) navigator.geolocation.clearWatch(watcher);
+        };
+    }, [geofenceSettings]);
 
     // Fetch employee reference photo when ID is entered
     useEffect(() => {
@@ -152,7 +183,7 @@ const Attendance = () => {
                 // Add timeout handling specifically for UI feedback
                 const position = await new Promise<GeolocationPosition>((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(resolve, reject, {
-                        enableHighAccuracy: true, // Use High Accuracy for more meta-data
+                        enableHighAccuracy: true,
                         timeout: 10000,
                         maximumAge: 0
                     });
@@ -168,21 +199,19 @@ const Attendance = () => {
                     gpsTimestamp: position.timestamp
                 };
 
-                // Calculate distance if geofencing is enabled
+                // Final Re-calculate distance for verification
                 if (geofenceSettings?.enabled) {
-                    const R = 6371e3; // Earth radius in meters
+                    const R = 6371e3;
                     const φ1 = geofenceSettings.centerLat * Math.PI / 180;
                     const φ2 = position.coords.latitude * Math.PI / 180;
                     const Δφ = (position.coords.latitude - geofenceSettings.centerLat) * Math.PI / 180;
                     const Δλ = (position.coords.longitude - geofenceSettings.centerLng) * Math.PI / 180;
-
                     const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
                         Math.cos(φ1) * Math.cos(φ2) *
                         Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
                     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                    const distance = R * c;
-
-                    setDistanceFromOffice(Math.round(distance));
+                    const finalDistance = Math.round(R * c);
+                    setDistanceFromOffice(finalDistance);
                 }
             }
 
