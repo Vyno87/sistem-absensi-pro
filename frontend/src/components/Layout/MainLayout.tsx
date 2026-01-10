@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar, FileSpreadsheet, RefreshCw, Settings, DollarSign, Moon, Sun } from 'lucide-react';
+import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar, FileSpreadsheet, RefreshCw, Settings, DollarSign, Moon, Sun, Menu, X, ChevronRight } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -11,6 +11,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { theme, toggleTheme } = useTheme();
     const location = useLocation();
     const navigate = useNavigate();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default closed for "slide pane" feel
 
     const handleLogout = () => {
         logout();
@@ -24,8 +25,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             if (toast) toast.classList.remove('hidden');
         };
 
-        // Custom event we might dispatch from index.tsx later or simple timer
-        // For now, we'll just check if we can reach the server after a failure
         window.addEventListener('sw-update-available', onSWUpdate);
         return () => window.removeEventListener('sw-update-available', onSWUpdate);
     }, []);
@@ -44,19 +43,53 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const navItems = allNavItems.filter(item => item.roles.includes(user?.role || 'user'));
 
     return (
-        <div className="flex h-screen bg-black overflow-hidden relative">
+        <div className="flex h-screen bg-[var(--bg-darker)] overflow-hidden relative transition-colors duration-300">
             {/* App-wide Neon Backgrounds */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
                 <div className="absolute top-[-20%] right-[-10%] w-[100vh] h-[100vh] bg-primary/5 rounded-full blur-[150px] animate-float-neon" />
                 <div className="absolute bottom-[-20%] left-[-10%] w-[90vh] h-[90vh] bg-secondary/5 rounded-full blur-[120px] animate-float-neon-delayed" />
             </div>
 
-            {/* Sidebar */}
-            <aside className="w-72 glass-panel m-4 rounded-3xl flex flex-col border-r-0 relative z-20 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-                <div className="p-8 flex-shrink-0">
+            {/* Backdrop for mobile/drawer mode */}
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 transition-opacity"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
+            {/* Sliding Sidebar (Drawer) */}
+            <aside
+                className={`
+                    fixed inset-y-0 left-0 z-40 w-72 glass-panel m-0 rounded-r-3xl border-l-0 flex flex-col 
+                    transform transition-transform duration-300 ease-in-out shadow-2xl
+                    ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+                `}
+            >
+                <div className="p-6 flex items-center justify-between flex-shrink-0">
                     <h2 className="text-2xl font-bold tracking-tighter">
-                        <span className="text-gradient">SISTEM ABSENSI PRO</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">ABSENSI PRO</span>
                     </h2>
+                    <button
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="p-2 rounded-xl hover:bg-[var(--glass-shine)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors"
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
+
+                <div className="px-6 py-2">
+                    <div className="glass-morphism p-4 rounded-2xl mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                                {user?.username?.charAt(0).toUpperCase() || 'A'}
+                            </div>
+                            <div className="min-w-0">
+                                <p className="font-bold text-[var(--text-main)] truncate text-sm">{user?.username || 'Admin'}</p>
+                                <p className="text-[10px] text-primary font-bold uppercase tracking-wider">{user?.role}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <nav className="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar">
@@ -64,77 +97,95 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         <Link
                             key={item.path}
                             to={item.path}
+                            onClick={() => setIsSidebarOpen(false)} // Close on navigate
                             className={`
-                flex items-center px-6 py-4 rounded-2xl transition-all duration-300 group
-                ${location.pathname === item.path
-                                    ? 'bg-primary/20 text-primary font-bold shadow-[0_0_20px_rgba(99,102,241,0.3)]'
-                                    : 'text-[var(--text-muted)] hover:bg-[var(--glass-shine)] hover:text-[var(--text-main)]'
+                                flex items-center justify-between px-5 py-3.5 rounded-xl transition-all duration-300 group
+                                ${location.pathname === item.path
+                                    ? 'bg-primary/10 text-primary font-bold border border-primary/20 shadow-[0_0_15px_rgba(99,102,241,0.2)]'
+                                    : 'text-[var(--text-muted)] hover:bg-[var(--glass-shine)] hover:text-[var(--text-main)] border border-transparent'
                                 }
-              `}
+                            `}
                         >
-                            <span className={`mr-4 ${location.pathname === item.path ? 'text-primary' : 'group-hover:text-primary transition-colors'}`}>
-                                {item.icon}
-                            </span>
-                            <span className="font-medium">{item.label}</span>
+                            <div className="flex items-center gap-4">
+                                <span className={`${location.pathname === item.path ? 'text-primary' : 'text-gray-400 group-hover:text-primary transition-colors'}`}>
+                                    {item.icon}
+                                </span>
+                                <span className="font-medium">{item.label}</span>
+                            </div>
+                            {location.pathname === item.path && (
+                                <ChevronRight size={16} className="text-primary animate-pulse" />
+                            )}
                         </Link>
                     ))}
                 </nav>
 
-                <div className="p-4 mt-auto flex-shrink-0 border-t border-white/5 bg-white/5 backdrop-blur-md rounded-b-3xl">
-                    {/* Theme Toggle */}
+                <div className="p-6 mt-auto flex-shrink-0">
                     <button
-                        onClick={toggleTheme}
-                        className="w-full mb-3 p-3 bg-gradient-to-r from-primary/20 to-secondary/20 hover:from-primary/30 hover:to-secondary/30 rounded-xl transition-all flex items-center justify-center gap-2 group"
-                        title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                        onClick={handleLogout}
+                        className="w-full p-3 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all flex items-center justify-center gap-2 group border border-red-500/20"
                     >
-                        {theme === 'dark' ? (
-                            <>
-                                <Sun className="w-5 h-5 text-yellow-400 group-hover:rotate-180 transition-transform duration-500" />
-                                <span className="text-white font-semibold text-sm">Light Mode</span>
-                            </>
-                        ) : (
-                            <>
-                                <Moon className="w-5 h-5 text-indigo-400 group-hover:rotate-180 transition-transform duration-500" />
-                                <span className="text-gray-800 font-semibold text-sm">Dark Mode</span>
-                            </>
-                        )}
+                        <LogOut size={18} />
+                        <span className="font-semibold">Logout</span>
                     </button>
-
-                    <div className="glass-morphism p-4 rounded-2xl mb-2">
-                        <div className="flex items-center justify-between">
-                            <div className="truncate mr-2">
-                                <p className="text-[10px] text-[var(--text-muted)] uppercase font-semibold">{t('nav.loggedInAs')}</p>
-                                <p className="font-bold text-[var(--text-main)] truncate text-sm">{user?.username || 'Admin'}</p>
-                                <p className="text-[10px] text-primary font-bold uppercase">{user?.role}</p>
-                            </div>
-                            <button
-                                onClick={handleLogout}
-                                className="p-3 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-xl transition-all group title='Logout'"
-                                title={t('nav.logout')}
-                            >
-                                <LogOut size={18} />
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 overflow-auto relative">
-                <div className="p-8 min-h-full">
-                    {children}
-                </div>
-            </main>
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col min-w-0 h-full relative z-10">
+                {/* Top Header */}
+                <header className="h-20 px-4 md:px-8 flex items-center justify-between shrink-0">
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            className="p-3 rounded-2xl glass-panel text-[var(--text-main)] hover:text-primary hover:border-primary/50 transition-all shadow-lg active:scale-95"
+                            aria-label="Open Menu"
+                        >
+                            <Menu size={24} />
+                        </button>
 
-            {/* Update Notification (Solusi Jangka Panjang) */}
-            <div id="update-toast" className="hidden fixed bottom-4 right-4 bg-slate-800 border border-primary p-4 rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.5)] z-50 animate-bounce">
+                        {!isSidebarOpen && (
+                            <h1 className="text-xl font-bold text-[var(--text-main)] hidden md:block animate-fade-in">
+                                {allNavItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
+                            </h1>
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        {/* Theme Toggle - Moved to Top Right as requested */}
+                        <button
+                            onClick={toggleTheme}
+                            className="p-3 rounded-2xl glass-panel text-[var(--text-main)] hover:bg-[var(--glass-shine)] transition-all shadow-lg flex items-center gap-3 group"
+                            aria-label="Toggle Theme"
+                        >
+                            <div className="relative w-6 h-6">
+                                <Sun
+                                    className={`absolute inset-0 w-full h-full text-yellow-500 transition-all duration-500 ${theme === 'dark' ? 'rotate-90 opacity-0 scale-50' : 'rotate-0 opacity-100 scale-100'}`}
+                                />
+                                <Moon
+                                    className={`absolute inset-0 w-full h-full text-indigo-400 transition-all duration-500 ${theme === 'dark' ? 'rotate-0 opacity-100 scale-100' : '-rotate-90 opacity-0 scale-50'}`}
+                                />
+                            </div>
+                            <span className="text-sm font-semibold hidden md:block">
+                                {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                            </span>
+                        </button>
+                    </div>
+                </header>
+
+                <main className="flex-1 overflow-auto p-4 md:p-8 pt-0 custom-scrollbar">
+                    {children}
+                </main>
+            </div>
+
+            {/* Update Notification */}
+            <div id="update-toast" className="hidden fixed bottom-6 right-6 bg-[var(--glass-bg)] backdrop-blur-xl border border-primary p-4 rounded-2xl shadow-2xl z-50 animate-bounce">
                 <div className="flex items-center space-x-4">
                     <div className="bg-primary/20 p-2 rounded-full text-primary">
                         <RefreshCw size={24} className="animate-spin" />
                     </div>
                     <div>
-                        <p className="font-bold text-white">Update Available</p>
-                        <p className="text-xs text-gray-400">New version is ready.</p>
+                        <p className="font-bold text-[var(--text-main)]">Update Available</p>
+                        <p className="text-xs text-[var(--text-muted)]">New version is ready.</p>
                     </div>
                     <button
                         onClick={() => {
@@ -143,7 +194,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             }
                             window.location.reload();
                         }}
-                        className="px-3 py-1 bg-primary text-white text-sm rounded-lg hover:bg-primary-dark"
+                        className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-xl hover:bg-indigo-600 transition-colors shadow-lg shadow-primary/30"
                     >
                         Reload
                     </button>
@@ -152,9 +203,9 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             const el = document.getElementById('update-toast');
                             if (el) el.classList.add('hidden');
                         }}
-                        className="text-gray-400 hover:text-white"
+                        className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors"
                     >
-                        <LogOut size={16} /> {/* Reusing LogOut icon as close for now */}
+                        <X size={18} />
                     </button>
                 </div>
             </div>
