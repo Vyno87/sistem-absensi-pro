@@ -86,24 +86,24 @@ const Settings = () => {
     return (
         <MainLayout>
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-white mb-2">⚙️ Pengaturan Sistem</h1>
-                <p className="text-gray-400">Konfigurasi geofencing dan keamanan</p>
+                <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">⚙️ Pengaturan Sistem</h1>
+                <p className="text-[var(--text-muted)]">Konfigurasi geofencing dan keamanan</p>
             </div>
 
             <GlassCard className="max-w-3xl mx-auto">
-                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[var(--glass-border)]">
                     <div className="p-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500">
                         <Shield className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-white">Smart Geofencing</h2>
-                        <p className="text-gray-400 text-sm">Validasi lokasi karyawan saat absen</p>
+                        <h2 className="text-xl font-bold text-[var(--text-main)]">Smart Geofencing</h2>
+                        <p className="text-[var(--text-muted)] text-sm">Validasi lokasi karyawan saat absen</p>
                     </div>
                 </div>
 
                 {/* Enable/Disable Toggle */}
                 <div className="mb-6">
-                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                    <div className="flex items-center justify-between p-4 bg-[var(--glass-shine)] rounded-xl">
                         <div className="flex items-center gap-3">
                             {settings.enabled ? (
                                 <ToggleRight className="w-8 h-8 text-green-400" />
@@ -111,8 +111,8 @@ const Settings = () => {
                                 <ToggleLeft className="w-8 h-8 text-gray-400" />
                             )}
                             <div>
-                                <h3 className="text-white font-semibold">Aktifkan Geofencing</h3>
-                                <p className="text-gray-400 text-sm">Validasi jarak karyawan dari kantor</p>
+                                <h3 className="text-[var(--text-main)] font-semibold">Aktifkan Geofencing</h3>
+                                <p className="text-[var(--text-muted)] text-sm">Validasi jarak karyawan dari kantor</p>
                             </div>
                         </div>
                         <button
@@ -129,7 +129,7 @@ const Settings = () => {
 
                 {/* Office Location */}
                 <div className="mb-6">
-                    <label className="text-white font-semibold mb-2 block flex items-center gap-2">
+                    <label className="text-[var(--text-main)] font-semibold mb-2 block flex items-center gap-2">
                         <MapPin className="w-5 h-5 text-primary" />
                         Lokasi Kantor
                     </label>
@@ -169,7 +169,7 @@ const Settings = () => {
 
                 {/* Radius Setting */}
                 <div className="mb-6">
-                    <label className="text-white font-semibold mb-2 block">
+                    <label className="text-[var(--text-main)] font-semibold mb-2 block">
                         Radius (meter)
                     </label>
                     <div className="flex items-center gap-4">
@@ -193,9 +193,9 @@ const Settings = () => {
 
                 {/* Block Mode */}
                 <div className="mb-6">
-                    <div className="p-4 bg-white/5 rounded-xl">
+                    <div className="p-4 bg-[var(--glass-shine)] rounded-xl">
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-white font-semibold">Mode Blokir</h3>
+                            <h3 className="text-[var(--text-main)] font-semibold">Mode Blokir</h3>
                             <button
                                 onClick={() => setSettings({ ...settings, blockOutOfRange: !settings.blockOutOfRange })}
                                 className={`px-4 py-1 rounded-lg text-sm font-semibold transition-all ${settings.blockOutOfRange
@@ -206,7 +206,7 @@ const Settings = () => {
                                 {settings.blockOutOfRange ? 'BLOCK' : 'WARN'}
                             </button>
                         </div>
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-[var(--text-muted)] text-sm">
                             {settings.blockOutOfRange
                                 ? '🚫 Tolak absensi jika di luar radius'
                                 : '⚠️ Izinkan tapi tandai "out-of-range"'}
@@ -234,24 +234,24 @@ const Settings = () => {
                 )}
 
                 {/* Biometric Security Section */}
-                <div className="mt-8 pt-8 border-t border-white/10">
+                <div className="mt-8 pt-8 border-t border-[var(--glass-border)]">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500">
                             <Fingerprint className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-white">Biometric Security</h2>
-                            <p className="text-gray-400 text-sm">Login cepat menggunakan Sidik Jari / Wajah</p>
+                            <h2 className="text-xl font-bold text-[var(--text-main)]">Biometric Security</h2>
+                            <p className="text-[var(--text-muted)] text-sm">Login cepat menggunakan Sidik Jari / Wajah</p>
                         </div>
                     </div>
 
-                    <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                    <div className="p-4 bg-[var(--glass-shine)] rounded-xl border border-[var(--glass-border)]">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div className="text-center md:text-left">
-                                <h3 className="text-white font-semibold flex items-center gap-2 justify-center md:justify-start">
+                                <h3 className="text-[var(--text-main)] font-semibold flex items-center gap-2 justify-center md:justify-start">
                                     Status Biometrik
                                 </h3>
-                                <p className="text-gray-400 text-sm">
+                                <p className="text-[var(--text-muted)] text-sm">
                                     Daftarkan perangkat ini untuk login instan tanpa mengetik kata sandi.
                                 </p>
                             </div>

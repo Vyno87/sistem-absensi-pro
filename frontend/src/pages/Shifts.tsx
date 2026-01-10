@@ -101,8 +101,8 @@ const Shifts = () => {
         <MainLayout>
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">{t('shifts.title')}</h1>
-                    <p className="text-gray-400">{t('shifts.subtitle')}</p>
+                    <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">{t('shifts.title')}</h1>
+                    <p className="text-[var(--text-muted)]">{t('shifts.subtitle')}</p>
                 </div>
                 <Button
                     onClick={() => {
@@ -118,9 +118,9 @@ const Shifts = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
-                    <p className="text-white">{t('common.loading')}</p>
+                    <p className="text-[var(--text-main)]">{t('common.loading')}</p>
                 ) : shifts.length === 0 ? (
-                    <p className="text-gray-400">{t('shifts.noShifts')}</p>
+                    <p className="text-[var(--text-muted)]">{t('shifts.noShifts')}</p>
                 ) : (
                     shifts.map((shift) => (
                         <GlassCard key={shift._id} className="relative">
@@ -129,19 +129,19 @@ const Shifts = () => {
                                     <Clock className="w-6 h-6 text-indigo-400" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-white">{shift.name}</h3>
-                                    <p className="text-sm text-gray-400">{shift.description || t('shifts.noDescription')}</p>
+                                    <h3 className="text-lg font-bold text-[var(--text-main)]">{shift.name}</h3>
+                                    <p className="text-sm text-[var(--text-muted)]">{shift.description || t('shifts.noDescription')}</p>
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-between bg-white/5 rounded-xl p-4 mb-4">
+                            <div className="flex items-center justify-between bg-[var(--glass-shine)] rounded-xl p-4 mb-4">
                                 <div className="text-center">
-                                    <p className="text-xs text-gray-400">{t('shifts.start')}</p>
+                                    <p className="text-xs text-[var(--text-muted)]">{t('shifts.start')}</p>
                                     <p className="text-xl font-bold text-green-400">{shift.startTime}</p>
                                 </div>
                                 <div className="text-gray-500">→</div>
                                 <div className="text-center">
-                                    <p className="text-xs text-gray-400">{t('shifts.end')}</p>
+                                    <p className="text-xs text-[var(--text-muted)]">{t('shifts.end')}</p>
                                     <p className="text-xl font-bold text-red-400">{shift.endTime}</p>
                                 </div>
                             </div>
@@ -209,7 +209,7 @@ const Shifts = () => {
             {/* Delete Confirmation Modal */}
             <Modal isOpen={!!deleteId} onClose={() => setDeleteId(null)} title={t('shifts.confirmDelete')}>
                 <div className="p-4">
-                    <p className="text-gray-300 mb-6">Apakah Anda yakin ingin menghapus shift ini?</p>
+                    <p className="text-[var(--text-muted)] mb-6">Apakah Anda yakin ingin menghapus shift ini?</p>
                     <div className="flex gap-3">
                         <Button onClick={executeDelete} className="flex-1 bg-red-500 hover:bg-red-600 border-none">
                             {t('common.delete')}
