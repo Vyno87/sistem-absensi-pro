@@ -34,6 +34,13 @@ const leaveSchema = new mongoose.Schema({
     },
     approvalNotes: {
         type: String
+    },
+    attachmentUrl: {
+        type: String // Base64 encoded image or document
+    },
+    daysCount: {
+        type: Number,
+        default: 1
     }
 }, {
     timestamps: true

@@ -106,6 +106,17 @@ const employeeSchema = new mongoose.Schema({
   profilePhoto: {
     type: String, // Base64 or URL
     default: null
+  },
+  leaveBalance: {
+    annual: { type: Number, default: 12 },
+    sick: { type: Number, default: 12 },
+    used: { type: Number, default: 0 }
+  },
+  salaryConfig: {
+    type: { type: String, enum: ['monthly', 'daily'], default: 'daily' },
+    amount: { type: Number, default: 0 },
+    lateDeduction: { type: Number, default: 5000 },
+    overtimeRate: { type: Number, default: 1.5 }
   }
 }, {
   timestamps: true

@@ -6,7 +6,7 @@ import Input from '../components/UI/Input';
 import Modal from '../components/UI/Modal';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { Calendar, Plus, Check, X, Clock } from 'lucide-react';
+import { Calendar, Plus, Check, X, Clock, Upload, Camera, FileText } from 'lucide-react';
 
 interface Leave {
     _id: string;
@@ -17,6 +17,8 @@ interface Leave {
     reason: string;
     status: 'pending' | 'approved' | 'rejected';
     approvalNotes?: string;
+    attachmentUrl?: string;
+    daysCount?: number;
     createdAt: string;
 }
 
@@ -30,10 +32,12 @@ const Leaves = () => {
         type: 'annual',
         startDate: '',
         endDate: '',
-        reason: ''
+        reason: '',
+        attachmentUrl: ''
     });
     const [formLoading, setFormLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    const [leaveBalance, setLeaveBalance] = useState<any>(null);
 
     useEffect(() => {
         fetchLeaves();
@@ -43,6 +47,15 @@ const Leaves = () => {
         try {
             const res = await api.get('/leaves');
             setLeaves(res.data);
+
+            // Fetch leave balance for current user (if employee)
+            if (res.data.length > 0) {
+                const firstEmployeeId = res.data[0].employeeId;
+                const empRes = await api.get(`/employees/${firstEmployeeId}`);
+                if (empRes.data.leaveBalance) {
+                    setLeaveBalance(empRes.data.leaveBalance);
+                }
+            }
         } catch (error) {
             console.error('Error fetching leaves:', error);
         } finally {
@@ -56,13 +69,24 @@ const Leaves = () => {
 
         try {
             await api.post('/leaves', formData);
-            setFormData({ employeeId: '', type: 'annual', startDate: '', endDate: '', reason: '' });
+            setFormData({ employeeId: '', type: 'annual', startDate: '', endDate: '', reason: '', attachmentUrl: '' });
             setIsModalOpen(false);
             fetchLeaves();
         } catch (error: any) {
             setErrorMsg(error.response?.data?.msg || t('leaves.failedSubmit'));
         } finally {
             setFormLoading(false);
+        }
+    };
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData({ ...formData, attachmentUrl: reader.result as string });
+            };
+            reader.readAsDataURL(file);
         }
     };
 
@@ -121,6 +145,24 @@ const Leaves = () => {
                     {t('leaves.requestLeave')}
                 </Button>
             </div>
+
+            {/* Leave Balance Display */}
+            {leaveBalance && (
+                <GlassCard className="mb-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-white font-semibold mb-2">Sisa Cuti Tahunan</h3>
+                            <p className="text-3xl font-bold text-primary">{leaveBalance.annual - leaveBalance.used}</p>
+                            <p className="text-sm text-gray-400">dari {leaveBalance.annual} hari</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-sm text-gray-400 mb-1">Cuti Sakit Tersedia</p>
+                            <p className="text-2xl font-bold text-green-400">{leaveBalance.sick}</p>
+                            <p className="text-xs text-gray-500">hari</p>
+                        </div>
+                    </div>
+                </GlassCard>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
@@ -217,6 +259,44 @@ const Leaves = () => {
                         rows={3}
                         required
                     />
+
+                    {/* Document Upload */}
+                    <div className="space-y-2">
+                        <label className="text-sm text-gray-400 flex items-center gap-2">
+                            <FileText className="w-4 h-4" />
+                            Dokumen Pendukung (Opsional)
+                        </label>
+                        <div className="flex gap-2">
+                            <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 cursor-pointer transition-all">
+                                <Camera className="w-5 h-5 text-primary" />
+                                <span className="text-sm">Ambil Foto</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    capture="environment"
+                                    onChange={handleFileUpload}
+                                    className="hidden"
+                                />
+                            </label>
+                            <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 cursor-pointer transition-all">
+                                <Upload className="w-5 h-5 text-primary" />
+                                <span className="text-sm">Upload File</span>
+                                <input
+                                    type="file"
+                                    accept="image/*,application/pdf"
+                                    onChange={handleFileUpload}
+                                    className="hidden"
+                                />
+                            </label>
+                        </div>
+                        {formData.attachmentUrl && (
+                            <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center gap-2">
+                                <Check className="w-4 h-4 text-green-400" />
+                                <span className="text-sm text-green-400">Dokumen berhasil di-upload</span>
+                            </div>
+                        )}
+                    </div>
+
                     <Button type="submit" isLoading={formLoading} className="w-full">
                         {t('leaves.submitRequest')}
                     </Button>
