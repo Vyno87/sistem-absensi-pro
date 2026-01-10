@@ -32,6 +32,7 @@ const Attendance = () => {
     const [gpsEnabled, setGpsEnabled] = useState(false);
     const [geofenceSettings, setGeofenceSettings] = useState<any>(null);
     const [distanceFromOffice, setDistanceFromOffice] = useState<number | null>(null);
+    const [lastKnownLocation, setLastKnownLocation] = useState<any>(null);
 
     // Liveness Detection State
     const [livenessEnabled, setLivenessEnabled] = useState(true); // Can be fetched from settings
@@ -95,6 +96,16 @@ const Attendance = () => {
                 (pos) => {
                     const lat = pos.coords.latitude;
                     const lng = pos.coords.longitude;
+
+                    setLastKnownLocation({
+                        latitude: pos.coords.latitude,
+                        longitude: pos.coords.longitude,
+                        accuracy: pos.coords.accuracy,
+                        altitude: pos.coords.altitude,
+                        speed: pos.coords.speed,
+                        heading: pos.coords.heading,
+                        gpsTimestamp: pos.timestamp
+                    });
 
                     // Update distance if geofence is loaded
                     if (geofenceSettings?.enabled) {
@@ -196,22 +207,11 @@ const Attendance = () => {
                         heading: position.coords.heading,
                         gpsTimestamp: position.timestamp
                     };
-
-                    if (geofenceSettings?.enabled) {
-                        const R = 6371e3;
-                        const φ1 = geofenceSettings.centerLat * Math.PI / 180;
-                        const φ2 = position.coords.latitude * Math.PI / 180;
-                        const Δφ = (position.coords.latitude - geofenceSettings.centerLat) * Math.PI / 180;
-                        const Δλ = (position.coords.longitude - geofenceSettings.centerLng) * Math.PI / 180;
-                        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                            Math.cos(φ1) * Math.cos(φ2) *
-                            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-                        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                        const finalDistance = Math.round(R * c);
-                        setDistanceFromOffice(finalDistance);
-                    }
                 } catch (gpsError) {
-                    console.error("Critical GPS fetch failed at submission:", gpsError);
+                    console.error("Fresh GPS grab failed, trying fallback:", gpsError);
+                    if (lastKnownLocation) {
+                        locationData = lastKnownLocation;
+                    }
                 }
             }
 

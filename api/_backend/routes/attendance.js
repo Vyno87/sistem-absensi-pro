@@ -55,14 +55,17 @@ router.get('/', auth, async (req, res) => {
 // @access   Private (Admin)
 router.get('/today', auth, async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Calculate start of today in WIB (UTC+7)
+    const now = new Date();
+    const wibOffset = 7 * 60 * 60 * 1000;
+    const wibTime = new Date(now.getTime() + wibOffset);
+    wibTime.setUTCHours(0, 0, 0, 0);
+    const startOfTodayWib = new Date(wibTime.getTime() - wibOffset);
 
-    // Get all records for today that have location data
-    // We include facePhoto here? No, let's exclude it to keep map fast. 
-    // Or maybe include a small version? For now exclude, use placeholder in map.
+    console.log(`Searching for map records since: ${startOfTodayWib.toISOString()}`);
+
     const records = await Attendance.find({
-      createdAt: { $gte: today },
+      createdAt: { $gte: startOfTodayWib },
       latitude: { $ne: null },
       longitude: { $ne: null }
     })
