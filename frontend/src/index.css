@@ -5,15 +5,13 @@
 @tailwind utilities;
 
 :root {
-  /* Premium Dark Palette */
+  /* Premium Dark Palette (Default) */
   --bg-dark: #0f172a;
   --bg-darker: #020617;
+  --bg-card: rgba(30, 41, 59, 0.4);
   --primary: #6366f1;
-  /* Indigo */
   --secondary: #ec4899;
-  /* Pink */
   --accent: #06b6d4;
-  /* Cyan */
 
   /* Glassmorphism Variables */
   --glass-bg: rgba(30, 41, 59, 0.4);
@@ -24,16 +22,36 @@
   /* Text Colors */
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
+  --text-inverse: #1e293b;
 
   /* Transitions */
   --transition-fast: 0.2s ease;
   --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Light Theme */
+[data-theme='light'] {
+  --bg-dark: #f1f5f9;
+  --bg-darker: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.8);
+  --primary: #4f46e5;
+  --secondary: #db2777;
+  --accent: #0891b2;
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(15, 23, 42, 0.1);
+  --glass-shine: rgba(15, 23, 42, 0.03);
+
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-inverse: #f8fafc;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {

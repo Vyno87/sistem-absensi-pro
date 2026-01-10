@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 import api from './services/api';
 
 // Direct import hanya untuk Login (karena initial route)
@@ -79,68 +80,70 @@ const SyncHandler = () => {
 
 function App() {
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <SyncHandler />
-        <Router>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/login" element={<Login />} />
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <SyncHandler />
+          <Router>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/login" element={<Login />} />
 
-              <Route path="/dashboard" element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>
-              } />
+                <Route path="/dashboard" element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                } />
 
-              <Route path="/employees" element={
-                <PrivateRoute allowedRoles={['admin']}>
-                  <Employees />
-                </PrivateRoute>
-              } />
+                <Route path="/employees" element={
+                  <PrivateRoute allowedRoles={['admin']}>
+                    <Employees />
+                  </PrivateRoute>
+                } />
 
-              <Route path="/attendance" element={
-                <PrivateRoute allowedRoles={['user']}>
-                  <Attendance />
-                </PrivateRoute>
-              } />
+                <Route path="/attendance" element={
+                  <PrivateRoute allowedRoles={['user']}>
+                    <Attendance />
+                  </PrivateRoute>
+                } />
 
-              <Route path="/shifts" element={
-                <PrivateRoute allowedRoles={['admin']}>
-                  <Shifts />
-                </PrivateRoute>
-              } />
+                <Route path="/shifts" element={
+                  <PrivateRoute allowedRoles={['admin']}>
+                    <Shifts />
+                  </PrivateRoute>
+                } />
 
-              <Route path="/leaves" element={
-                <PrivateRoute>
-                  <Leaves />
-                </PrivateRoute>
-              } />
+                <Route path="/leaves" element={
+                  <PrivateRoute>
+                    <Leaves />
+                  </PrivateRoute>
+                } />
 
-              <Route path="/reports" element={
-                <PrivateRoute allowedRoles={['admin']}>
-                  <Reports />
-                </PrivateRoute>
-              } />
+                <Route path="/reports" element={
+                  <PrivateRoute allowedRoles={['admin']}>
+                    <Reports />
+                  </PrivateRoute>
+                } />
 
-              <Route path="/settings" element={
-                <PrivateRoute allowedRoles={['admin']}>
-                  <Settings />
-                </PrivateRoute>
-              } />
+                <Route path="/settings" element={
+                  <PrivateRoute allowedRoles={['admin']}>
+                    <Settings />
+                  </PrivateRoute>
+                } />
 
-              <Route path="/payroll" element={
-                <PrivateRoute allowedRoles={['admin']}>
-                  <Payroll />
-                </PrivateRoute>
-              } />
+                <Route path="/payroll" element={
+                  <PrivateRoute allowedRoles={['admin']}>
+                    <Payroll />
+                  </PrivateRoute>
+                } />
 
-              <Route path="/" element={<Navigate to="/dashboard" />} />
-            </Routes>
-          </Suspense>
-        </Router>
-      </AuthProvider>
-    </LanguageProvider>
+                <Route path="/" element={<Navigate to="/dashboard" />} />
+              </Routes>
+            </Suspense>
+          </Router>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

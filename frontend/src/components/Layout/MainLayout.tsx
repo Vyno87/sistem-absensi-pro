@@ -1,12 +1,14 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar, FileSpreadsheet, RefreshCw, Settings, DollarSign } from 'lucide-react';
+import { LayoutDashboard, Users, CalendarCheck, LogOut, Clock, Calendar, FileSpreadsheet, RefreshCw, Settings, DollarSign, Moon, Sun } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user, logout } = useAuth();
     const { t } = useLanguage();
+    const { theme, toggleTheme } = useTheme();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -79,6 +81,25 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 </nav>
 
                 <div className="p-4 mt-auto flex-shrink-0 border-t border-white/5 bg-white/5 backdrop-blur-md rounded-b-3xl">
+                    {/* Theme Toggle */}
+                    <button
+                        onClick={toggleTheme}
+                        className="w-full mb-3 p-3 bg-gradient-to-r from-primary/20 to-secondary/20 hover:from-primary/30 hover:to-secondary/30 rounded-xl transition-all flex items-center justify-center gap-2 group"
+                        title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                    >
+                        {theme === 'dark' ? (
+                            <>
+                                <Sun className="w-5 h-5 text-yellow-400 group-hover:rotate-180 transition-transform duration-500" />
+                                <span className="text-white font-semibold text-sm">Light Mode</span>
+                            </>
+                        ) : (
+                            <>
+                                <Moon className="w-5 h-5 text-indigo-400 group-hover:rotate-180 transition-transform duration-500" />
+                                <span className="text-gray-800 font-semibold text-sm">Dark Mode</span>
+                            </>
+                        )}
+                    </button>
+
                     <div className="glass-morphism p-4 rounded-2xl mb-2">
                         <div className="flex items-center justify-between">
                             <div className="truncate mr-2">
