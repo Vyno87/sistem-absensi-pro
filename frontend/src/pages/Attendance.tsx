@@ -275,7 +275,7 @@ const Attendance = () => {
                         <h2 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 mb-4 animate-pulse">
                             {currentTime.toLocaleTimeString('id-ID', { hour12: false })}
                         </h2>
-                        <p className="text-xl text-gray-400">
+                        <p className="text-xl text-[var(--text-muted)]">
                             {currentTime.toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                         </p>
                     </div>
@@ -321,8 +321,8 @@ const Attendance = () => {
                                     )}
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-400 uppercase tracking-widest">Target Identitas</p>
-                                    <p className="text-white font-bold">{employeeName}</p>
+                                    <p className="text-xs text-[var(--text-muted)] uppercase tracking-widest">Target Identitas</p>
+                                    <p className="text-[var(--text-main)] font-bold">{employeeName}</p>
                                     <p className="text-[10px] text-indigo-400 flex items-center gap-1">
                                         <Shield size={10} /> AI Biometric Guard Active
                                     </p>
@@ -340,7 +340,7 @@ const Attendance = () => {
                     )}
 
                     <GlassCard className="p-6 border-indigo-500/30">
-                        <h3 className="text-2xl font-bold text-white mb-6 text-center">{t('attendance.faceVerification')}</h3>
+                        <h3 className="text-2xl font-bold text-[var(--text-main)] mb-6 text-center">{t('attendance.faceVerification')}</h3>
 
                         <div className="relative mb-6 rounded-2xl overflow-hidden bg-slate-900 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center aspect-video">
                             {!imgSrc ? (
@@ -420,20 +420,20 @@ const Attendance = () => {
 
                 {/* Right Side - Recent Activity */}
                 <GlassCard>
-                    <h3 className="text-xl font-bold text-white mb-6">{t('attendance.recentActivity')}</h3>
+                    <h3 className="text-xl font-bold text-[var(--text-main)] mb-6">{t('attendance.recentActivity')}</h3>
                     <div className="space-y-4">
                         {recentActivity.length === 0 ? (
-                            <div className="text-gray-400 text-center py-4">{t('common.noData')}</div>
+                            <div className="text-[var(--text-muted)] text-center py-4">{t('common.noData')}</div>
                         ) : (
                             recentActivity.map((record: any, i) => (
-                                <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors animate-fade-in">
+                                <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-[var(--glass-shine)] hover:bg-[var(--glass-shine)]/80 transition-colors animate-fade-in">
                                     <div className="flex items-center space-x-4">
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${record.status === 'late' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gradient-to-br from-indigo-500 to-purple-500'}`}>
                                             <User className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <p className="font-bold text-white">{record.employeeName || 'Unknown'}</p>
-                                            <p className="text-xs text-gray-400">{record.position || 'Employee'}</p>
+                                            <p className="font-bold text-[var(--text-main)]">{record.employeeName || 'Unknown'}</p>
+                                            <p className="text-xs text-[var(--text-muted)]">{record.position || 'Employee'}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
@@ -462,11 +462,11 @@ const Attendance = () => {
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
                                 <Shield className="w-6 h-6 text-indigo-400" />
-                                <h2 className="text-xl font-bold text-white">Verifikasi Keamanan</h2>
+                                <h2 className="text-xl font-bold text-[var(--text-main)]">Verifikasi Keamanan</h2>
                             </div>
                             <button
                                 onClick={() => setShowLivenessModal(false)}
-                                className="text-gray-400 hover:text-white transition-colors"
+                                className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors"
                             >
                                 <XCircle className="w-6 h-6" />
                             </button>
