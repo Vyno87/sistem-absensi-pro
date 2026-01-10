@@ -67,8 +67,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             className={`
                 flex items-center px-6 py-4 rounded-2xl transition-all duration-300 group
                 ${location.pathname === item.path
-                                    ? 'bg-primary/20 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)]'
-                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                    ? 'bg-primary/20 text-primary font-bold shadow-[0_0_20px_rgba(99,102,241,0.3)]'
+                                    : 'text-[var(--text-muted)] hover:bg-[var(--glass-shine)] hover:text-[var(--text-main)]'
                                 }
               `}
                         >
@@ -103,8 +103,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     <div className="glass-morphism p-4 rounded-2xl mb-2">
                         <div className="flex items-center justify-between">
                             <div className="truncate mr-2">
-                                <p className="text-[10px] text-gray-500 uppercase font-semibold">{t('nav.loggedInAs')}</p>
-                                <p className="font-bold text-white truncate text-sm">{user?.username || 'Admin'}</p>
+                                <p className="text-[10px] text-[var(--text-muted)] uppercase font-semibold">{t('nav.loggedInAs')}</p>
+                                <p className="font-bold text-[var(--text-main)] truncate text-sm">{user?.username || 'Admin'}</p>
                                 <p className="text-[10px] text-primary font-bold uppercase">{user?.role}</p>
                             </div>
                             <button

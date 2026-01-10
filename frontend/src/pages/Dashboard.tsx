@@ -176,10 +176,10 @@ const Dashboard = () => {
             <div className="mb-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-white mb-2">
+                        <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">
                             {user?.role === 'admin' ? t('dashboard.overview') : `${t('dashboard.welcome')}, ${user?.username}`}
                         </h1>
-                        <p className="text-gray-400">
+                        <p className="text-[var(--text-muted)]">
                             {user?.role === 'admin' ? t('dashboard.monitoring') : t('dashboard.userSubtitle')}
                         </p>
                     </div>
@@ -189,8 +189,8 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-3 bg-white/5 px-4 py-3 rounded-lg border border-white/10">
                             <MapPin className={`w-5 h-5 ${enableGPS ? 'text-green-400' : 'text-gray-500'}`} />
                             <div className="flex flex-col">
-                                <span className="text-white text-sm font-medium">{t('common.gpsEnforcement')}</span>
-                                <span className="text-gray-400 text-xs">{enableGPS ? t('common.active') : t('common.disabled')}</span>
+                                <span className="text-[var(--text-main)] text-sm font-medium">{t('common.gpsEnforcement')}</span>
+                                <span className="text-[var(--text-muted)] text-xs">{enableGPS ? t('common.active') : t('common.disabled')}</span>
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
@@ -215,13 +215,13 @@ const Dashboard = () => {
                             { label: t('dashboard.promotionReady'), value: stats?.promotionRecommended || 0, icon: <Award className="text-yellow-400" />, color: 'from-yellow-500/20 to-yellow-600/5' },
                             { label: t('dashboard.activeStatus'), value: stats?.employeesByStatus?.length || 0, icon: <UserCheck className="text-purple-400" />, color: 'from-purple-500/20 to-purple-600/5' },
                         ].map((stat, idx) => (
-                            <GlassCard key={idx} className={`relative overflow-hidden bg-gradient-to-br ${stat.color} border-white/5 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(99,102,241,0.1)] transition-all cursor-default group`}>
+                            <GlassCard key={idx} className={`relative overflow-hidden bg-gradient-to-br ${stat.color} border-[var(--glass-border)] hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(99,102,241,0.1)] transition-all cursor-default group`}>
                                 <div className="flex justify-between items-start z-10 relative">
                                     <div>
-                                        <p className="text-gray-400 text-sm font-medium mb-1">{stat.label}</p>
-                                        <h3 className="text-3xl font-bold text-white group-hover:text-primary transition-colors">{stat.value}</h3>
+                                        <p className="text-[var(--text-muted)] text-sm font-medium mb-1">{stat.label}</p>
+                                        <h3 className="text-3xl font-bold text-[var(--text-main)] group-hover:text-primary transition-colors">{stat.value}</h3>
                                     </div>
-                                    <div className="p-3 bg-white/5 rounded-xl backdrop-blur-md group-hover:bg-primary/20 transition-all">
+                                    <div className="p-3 bg-[var(--glass-shine)] rounded-xl backdrop-blur-md group-hover:bg-primary/20 transition-all">
                                         {stat.icon}
                                     </div>
                                 </div>
@@ -239,7 +239,7 @@ const Dashboard = () => {
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <GlassCard className="lg:col-span-2">
-                            <h3 className="text-xl font-bold text-white mb-6">{t('dashboard.weeklyAttendance')}</h3>
+                            <h3 className="text-xl font-bold text-[var(--text-main)] mb-6">{t('dashboard.weeklyAttendance')}</h3>
                             <div className="h-[300px] w-full">
                                 <Line options={chartOptions} data={lineData} />
                             </div>
@@ -253,7 +253,7 @@ const Dashboard = () => {
                         <div className="space-y-8">
                             {/* Employee Status Chart */}
                             <GlassCard>
-                                <h3 className="text-xl font-bold text-white mb-6">{t('dashboard.employeeStatus')}</h3>
+                                <h3 className="text-xl font-bold text-[var(--text-main)] mb-6">{t('dashboard.employeeStatus')}</h3>
                                 <div className="h-[200px] flex justify-center">
                                     <Doughnut data={doughnutData} options={{
                                         plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } }
@@ -264,7 +264,7 @@ const Dashboard = () => {
                             {/* Recent Activity Feed (Live) */}
                             <GlassCard>
                                 <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <h3 className="text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
                                         <Clock className="w-5 h-5 text-blue-400" />
                                         {t('common.recentActivityLive')}
                                     </h3>
@@ -272,17 +272,17 @@ const Dashboard = () => {
                                 </div>
                                 <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                                     {recentActivity.length === 0 ? (
-                                        <div className="text-gray-400 text-center py-4">{t('common.noData')}</div>
+                                        <div className="text-[var(--text-muted)] text-center py-4">{t('common.noData')}</div>
                                     ) : (
                                         recentActivity.map((record: any, i) => (
-                                            <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all border border-white/5">
+                                            <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-[var(--glass-shine)] hover:bg-[var(--glass-border)] transition-all border border-[var(--glass-border)]">
                                                 <div className="flex items-center space-x-3">
                                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${record.status === 'late' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-blue-500/20 text-blue-500'}`}>
                                                         <User className="w-4 h-4" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold text-white text-sm">{record.employeeName || 'Unknown'}</p>
-                                                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">{record.position || 'Employee'}</p>
+                                                        <p className="font-bold text-[var(--text-main)] text-sm">{record.employeeName || 'Unknown'}</p>
+                                                        <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">{record.position || 'Employee'}</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
