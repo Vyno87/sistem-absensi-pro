@@ -50,6 +50,40 @@
   --text-inverse: #f8fafc;
 }
 
+/* Midnight Emerald Theme - Premium Cyberpunk Green */
+[data-theme='emerald'] {
+  --bg-dark: #064e3b;
+  --bg-darker: #022c22;
+  --bg-card: rgba(6, 78, 59, 0.4);
+  --primary: #10b981;
+  --secondary: #84cc16;
+  --accent: #14b8a6;
+
+  --glass-bg: rgba(6, 78, 59, 0.4);
+  --glass-border: rgba(16, 185, 129, 0.2);
+  --glass-shine: rgba(16, 185, 129, 0.05);
+
+  --text-main: #ecfdf5;
+  --text-muted: #6ee7b7;
+  --text-inverse: #022c22;
+}
+
+[data-theme='emerald'] body {
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(132, 204, 22, 0.15) 0%, transparent 40%);
+}
+
+[data-theme='emerald'] .glass-panel {
+  background: rgba(6, 78, 59, 0.6);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='emerald'] .text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-lime-400;
+}
+
 /* Light mode specific adjustments */
 [data-theme='light'] body {
   background-image:

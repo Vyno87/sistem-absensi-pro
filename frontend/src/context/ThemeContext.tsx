@@ -1,18 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface ThemeContextType {
-    theme: 'dark' | 'light';
+    theme: 'dark' | 'light' | 'emerald';
     toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+    const [theme, setTheme] = useState<'dark' | 'light' | 'emerald'>('dark');
 
     useEffect(() => {
         // Load theme from localStorage
-        const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
+        const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | 'emerald' | null;
         if (savedTheme) {
             setTheme(savedTheme);
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -23,7 +23,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, []);
 
     const toggleTheme = () => {
-        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        let newTheme: 'dark' | 'light' | 'emerald';
+        if (theme === 'dark') newTheme = 'light';
+        else if (theme === 'light') newTheme = 'emerald';
+        else newTheme = 'dark';
+
         setTheme(newTheme);
         localStorage.setItem('theme', newTheme);
         document.documentElement.setAttribute('data-theme', newTheme);
