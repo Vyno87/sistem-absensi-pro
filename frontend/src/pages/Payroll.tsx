@@ -172,12 +172,12 @@ const Payroll = () => {
 
         // Net Salary
         doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text(`GAJI BERSIH: Rp ${data.netSalary.toLocaleString('id-ID')}`, 30, 230);
 
         // Footer
         doc.setFontSize(9);
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         doc.text('Dokumen ini digenerate otomatis oleh sistem', 105, 270, { align: 'center' });
         doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 105, 280, { align: 'center' });
 
