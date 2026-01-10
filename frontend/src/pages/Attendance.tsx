@@ -76,6 +76,7 @@ const Attendance = () => {
         }
     };
 
+    // INITIAL DATA FETCHING (Only once on mount)
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) return;
@@ -84,20 +85,21 @@ const Attendance = () => {
         fetchGPSSetting();
         fetchGeofenceSettings();
 
-        // Real-time polling setiap 5 detik
+        // Real-time polling setiap 5 detik for list data
         const interval = setInterval(() => {
             fetchRecent();
             fetchGPSSetting();
         }, 5000);
 
-        // REAL-TIME LOCATION WATCHING
+        return () => clearInterval(interval);
+    }, []);
+
+    // REAL-TIME LOCATION WATCHING (Decoupled from geofence loading to prevent flickering)
+    useEffect(() => {
         let watcher: number | null = null;
         if (navigator.geolocation) {
             watcher = navigator.geolocation.watchPosition(
                 (pos) => {
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-
                     setLastKnownLocation({
                         latitude: pos.coords.latitude,
                         longitude: pos.coords.longitude,
@@ -108,20 +110,6 @@ const Attendance = () => {
                         gpsTimestamp: pos.timestamp
                     });
                     setGpsAccuracy(pos.coords.accuracy);
-
-                    // Update distance if geofence is loaded
-                    if (geofenceSettings?.enabled) {
-                        const R = 6371e3;
-                        const φ1 = geofenceSettings.centerLat * Math.PI / 180;
-                        const φ2 = lat * Math.PI / 180;
-                        const Δφ = (lat - geofenceSettings.centerLat) * Math.PI / 180;
-                        const Δλ = (lng - geofenceSettings.centerLng) * Math.PI / 180;
-                        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                            Math.cos(φ1) * Math.cos(φ2) *
-                            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-                        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                        setDistanceFromOffice(Math.round(R * c));
-                    }
                 },
                 (err) => console.error("Real-time GPS Error:", err),
                 { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
@@ -129,10 +117,27 @@ const Attendance = () => {
         }
 
         return () => {
-            clearInterval(interval);
             if (watcher !== null) navigator.geolocation.clearWatch(watcher);
         };
-    }, [geofenceSettings]);
+    }, []);
+
+    // DISTANCE CALCULATION (Reacts to location OR geofence settings change)
+    useEffect(() => {
+        if (geofenceSettings?.enabled && lastKnownLocation) {
+            const lat = lastKnownLocation.latitude;
+            const lng = lastKnownLocation.longitude;
+            const R = 6371e3;
+            const φ1 = geofenceSettings.centerLat * Math.PI / 180;
+            const φ2 = lat * Math.PI / 180;
+            const Δφ = (lat - geofenceSettings.centerLat) * Math.PI / 180;
+            const Δλ = (lng - geofenceSettings.centerLng) * Math.PI / 180;
+            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            setDistanceFromOffice(Math.round(R * c));
+        }
+    }, [geofenceSettings, lastKnownLocation]);
 
     // Fetch employee reference photo when ID is entered
     useEffect(() => {
@@ -342,10 +347,10 @@ const Attendance = () => {
 
                     {/* GPS Required Lock Message */}
                     {gpsEnabled && !lastKnownLocation && (
-                        <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/50 flex items-center gap-3 animate-pulse mb-4">
-                            <MapPin className="text-yellow-400 animate-bounce" />
-                            <p className="text-sm text-yellow-200 font-medium">
-                                Mencari lokasi GPS... Harap tunggu agar lokasi akurat.
+                        <div className="p-4 rounded-xl bg-yellow-500/20 border border-yellow-500/80 flex items-center gap-3 animate-pulse mb-4 shadow-lg shadow-yellow-500/10">
+                            <MapPin className="text-yellow-600 dark:text-yellow-400 animate-bounce" />
+                            <p className="text-sm text-yellow-800 dark:text-yellow-200 font-bold">
+                                {t('attendance.searchingGPS') || 'Mencari lokasi GPS... Harap tunggu agar lokasi akurat.'}
                             </p>
                         </div>
                     )}
