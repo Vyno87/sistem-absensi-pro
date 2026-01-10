@@ -90,7 +90,7 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-black selection:bg-primary/30">
+        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[var(--bg-main)] selection:bg-primary/30 text-[var(--text-main)] transition-colors duration-300">
             {/* Background Gradients - Nuansa Neon Premium */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-5%] w-[80vh] h-[80vh] bg-primary/10 rounded-full blur-[120px] animate-float-neon" />
@@ -103,18 +103,18 @@ const Login = () => {
 
             {/* Language Selector - Top Right */}
             <div className="absolute top-6 right-6 z-20">
-                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-xl rounded-2xl p-1.5 border border-white/10">
+                <div className="flex items-center gap-2 bg-[var(--glass-shine)] backdrop-blur-xl rounded-2xl p-1.5 border border-[var(--glass-border)]">
                     <Globe className="w-4 h-4 text-gray-500 ml-2" />
-                    <div className="flex bg-white/5 rounded-xl p-1">
+                    <div className="flex bg-[var(--glass-shine)] rounded-xl p-1">
                         <button
                             onClick={() => setLanguage('en')}
-                            className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${language === 'en' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'}`}
+                            className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${language === 'en' ? 'bg-primary text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
                         >
                             EN
                         </button>
                         <button
                             onClick={() => setLanguage('id')}
-                            className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${language === 'id' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'}`}
+                            className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${language === 'id' ? 'bg-primary text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
                         >
                             ID
                         </button>
@@ -126,9 +126,9 @@ const Login = () => {
                 <GlassCard className="p-8 backdrop-blur-xl border-opacity-20 animate-fade-in-up">
                     <div className="text-center mb-8">
                         <h1 className="text-4xl font-bold mb-2">
-                            <span className="text-gradient leading-tight">{t('login.title')}</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 leading-tight">{t('login.title')}</span>
                         </h1>
-                        <p className="text-gray-400">{t('login.subtitle')}</p>
+                        <p className="text-[var(--text-muted)]">{t('login.subtitle')}</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -161,10 +161,10 @@ const Login = () => {
 
                         <div className="relative py-4">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-white/10"></div>
+                                <div className="w-full border-t border-[var(--glass-border)]"></div>
                             </div>
                             <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-[#020617] px-2 text-gray-500">OR</span>
+                                <span className="bg-[var(--bg-card)] px-2 text-[var(--text-muted)]">OR</span>
                             </div>
                         </div>
 
@@ -182,14 +182,14 @@ const Login = () => {
 
                 {/* Download PWA Section */}
                 <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-                    <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10">
+                    <div className="bg-[var(--glass-shine)] backdrop-blur-md rounded-2xl p-6 border border-[var(--glass-border)]">
                         <div className="flex items-center gap-4 mb-4">
                             <div className="p-3 bg-primary/20 rounded-xl">
                                 <Download className="w-6 h-6 text-primary" />
                             </div>
                             <div className="text-left">
-                                <h3 className="text-white font-bold">{t('login.downloadApp')}</h3>
-                                <p className="text-gray-400 text-xs">{t('login.installInstruction')}</p>
+                                <h3 className="text-[var(--text-main)] font-bold">{t('login.downloadApp')}</h3>
+                                <p className="text-[var(--text-muted)] text-xs">{t('login.installInstruction')}</p>
                             </div>
                         </div>
 
@@ -203,7 +203,7 @@ const Login = () => {
                         ) : (
                             <button
                                 onClick={handleInstallClick}
-                                className="w-full flex items-center justify-center gap-3 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl border border-white/10 transition-all group"
+                                className="w-full flex items-center justify-center gap-3 py-3 bg-[var(--glass-shine)] hover:bg-[var(--glass-shine)]/80 text-[var(--text-main)] rounded-xl border border-[var(--glass-border)] transition-all group"
                             >
                                 {deviceType === 'pc' ? <Monitor className="w-5 h-5 text-primary" /> : <Smartphone className="w-5 h-5 text-primary" />}
                                 <span className="font-bold">{t('login.installBtn')}</span>
@@ -212,7 +212,7 @@ const Login = () => {
                     </div>
                 </div>
 
-                <div className="text-center text-gray-500 text-xs pt-4">
+                <div className="text-center text-[var(--text-muted)] text-xs pt-4">
                     &copy; 2026 {t('app.title')}. All Rights Reserved.
                 </div>
             </div>
