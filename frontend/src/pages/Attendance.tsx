@@ -33,6 +33,7 @@ const Attendance = () => {
     const [geofenceSettings, setGeofenceSettings] = useState<any>(null);
     const [distanceFromOffice, setDistanceFromOffice] = useState<number | null>(null);
     const [lastKnownLocation, setLastKnownLocation] = useState<any>(null);
+    const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
 
     // Liveness Detection State
     const [livenessEnabled, setLivenessEnabled] = useState(true); // Can be fetched from settings
@@ -106,6 +107,7 @@ const Attendance = () => {
                         heading: pos.coords.heading,
                         gpsTimestamp: pos.timestamp
                     });
+                    setGpsAccuracy(pos.coords.accuracy);
 
                     // Update distance if geofence is loaded
                     if (geofenceSettings?.enabled) {
@@ -321,6 +323,12 @@ const Attendance = () => {
                                     }`}>
                                     {distanceFromOffice}m
                                 </p>
+                                <div className="flex items-center justify-center gap-1 mt-1">
+                                    <div className={`w-3 h-1 rounded-full ${gpsAccuracy && gpsAccuracy < 20 ? 'bg-green-500' : 'bg-gray-600'}`}></div>
+                                    <div className={`w-3 h-1 rounded-full ${gpsAccuracy && gpsAccuracy < 50 ? 'bg-green-500' : 'bg-gray-600'}`}></div>
+                                    <div className={`w-3 h-1 rounded-full ${gpsAccuracy && gpsAccuracy < 150 ? 'bg-yellow-500' : 'bg-gray-600'}`}></div>
+                                    <p className="text-[10px] text-gray-400 ml-1">Sinyal {gpsAccuracy && gpsAccuracy < 50 ? 'Kuat' : 'Lemah'}</p>
+                                </div>
                                 <p className="text-xs text-gray-400 mt-1">
                                     Max: {geofenceSettings.radiusMeters}m | Status: {
                                         distanceFromOffice <= geofenceSettings.radiusMeters
@@ -331,6 +339,17 @@ const Attendance = () => {
                             </div>
                         </div>
                     )}
+
+                    {/* GPS Required Lock Message */}
+                    {gpsEnabled && !lastKnownLocation && (
+                        <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/50 flex items-center gap-3 animate-pulse mb-4">
+                            <MapPin className="text-yellow-400 animate-bounce" />
+                            <p className="text-sm text-yellow-200 font-medium">
+                                Mencari lokasi GPS... Harap tunggu agar lokasi akurat.
+                            </p>
+                        </div>
+                    )}
+
                     {/* AI Verification Indicator */}
                     {employeeName && (
                         <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/50 flex items-center justify-between animate-fade-in mb-4">
@@ -412,8 +431,8 @@ const Attendance = () => {
                                 <Button
                                     onClick={() => handleAttendance('Check In')}
                                     isLoading={loadingAction === 'Check In'}
-                                    disabled={loadingAction !== null}
-                                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-none"
+                                    disabled={loadingAction !== null || (gpsEnabled && !lastKnownLocation)}
+                                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-none shadow-lg shadow-green-500/20"
                                 >
                                     {t('attendance.checkIn')}
                                 </Button>
@@ -421,8 +440,8 @@ const Attendance = () => {
                                     onClick={() => handleAttendance('Check Out')}
                                     variant="secondary"
                                     isLoading={loadingAction === 'Check Out'}
-                                    disabled={loadingAction !== null}
-                                    className="w-full"
+                                    disabled={loadingAction !== null || (gpsEnabled && !lastKnownLocation)}
+                                    className="w-full h-12"
                                 >
                                     {t('attendance.checkOut')}
                                 </Button>

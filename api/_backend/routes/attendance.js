@@ -200,32 +200,42 @@ router.post('/', auth, async (req, res) => {
     let distanceFromOffice = null;
     let geofenceStatus = 'disabled';
 
-    if (geofenceSettings.enabled && latitude && longitude) {
-      // Calculate distance from office
-      distanceFromOffice = calculateDistance(
-        geofenceSettings.centerLat,
-        geofenceSettings.centerLng,
-        latitude,
-        longitude
-      );
-
-      // Check if within radius
-      if (distanceFromOffice <= geofenceSettings.radiusMeters) {
-        geofenceStatus = 'in-range';
-      } else {
-        geofenceStatus = 'out-of-range';
-
-        // Block check-in if configured
+    if (geofenceSettings.enabled) {
+      if (!latitude || !longitude) {
+        // If geofence is enabled, we MUST have coordinates unless it's a manual override (not implemented yet)
         if (geofenceSettings.blockOutOfRange) {
           return res.status(403).json({
-            msg: 'Anda berada di luar radius kantor',
-            distance: Math.round(distanceFromOffice),
-            maxDistance: geofenceSettings.radiusMeters,
-            officeLocation: {
-              lat: geofenceSettings.centerLat,
-              lng: geofenceSettings.centerLng
-            }
+            msg: 'Data lokasi GPS diperlukan untuk absensi ini. Pastikan GPS Anda aktif.',
+            code: 'GPS_REQUIRED'
           });
+        }
+      } else {
+        // Calculate distance from office
+        distanceFromOffice = calculateDistance(
+          geofenceSettings.centerLat,
+          geofenceSettings.centerLng,
+          latitude,
+          longitude
+        );
+
+        // Check if within radius
+        if (distanceFromOffice <= geofenceSettings.radiusMeters) {
+          geofenceStatus = 'in-range';
+        } else {
+          geofenceStatus = 'out-of-range';
+
+          // Block check-in if configured
+          if (geofenceSettings.blockOutOfRange) {
+            return res.status(403).json({
+              msg: 'Anda berada di luar radius kantor',
+              distance: Math.round(distanceFromOffice),
+              maxDistance: geofenceSettings.radiusMeters,
+              officeLocation: {
+                lat: geofenceSettings.centerLat,
+                lng: geofenceSettings.centerLng
+              }
+            });
+          }
         }
       }
     }
