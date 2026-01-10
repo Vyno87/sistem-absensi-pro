@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MainLayout from '../components/Layout/MainLayout';
 import GlassCard from '../components/UI/GlassCard';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import api from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
-import { FileSpreadsheet, FileText, Calendar, Users, RefreshCw, Trash2, X, User, Check } from 'lucide-react';
+import { FileSpreadsheet, FileText, Calendar, Users, RefreshCw, Trash2, X, User, Check, ArrowLeft } from 'lucide-react';
 import Modal from '../components/UI/Modal';
 
 const Reports = () => {
     const { t } = useLanguage();
+    const navigate = useNavigate();
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [loading, setLoading] = useState({ excel: false, pdf: false });
@@ -201,9 +203,18 @@ const Reports = () => {
     return (
         <MainLayout>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">{t('reports.title')}</h1>
-                    <p className="text-[var(--text-muted)]">{t('reports.subtitle')}</p>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => navigate('/dashboard')}
+                        className="p-2 rounded-xl bg-[var(--glass-shine)] border border-[var(--glass-border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--glass-border)] transition-all group"
+                        title="Back to Dashboard"
+                    >
+                        <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                    </button>
+                    <div>
+                        <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">{t('reports.title')}</h1>
+                        <p className="text-[var(--text-muted)]">{t('reports.subtitle')}</p>
+                    </div>
                 </div>
             </div>
 
@@ -499,8 +510,8 @@ const Reports = () => {
                                         key={pageNum}
                                         onClick={() => paginate(pageNum)}
                                         className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${currentPage === pageNum
-                                                ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30'
-                                                : 'bg-[var(--glass-shine)] text-[var(--text-muted)] hover:bg-[var(--glass-border)]'
+                                            ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30'
+                                            : 'bg-[var(--glass-shine)] text-[var(--text-muted)] hover:bg-[var(--glass-border)]'
                                             }`}
                                     >
                                         {pageNum}

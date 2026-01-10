@@ -1,9 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import MainLayout from '../components/Layout/MainLayout';
-import GlassCard from '../components/UI/GlassCard';
-import api from '../services/api';
-import { useLanguage } from '../context/LanguageContext';
-import { UserPlus, Search, Trash2, Shield, Smartphone, HardDrive, Camera, Upload } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { UserPlus, Search, Trash2, Shield, Smartphone, HardDrive, Camera, Upload, ArrowLeft } from 'lucide-react';
 import Webcam from 'react-webcam';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
@@ -11,6 +7,7 @@ import Modal from '../components/UI/Modal';
 
 const Employees = () => {
     const { t } = useLanguage();
+    const navigate = useNavigate();
     const [employees, setEmployees] = useState<any[]>([]);
     const [shifts, setShifts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -155,9 +152,18 @@ const Employees = () => {
     return (
         <MainLayout>
             <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">{t('employees.title')}</h1>
-                    <p className="text-[var(--text-muted)]">{t('employees.subtitle')}</p>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => navigate('/dashboard')}
+                        className="p-2 rounded-xl bg-[var(--glass-shine)] border border-[var(--glass-border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--glass-border)] transition-all group"
+                        title="Back to Dashboard"
+                    >
+                        <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                    </button>
+                    <div>
+                        <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">{t('employees.title')}</h1>
+                        <p className="text-[var(--text-muted)]">{t('employees.subtitle')}</p>
+                    </div>
                 </div>
                 <div className="flex gap-3 w-full md:w-auto">
                     <Input

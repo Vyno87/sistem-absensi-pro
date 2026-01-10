@@ -14,7 +14,8 @@ import {
     Calendar,
     Clock,
     MapPin,
-    User
+    User,
+    ArrowUp
 } from 'lucide-react';
 import {
     Chart as ChartJS,
@@ -256,6 +257,16 @@ const Dashboard = () => {
 
                         {/* Live Map Section */}
                         <div id="map-section" className="lg:col-span-3">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-xl font-bold text-[var(--text-main)]">{t('dashboard.liveMap')}</h3>
+                                <button
+                                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20 transition-all text-xs font-bold group"
+                                >
+                                    <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
+                                    Kembali ke Ringkasan
+                                </button>
+                            </div>
                             <LiveMap />
                         </div>
 
