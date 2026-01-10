@@ -353,10 +353,10 @@ const Attendance = () => {
                                         videoConstraints={{ facingMode: "user" }} // Ensure front camera
                                     />
                                     {/* Face Guide Overlay */}
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="w-[220px] h-[280px] border-4 border-dashed border-white/60 rounded-[50%] shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"></div>
-                                        <p className="absolute bottom-16 text-white text-sm font-semibold bg-black/50 px-4 py-2 rounded-full border border-white/20">
-                                            Posisikan wajah dalam area oval
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        <div className="w-[280px] h-[380px] md:w-[240px] md:h-[320px] border-4 border-dashed border-white/60 rounded-[50%] shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"></div>
+                                        <p className="absolute bottom-20 text-white text-xs md:text-sm font-semibold bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
+                                            {t('attendance.posFaceInOval')}
                                         </p>
                                     </div>
                                     <div className="absolute bottom-4">
