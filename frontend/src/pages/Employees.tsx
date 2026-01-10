@@ -1,4 +1,9 @@
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MainLayout from '../components/Layout/MainLayout';
+import GlassCard from '../components/UI/GlassCard';
+import api from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import { UserPlus, Search, Trash2, Shield, Smartphone, HardDrive, Camera, Upload, ArrowLeft } from 'lucide-react';
 import Webcam from 'react-webcam';
 import Button from '../components/UI/Button';
