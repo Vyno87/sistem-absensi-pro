@@ -146,7 +146,10 @@ const LiveMap = () => {
                                     </div>
                                     <div className="overflow-hidden">
                                         <h4 className="text-sm font-bold text-gray-900 m-0 truncate">{marker.employeeName}</h4>
-                                        <p className="text-[10px] text-gray-500 m-0 uppercase tracking-wider font-semibold truncate">{marker.position}</p>
+                                        <div className="flex items-center gap-1.5 mt-0.5">
+                                            <span className="text-[10px] bg-indigo-500/10 text-indigo-600 px-1.5 py-0.5 rounded font-bold">{marker.employeeId}</span>
+                                            <p className="text-[10px] text-gray-400 m-0 uppercase tracking-wider font-semibold truncate">{marker.position}</p>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="space-y-2">

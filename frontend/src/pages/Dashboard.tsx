@@ -210,12 +210,21 @@ const Dashboard = () => {
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         {[
-                            { label: t('dashboard.totalEmployees'), value: stats?.totalEmployees || 0, icon: <Users className="text-blue-400" />, color: 'from-blue-500/20 to-blue-600/5' },
-                            { label: t('dashboard.avgPerformance'), value: `${stats?.averagePerformance || 0}%`, icon: <TrendingUp className="text-green-400" />, color: 'from-green-500/20 to-green-600/5' },
-                            { label: t('dashboard.promotionReady'), value: stats?.promotionRecommended || 0, icon: <Award className="text-yellow-400" />, color: 'from-yellow-500/20 to-yellow-600/5' },
-                            { label: t('dashboard.activeStatus'), value: stats?.employeesByStatus?.length || 0, icon: <UserCheck className="text-purple-400" />, color: 'from-purple-500/20 to-purple-600/5' },
+                            { label: t('dashboard.totalEmployees'), value: stats?.totalEmployees || 0, icon: <Users className="text-blue-400" />, color: 'from-blue-500/20 to-blue-600/5', path: '/employees' },
+                            { label: t('dashboard.avgPerformance'), value: `${stats?.averagePerformance || 0}%`, icon: <TrendingUp className="text-green-400" />, color: 'from-green-500/20 to-green-600/5', path: '/reports' },
+                            { label: t('dashboard.promotionReady'), value: stats?.promotionRecommended || 0, icon: <Award className="text-yellow-400" />, color: 'from-yellow-500/20 to-yellow-600/5', path: '/reports' },
+                            { label: t('dashboard.activeStatus'), value: stats?.employeesByStatus?.length || 0, icon: <UserCheck className="text-purple-400" />, color: 'from-purple-500/20 to-purple-600/5', action: 'scroll-to-map' },
                         ].map((stat, idx) => (
-                            <GlassCard key={idx} className={`relative overflow-hidden bg-gradient-to-br ${stat.color} border-[var(--glass-border)] hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(99,102,241,0.1)] transition-all cursor-default group`}>
+                            <GlassCard
+                                key={idx}
+                                onClick={() => {
+                                    if (stat.path) navigate(stat.path);
+                                    else if (stat.action === 'scroll-to-map') {
+                                        document.getElementById('map-section')?.scrollIntoView({ behavior: 'smooth' });
+                                    }
+                                }}
+                                className={`relative overflow-hidden bg-gradient-to-br ${stat.color} border-[var(--glass-border)] hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(99,102,241,0.1)] transition-all cursor-pointer group`}
+                            >
                                 <div className="flex justify-between items-start z-10 relative">
                                     <div>
                                         <p className="text-[var(--text-muted)] text-sm font-medium mb-1">{stat.label}</p>
@@ -246,7 +255,7 @@ const Dashboard = () => {
                         </GlassCard>
 
                         {/* Live Map Section */}
-                        <div className="lg:col-span-3">
+                        <div id="map-section" className="lg:col-span-3">
                             <LiveMap />
                         </div>
 
