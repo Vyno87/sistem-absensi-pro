@@ -192,8 +192,8 @@ const Reports = () => {
         <MainLayout>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">{t('reports.title')}</h1>
-                    <p className="text-gray-400">{t('reports.subtitle')}</p>
+                    <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">{t('reports.title')}</h1>
+                    <p className="text-[var(--text-muted)]">{t('reports.subtitle')}</p>
                 </div>
             </div>
 
@@ -231,23 +231,23 @@ const Reports = () => {
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <GlassCard className="text-center py-4">
-                    <p className="text-2xl font-bold text-white">{previewData.length}</p>
-                    <p className="text-gray-400 text-[10px] uppercase font-bold">{t('reports.totalRecords')}</p>
+                    <p className="text-2xl font-bold text-[var(--text-main)]">{previewData.length}</p>
+                    <p className="text-[var(--text-muted)] text-[10px] uppercase font-bold">{t('reports.totalRecords')}</p>
                 </GlassCard>
                 <GlassCard className="text-center py-4 border-l-4 border-l-green-500">
-                    <p className="text-2xl font-bold text-white">
+                    <p className="text-2xl font-bold text-[var(--text-main)]">
                         {previewData.filter(d => d.attendanceStatus === 'present').length}
                     </p>
-                    <p className="text-gray-400 text-[10px] uppercase font-bold">{t('reports.present')}</p>
+                    <p className="text-[var(--text-muted)] text-[10px] uppercase font-bold">{t('reports.present')}</p>
                 </GlassCard>
                 <GlassCard className="text-center py-4 border-l-4 border-l-yellow-500">
-                    <p className="text-2xl font-bold text-white">
+                    <p className="text-2xl font-bold text-[var(--text-main)]">
                         {previewData.filter(d => d.attendanceStatus === 'late').length}
                     </p>
-                    <p className="text-gray-400 text-[10px] uppercase font-bold">{t('reports.late')}</p>
+                    <p className="text-[var(--text-muted)] text-[10px] uppercase font-bold">{t('reports.late')}</p>
                 </GlassCard>
                 <GlassCard className="text-center py-4 border-l-4 border-l-indigo-500">
-                    <p className="text-2xl font-bold text-white">{eligibleForPromotion.length}</p>
+                    <p className="text-2xl font-bold text-[var(--text-main)]">{eligibleForPromotion.length}</p>
                     <p className="text-indigo-400 text-[10px] uppercase font-bold">{t('reports.eligible')}</p>
                 </GlassCard>
             </div>
@@ -256,15 +256,15 @@ const Reports = () => {
             <GlassCard className="mb-6">
                 <div className="flex items-center gap-2 mb-4">
                     <Users className="w-5 h-5 text-indigo-400" />
-                    <h3 className="text-lg font-bold text-white">{t('reports.summaryTable')}</h3>
+                    <h3 className="text-lg font-bold text-[var(--text-main)]">{t('reports.summaryTable')}</h3>
                 </div>
                 {previewLoading ? (
-                    <p className="text-gray-400">{t('common.loading')}</p>
+                    <p className="text-[var(--text-muted)]">{t('common.loading')}</p>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-xs">
                             <thead>
-                                <tr className="border-b border-white/10 text-gray-400 uppercase">
+                                <tr className="border-b border-[var(--glass-border)] text-[var(--text-muted)] uppercase">
                                     <th className="py-3 px-2 text-left font-semibold">{t('reports.name')}</th>
                                     <th className="py-3 px-2 text-center font-semibold">{t('reports.attendanceRate')}</th>
                                     <th className="py-3 px-2 text-center font-semibold">{t('reports.punctualityRate')}</th>
@@ -276,16 +276,16 @@ const Reports = () => {
                             </thead>
                             <tbody>
                                 {statsData.map((stat, index) => (
-                                    <tr key={index} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                    <tr key={index} className="border-b border-[var(--glass-border)] hover:bg-[var(--glass-shine)] transition-colors">
                                         <td className="py-3 px-2">
-                                            <p className="text-white font-medium">{stat.name}</p>
-                                            <p className="text-gray-500 text-[10px]">{stat.position}</p>
+                                            <p className="text-[var(--text-main)] font-medium">{stat.name}</p>
+                                            <p className="text-[var(--text-muted)] text-[10px]">{stat.position}</p>
                                         </td>
-                                        <td className="py-3 px-2 text-center font-bold text-white">{stat.attendanceRate}%</td>
-                                        <td className="py-3 px-2 text-center text-gray-300">{stat.punctualityRate}%</td>
-                                        <td className="py-3 px-2 text-center text-gray-300">{stat.performanceScore}%</td>
+                                        <td className="py-3 px-2 text-center font-bold text-[var(--text-main)]">{stat.attendanceRate}%</td>
+                                        <td className="py-3 px-2 text-center text-[var(--text-muted)]">{stat.punctualityRate}%</td>
+                                        <td className="py-3 px-2 text-center text-[var(--text-muted)]">{stat.performanceScore}%</td>
                                         <td className="py-3 px-2 text-center text-indigo-400 font-bold">{stat.promotionScore}</td>
-                                        <td className="py-3 px-2 text-center text-gray-500 font-mono text-[10px]">{stat.currentStatus}</td>
+                                        <td className="py-3 px-2 text-center text-[var(--text-muted)] font-mono text-[10px]">{stat.currentStatus}</td>
                                         <td className="py-3 px-2 text-right">
                                             {stat.isEligibleForPromotion ? (
                                                 <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-[9px] font-bold border border-green-500/30">
@@ -313,20 +313,20 @@ const Reports = () => {
                     <p className="text-xs text-gray-400 mb-4">{t('reports.promotionCriteria')}</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {eligibleForPromotion.map((emp, i) => (
-                            <div key={i} className="bg-white/5 rounded-xl p-4 border border-white/10 hover:border-indigo-500/50 transition-all">
+                            <div key={i} className="bg-[var(--glass-shine)] rounded-xl p-4 border border-[var(--glass-border)] hover:border-indigo-500/50 transition-all">
                                 <div className="flex justify-between items-start mb-2">
-                                    <h4 className="text-white font-bold">{emp.name}</h4>
+                                    <h4 className="text-[var(--text-main)] font-bold">{emp.name}</h4>
                                     <span className="text-indigo-400 font-bold text-xs">#{emp.promotionScore}</span>
                                 </div>
-                                <p className="text-gray-400 text-[10px] mb-3">{emp.position}</p>
+                                <p className="text-[var(--text-muted)] text-[10px] mb-3">{emp.position}</p>
                                 <div className="space-y-1 text-[10px]">
                                     <div className="flex justify-between">
-                                        <span className="text-gray-500">{t('reports.attendanceRate')}</span>
-                                        <span className="text-white">{emp.attendanceRate}%</span>
+                                        <span className="text-[var(--text-muted)]">{t('reports.attendanceRate')}</span>
+                                        <span className="text-[var(--text-main)]">{emp.attendanceRate}%</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-gray-500">{t('reports.performanceScore')}</span>
-                                        <span className="text-white">{emp.performanceScore}%</span>
+                                        <span className="text-[var(--text-muted)]">{t('reports.performanceScore')}</span>
+                                        <span className="text-[var(--text-main)]">{emp.performanceScore}%</span>
                                     </div>
                                 </div>
                                 <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
@@ -378,8 +378,8 @@ const Reports = () => {
             {/* Detailed Data Preview - Collapsible or simpler */}
             <GlassCard>
                 <div className="flex items-center gap-2 mb-4">
-                    <FileText className="w-5 h-5 text-gray-400" />
-                    <h3 className="text-lg font-bold text-white">{t('reports.preview')} (10 {t('reports.records')})</h3>
+                    <FileText className="w-5 h-5 text-[var(--text-muted)]" />
+                    <h3 className="text-lg font-bold text-[var(--text-main)]">{t('reports.preview')} (10 {t('reports.records')})</h3>
                 </div>
                 {previewLoading ? (
                     <p className="text-gray-400">{t('common.loading')}</p>
@@ -434,9 +434,9 @@ const Reports = () => {
                                             )}
                                         </td>
                                         <td className="py-2 px-2">
-                                            <p className="text-white">{record.name}</p>
+                                            <p className="text-[var(--text-main)]">{record.name}</p>
                                         </td>
-                                        <td className="py-2 px-2 text-gray-400">{formatDate(record.date)}</td>
+                                        <td className="py-2 px-2 text-[var(--text-muted)]">{formatDate(record.date)}</td>
                                         <td className="py-2 px-2 text-center text-green-400 font-mono">{formatTime(record.checkIn)}</td>
                                         <td className="py-2 px-2 text-center text-red-400 font-mono">{formatTime(record.checkOut)}</td>
                                         <td className="py-2 px-2 text-center text-yellow-400 font-bold">{record.overtime}</td>
@@ -449,7 +449,7 @@ const Reports = () => {
                                                 className="p-2 hover:bg-red-500/20 rounded-lg transition-colors group"
                                                 title="Hapus"
                                             >
-                                                <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-400" />
+                                                <Trash2 className="w-4 h-4 text-[var(--text-muted)] group-hover:text-red-400" />
                                             </button>
                                         </td>
                                     </tr>

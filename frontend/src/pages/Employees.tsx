@@ -156,8 +156,8 @@ const Employees = () => {
         <MainLayout>
             <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">{t('employees.title')}</h1>
-                    <p className="text-gray-400">{t('employees.subtitle')}</p>
+                    <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">{t('employees.title')}</h1>
+                    <p className="text-[var(--text-muted)]">{t('employees.subtitle')}</p>
                 </div>
                 <div className="flex gap-3 w-full md:w-auto">
                     <Input
@@ -194,11 +194,11 @@ const Employees = () => {
                                     </div>
                                 </div>
 
-                                <h3 className="text-lg font-bold text-white mb-1">{emp.name}</h3>
+                                <h3 className="text-lg font-bold text-[var(--text-main)] mb-1">{emp.name}</h3>
                                 <p className="text-primary text-sm mb-4">{emp.position}</p>
 
-                                <div className="w-full bg-white/5 rounded-xl p-3 flex justify-between items-center text-sm mb-2">
-                                    <div className="text-gray-400">ID: <span className="text-white font-mono">{emp.employeeId}</span></div>
+                                <div className="w-full bg-[var(--glass-shine)] rounded-xl p-3 flex justify-between items-center text-sm mb-2">
+                                    <div className="text-[var(--text-muted)]">ID: <span className="text-[var(--text-main)] font-mono">{emp.employeeId}</span></div>
                                     <div className={`px-2 py-1 rounded text-xs font-bold ${emp.status === 'Tetap' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
                                         {emp.status === 'Tetap' ? t('employees.permanent') : t('employees.contract')}
                                     </div>
@@ -217,13 +217,13 @@ const Employees = () => {
                                 )}
 
                                 <div className="mt-4 w-full grid grid-cols-2 gap-2 text-center text-xs">
-                                    <div className="p-2 rounded bg-white/5">
-                                        <p className="text-gray-400">{t('employees.present')}</p>
-                                        <p className="text-white font-bold text-lg">{emp.attendanceCount?.present || 0}</p>
+                                    <div className="p-2 rounded bg-[var(--glass-shine)]">
+                                        <p className="text-[var(--text-muted)]">{t('employees.present')}</p>
+                                        <p className="text-[var(--text-main)] font-bold text-lg">{emp.attendanceCount?.present || 0}</p>
                                     </div>
-                                    <div className="p-2 rounded bg-white/5">
-                                        <p className="text-gray-400">{t('employees.performance')}</p>
-                                        <p className="text-white font-bold text-lg">{emp.performanceScore || 0}%</p>
+                                    <div className="p-2 rounded bg-[var(--glass-shine)]">
+                                        <p className="text-[var(--text-muted)]">{t('employees.performance')}</p>
+                                        <p className="text-[var(--text-main)] font-bold text-lg">{emp.performanceScore || 0}%</p>
                                     </div>
                                 </div>
 

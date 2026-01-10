@@ -138,8 +138,8 @@ const Leaves = () => {
         <MainLayout>
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">{t('leaves.title')}</h1>
-                    <p className="text-gray-400">{t('leaves.subtitle')}</p>
+                    <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">{t('leaves.title')}</h1>
+                    <p className="text-[var(--text-muted)]">{t('leaves.subtitle')}</p>
                 </div>
                 <Button onClick={() => setIsModalOpen(true)} icon={<Plus className="w-4 h-4" />}>
                     {t('leaves.requestLeave')}
@@ -151,14 +151,14 @@ const Leaves = () => {
                 <GlassCard className="mb-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-white font-semibold mb-2">Sisa Cuti Tahunan</h3>
+                            <h3 className="text-[var(--text-main)] font-semibold mb-2">Sisa Cuti Tahunan</h3>
                             <p className="text-3xl font-bold text-primary">{leaveBalance.annual - leaveBalance.used}</p>
-                            <p className="text-sm text-gray-400">dari {leaveBalance.annual} hari</p>
+                            <p className="text-sm text-[var(--text-muted)]">dari {leaveBalance.annual} hari</p>
                         </div>
                         <div className="text-right">
-                            <p className="text-sm text-gray-400 mb-1">Cuti Sakit Tersedia</p>
+                            <p className="text-sm text-[var(--text-muted)] mb-1">Cuti Sakit Tersedia</p>
                             <p className="text-2xl font-bold text-green-400">{leaveBalance.sick}</p>
-                            <p className="text-xs text-gray-500">hari</p>
+                            <p className="text-xs text-[var(--text-muted)]">hari</p>
                         </div>
                     </div>
                 </GlassCard>
@@ -178,8 +178,8 @@ const Leaves = () => {
                                         <Calendar className="w-6 h-6 text-purple-400" />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-white">{leave.employeeId}</h3>
-                                        <p className="text-sm text-gray-400">{getTypeLabel(leave.type)}</p>
+                                        <h3 className="font-bold text-[var(--text-main)]">{leave.employeeId}</h3>
+                                        <p className="text-sm text-[var(--text-muted)]">{getTypeLabel(leave.type)}</p>
                                     </div>
                                 </div>
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(leave.status)}`}>
@@ -187,12 +187,12 @@ const Leaves = () => {
                                 </span>
                             </div>
 
-                            <div className="bg-white/5 rounded-xl p-4 mb-4">
-                                <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                            <div className="bg-[var(--glass-shine)] rounded-xl p-4 mb-4">
+                                <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-2">
                                     <Clock className="w-4 h-4" />
                                     <span>{new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}</span>
                                 </div>
-                                <p className="text-white text-sm">{leave.reason}</p>
+                                <p className="text-[var(--text-main)] text-sm">{leave.reason}</p>
                             </div>
 
                             {leave.status === 'pending' && (
@@ -229,7 +229,7 @@ const Leaves = () => {
                     <select
                         value={formData.type}
                         onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none"
+                        className="w-full px-4 py-3 bg-[var(--glass-shine)] border border-[var(--glass-border)] rounded-xl text-[var(--text-main)] focus:border-primary focus:outline-none"
                         required
                     >
                         <option value="annual">{t('leaves.annualLeave')}</option>
@@ -255,7 +255,7 @@ const Leaves = () => {
                         placeholder={t('leaves.reason')}
                         value={formData.reason}
                         onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none resize-none"
+                        className="w-full px-4 py-3 bg-[var(--glass-shine)] border border-[var(--glass-border)] rounded-xl text-[var(--text-main)] focus:border-primary focus:outline-none resize-none"
                         rows={3}
                         required
                     />
@@ -267,7 +267,7 @@ const Leaves = () => {
                             Dokumen Pendukung (Opsional)
                         </label>
                         <div className="flex gap-2">
-                            <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 cursor-pointer transition-all">
+                            <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--glass-shine)] border border-[var(--glass-border)] rounded-xl text-[var(--text-main)] hover:bg-[var(--glass-border)] cursor-pointer transition-all">
                                 <Camera className="w-5 h-5 text-primary" />
                                 <span className="text-sm">Ambil Foto</span>
                                 <input
@@ -278,7 +278,7 @@ const Leaves = () => {
                                     className="hidden"
                                 />
                             </label>
-                            <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 cursor-pointer transition-all">
+                            <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--glass-shine)] border border-[var(--glass-border)] rounded-xl text-[var(--text-main)] hover:bg-[var(--glass-border)] cursor-pointer transition-all">
                                 <Upload className="w-5 h-5 text-primary" />
                                 <span className="text-sm">Upload File</span>
                                 <input
