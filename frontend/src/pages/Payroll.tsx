@@ -209,8 +209,8 @@ const Payroll = () => {
                         <div key={emp.employeeId} className="p-4 bg-white/5 rounded-xl border border-white/10">
                             <h3 className="text-white font-semibold mb-1">{emp.name}</h3>
                             <p className="text-sm text-gray-400 mb-2">{emp.employeeId}</p>
-                            <p className="text-xs text-gray-500 mb-3">
-                                {emp.salaryConfig?.type === 'monthly' ? 'Bulanan' : 'Harian'}:
+                            <p className="text-sm text-gray-300 mb-3">
+                                <span className="font-semibold">{emp.salaryConfig?.type === 'monthly' ? 'Bulanan' : 'Harian'}:</span>
                                 <span className="text-primary font-bold ml-1">
                                     Rp {(emp.salaryConfig?.amount || 0).toLocaleString('id-ID')}
                                 </span>
