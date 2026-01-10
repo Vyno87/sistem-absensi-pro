@@ -206,10 +206,10 @@ const Payroll = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {employees.slice(0, 6).map((emp) => (
-                        <div key={emp.employeeId} className="p-4 bg-white/5 rounded-xl border border-white/10">
-                            <h3 className="text-white font-semibold mb-1">{emp.name}</h3>
-                            <p className="text-sm text-gray-400 mb-2">{emp.employeeId}</p>
-                            <p className="text-sm text-gray-300 mb-3">
+                        <div key={emp.employeeId} className="p-4 bg-[var(--glass-shine)] rounded-xl border border-[var(--glass-border)]">
+                            <h3 className="text-[var(--text-main)] font-semibold mb-1">{emp.name}</h3>
+                            <p className="text-sm text-[var(--text-muted)] mb-2">{emp.employeeId}</p>
+                            <p className="text-sm text-[var(--text-muted)] mb-3">
                                 <span className="font-semibold">{emp.salaryConfig?.type === 'monthly' ? 'Bulanan' : 'Harian'}:</span>
                                 <span className="text-primary font-bold ml-1">
                                     Rp {(emp.salaryConfig?.amount || 0).toLocaleString('id-ID')}
@@ -269,7 +269,7 @@ const Payroll = () => {
                     </div>
 
                     <div>
-                        <label className="text-sm text-gray-400 mb-2 block">Tahun</label>
+                        <label className="text-sm text-[var(--text-muted)] mb-2 block">Tahun</label>
                         <Input
                             type="number"
                             value={selectedYear}
