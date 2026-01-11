@@ -71,11 +71,26 @@
   --accent: #14b8a6;
 }
 
-[data-vibe='emerald'] body {
-  background-image:
-    radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(132, 204, 22, 0.15) 0%, transparent 40%);
+[data-theme='dark'][data-vibe='emerald'] {
+  --bg-dark: #064e3b;
+  --bg-darker: #022c22;
+  --bg-card: rgba(6, 78, 59, 0.4);
+  --glass-bg: rgba(6, 78, 59, 0.4);
+  --glass-border: rgba(16, 185, 129, 0.2);
+  --glass-shine: rgba(16, 185, 129, 0.05);
+  --text-main: #ecfdf5;
+  --text-muted: #6ee7b7;
 }
+
+[data-vibe='emerald'] .vibe-container,
+[data-vibe='emerald'] body {
+  background-attachment: fixed;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 70%),
+    radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(132, 204, 22, 0.25) 0%, transparent 50%);
+}
+
 
 /* Cyber Neon Vibe */
 [data-vibe='neon'] {
@@ -100,11 +115,28 @@
   --accent: #38bdf8;
 }
 
-[data-vibe='ocean'] body {
-  background-image:
-    radial-gradient(circle at 0% 0%, rgba(14, 165, 233, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(34, 211, 238, 0.15) 0%, transparent 50%);
+[data-theme='dark'][data-vibe='ocean'] {
+  --bg-dark: #075985;
+  --bg-darker: #082f49;
+  --glass-bg: rgba(7, 89, 133, 0.4);
 }
+
+[data-theme='light'][data-vibe='ocean'] {
+  --bg-dark: #e0f2fe;
+  --bg-darker: #f0f9ff;
+  --text-main: #0c4a6e;
+}
+
+[data-vibe='ocean'] .vibe-container,
+[data-vibe='ocean'] body {
+  background-attachment: fixed;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.05) 0%, transparent 70%),
+    radial-gradient(circle at 0% 0%, rgba(14, 165, 233, 0.35) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(34, 211, 238, 0.35) 0%, transparent 60%);
+}
+
+
 
 /* Sunset Orange Vibe */
 [data-vibe='sunset'] {
@@ -113,16 +145,34 @@
   --accent: #f43f5e;
 }
 
+[data-theme='dark'][data-vibe='sunset'] {
+  --bg-dark: #4c1d95;
+  --bg-darker: #2e1065;
+  --glass-bg: rgba(76, 29, 149, 0.4);
+}
+
+[data-theme='light'][data-vibe='sunset'] {
+  --bg-dark: #fff7ed;
+  --bg-darker: #fffaf5;
+  --text-main: #7c2d12;
+}
+
+[data-vibe='sunset'] .vibe-container,
 [data-vibe='sunset'] body {
+  background-attachment: fixed;
   background-image:
-    radial-gradient(circle at 0% 0%, rgba(249, 115, 22, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(219, 39, 119, 0.15) 0%, transparent 50%);
+    radial-gradient(circle at 50% 50%, rgba(249, 115, 22, 0.05) 0%, transparent 70%),
+    radial-gradient(circle at 0% 0%, rgba(249, 115, 22, 0.35) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(219, 39, 119, 0.35) 0%, transparent 60%);
 }
 
 
-[data-theme='emerald'] .text-gradient {
+
+
+[data-vibe='emerald'] .text-gradient {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-lime-400;
 }
+
 
 /* Light mode specific adjustments */
 [data-theme='light'] body {
@@ -233,10 +283,11 @@ body {
   --nm-inset-dark: inset 6px 6px 12px rgba(0, 0, 0, 0.5), inset -4px -4px 10px rgba(255, 255, 255, 0.03);
 }
 
-[data-theme='neon'][data-ui-style='neumorph'] {
+[data-vibe='neon'][data-ui-style='neumorph'] {
   --nm-shadow-dark: 10px 10px 20px rgba(0, 0, 0, 0.6), -6px -6px 18px rgba(99, 102, 241, 0.15);
   --nm-inset-dark: inset 6px 6px 12px rgba(0, 0, 0, 0.6), inset -4px -4px 12px rgba(217, 70, 239, 0.1);
 }
+
 
 
 [data-ui-style='neumorph'] .glass-panel {
@@ -301,7 +352,7 @@ body {
 }
 
 /* Neon Theme Specific Overrides */
-[data-theme='neon'] .glass-panel {
+[data-vibe='neon'] .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: blur(25px) saturate(200%);
   -webkit-backdrop-filter: blur(25px) saturate(200%);
@@ -313,7 +364,8 @@ body {
   position: relative;
 }
 
-[data-theme='neon'] .glass-panel::after {
+
+[data-vibe='neon'] .glass-panel::after {
   content: '';
   position: absolute;
   inset: -1px;
@@ -328,20 +380,29 @@ body {
   opacity: 0.5;
 }
 
-[data-theme='neon'] .glass-morphism {
+[data-vibe='neon'] .glass-morphism {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: inset 0 0 20px rgba(99, 102, 241, 0.1);
 }
 
-[data-theme='neon'] .text-gradient {
+[data-vibe='neon'] .text-gradient {
   background: linear-gradient(to right, #6366f1, #a855f7, #ec4899);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.3));
 }
+
+[data-vibe='neon'] .vibe-container,
+[data-vibe='neon'] body {
+  background-attachment: fixed;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(217, 72, 153, 0.25) 0%, transparent 50%);
+}
+
 
 [data-theme='light'][data-ui-style='neumorph'] .glass-morphism {
   background: var(--nm-bg-light) !important;

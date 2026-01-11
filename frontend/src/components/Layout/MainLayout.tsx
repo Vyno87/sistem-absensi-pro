@@ -43,7 +43,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const navItems = allNavItems.filter(item => item.roles.includes(user?.role || 'user'));
 
     return (
-        <div className="flex h-screen bg-[var(--bg-darker)] overflow-hidden relative transition-colors duration-300">
+        <div className="flex h-screen bg-[var(--bg-darker)] vibe-container overflow-hidden relative transition-colors duration-300">
             {/* App-wide Neon Backgrounds */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
                 {/* Standard Blobs */}
