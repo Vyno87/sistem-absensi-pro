@@ -46,8 +46,22 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="flex h-screen bg-[var(--bg-darker)] overflow-hidden relative transition-colors duration-300">
             {/* App-wide Neon Backgrounds */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                {/* Standard Blobs */}
                 <div className="absolute top-[-20%] right-[-10%] w-[100vh] h-[100vh] bg-primary/5 rounded-full blur-[150px] animate-float-neon" />
                 <div className="absolute bottom-[-20%] left-[-10%] w-[90vh] h-[90vh] bg-secondary/5 rounded-full blur-[120px] animate-float-neon-delayed" />
+
+                {/* Extra Intensity for Neon Theme */}
+                {theme === 'neon' && (
+                    <>
+                        <div className="absolute top-[20%] left-[10%] w-[60vh] h-[60vh] bg-accent/10 rounded-full blur-[100px] animate-pulse" />
+                        <div className="absolute bottom-[10%] right-[20%] w-[50vh] h-[50vh] bg-primary/10 rounded-full blur-[100px] animate-bounce-slow" />
+
+                        {/* 3D-like Decorative Assets (CSS Spheres/Cubes) */}
+                        <div className="absolute top-[15%] left-[5%] w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 shadow-[0_0_30px_rgba(34,211,238,0.5)] opacity-40 animate-float-neon" style={{ filter: 'blur(2px)' }} />
+                        <div className="absolute top-[60%] right-[10%] w-24 h-24 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-purple-800 shadow-[0_0_40px_rgba(232,121,249,0.5)] opacity-30 animate-float-neon-delayed" style={{ transform: 'rotate(25deg)', filter: 'blur(3px)' }} />
+                        <div className="absolute bottom-[20%] left-[15%] w-12 h-12 rounded-full bg-gradient-to-tr from-blue-400 to-indigo-700 shadow-[0_0_20px_rgba(96,165,250,0.5)] opacity-50 animate-bounce-slow" />
+                    </>
+                )}
             </div>
 
             {/* Backdrop for mobile/drawer mode */}

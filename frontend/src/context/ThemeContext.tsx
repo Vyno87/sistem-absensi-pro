@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface ThemeContextType {
-    theme: 'dark' | 'light' | 'emerald';
+    theme: 'dark' | 'light' | 'emerald' | 'neon';
     uiStyle: 'glass' | 'neumorph';
     toggleTheme: () => void;
     toggleUIStyle: () => void;
@@ -10,12 +10,12 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [theme, setTheme] = useState<'dark' | 'light' | 'emerald'>('dark');
+    const [theme, setTheme] = useState<'dark' | 'light' | 'emerald' | 'neon'>('dark');
     const [uiStyle, setUiStyle] = useState<'glass' | 'neumorph'>('glass');
 
     useEffect(() => {
         // Load theme and UI style from localStorage
-        const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | 'emerald' | null;
+        const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | 'emerald' | 'neon' | null;
         const savedUiStyle = localStorage.getItem('uiStyle') as 'glass' | 'neumorph' | null;
 
         if (savedTheme) {
@@ -34,9 +34,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, []);
 
     const toggleTheme = () => {
-        let newTheme: 'dark' | 'light' | 'emerald';
+        let newTheme: 'dark' | 'light' | 'emerald' | 'neon';
         if (theme === 'dark') newTheme = 'light';
         else if (theme === 'light') newTheme = 'emerald';
+        else if (theme === 'emerald') newTheme = 'neon';
         else newTheme = 'dark';
 
         setTheme(newTheme);
