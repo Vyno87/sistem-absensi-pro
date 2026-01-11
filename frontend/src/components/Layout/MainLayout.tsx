@@ -8,7 +8,7 @@ import { useTheme } from '../../context/ThemeContext';
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user, logout } = useAuth();
     const { t } = useLanguage();
-    const { theme, uiStyle, toggleTheme, toggleUIStyle } = useTheme();
+    const { mode, vibe, uiStyle, toggleMode, toggleVibe, toggleUIStyle } = useTheme();
     const location = useLocation();
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default closed for "slide pane" feel
@@ -51,7 +51,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <div className="absolute bottom-[-20%] left-[-10%] w-[90vh] h-[90vh] bg-secondary/5 rounded-full blur-[120px] animate-float-neon-delayed" />
 
                 {/* Extra Intensity for Neon Theme */}
-                {theme === 'neon' && (
+                {vibe === 'neon' && (
                     <>
                         <div className="absolute top-[20%] left-[10%] w-[60vh] h-[60vh] bg-accent/10 rounded-full blur-[100px] animate-pulse" />
                         <div className="absolute bottom-[10%] right-[20%] w-[50vh] h-[50vh] bg-primary/10 rounded-full blur-[100px] animate-bounce-slow" />
@@ -171,27 +171,40 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             className="p-3 rounded-2xl glass-panel text-[var(--text-main)] hover:bg-[var(--glass-shine)] transition-all shadow-lg flex items-center gap-3 group"
                             title={uiStyle === 'glass' ? 'Switch to Neumorphic Design' : 'Switch to Glassmorphism Design'}
                         >
-                            <Layers className={`w-6 h-6 ${uiStyle === 'neumorph' ? 'text-primary' : 'text-gray-400'}`} />
-                            <span className="text-sm font-semibold hidden md:block">
+                            <Layers className={`w-5 h-5 ${uiStyle === 'neumorph' ? 'text-primary' : 'text-gray-400'}`} />
+                            <span className="text-sm font-semibold hidden lg:block">
                                 {uiStyle === 'glass' ? 'Glass' : 'Neumorph'}
                             </span>
                         </button>
 
+                        {/* Vibe Selection Toggle */}
                         <button
-                            onClick={toggleTheme}
+                            onClick={toggleVibe}
                             className="p-3 rounded-2xl glass-panel text-[var(--text-main)] hover:bg-[var(--glass-shine)] transition-all shadow-lg flex items-center gap-3 group"
-                            aria-label="Toggle Theme"
+                            title="Cycle Color Vibe"
                         >
-                            <div className="relative w-6 h-6">
+                            <RefreshCw className="w-5 h-5 text-accent animate-spin-slow" />
+                            <span className="text-sm font-semibold hidden lg:block capitalize">
+                                {vibe}
+                            </span>
+                        </button>
+
+                        {/* Mode (Light/Dark) Toggle */}
+                        <button
+                            onClick={toggleMode}
+                            className="p-3 rounded-2xl glass-panel text-[var(--text-main)] hover:bg-[var(--glass-shine)] transition-all shadow-lg flex items-center gap-3 group"
+                            aria-label="Toggle Mode"
+                        >
+                            <div className="relative w-5 h-5">
                                 <Sun
-                                    className={`absolute inset-0 w-full h-full text-yellow-500 transition-all duration-500 ${theme === 'dark' ? 'rotate-90 opacity-0 scale-50' : 'rotate-0 opacity-100 scale-100'}`}
+                                    className={`absolute inset-0 w-full h-full text-yellow-500 transition-all duration-500 ${mode === 'dark' ? 'rotate-90 opacity-0 scale-50' : 'rotate-0 opacity-100 scale-100'}`}
                                 />
                                 <Moon
-                                    className={`absolute inset-0 w-full h-full text-indigo-400 transition-all duration-500 ${theme === 'dark' ? 'rotate-0 opacity-100 scale-100' : '-rotate-90 opacity-0 scale-50'}`}
+                                    className={`absolute inset-0 w-full h-full text-indigo-400 transition-all duration-500 ${mode === 'dark' ? 'rotate-0 opacity-100 scale-100' : '-rotate-90 opacity-0 scale-50'}`}
                                 />
                             </div>
-                            <span className="text-sm font-semibold hidden md:block">
-                                {theme === 'dark' ? t('nav.mode.dark') : t('nav.mode.light')}
+                            <span className="text-sm font-semibold hidden lg:block">
+                                {mode === 'dark' ? t('nav.mode.dark') : t('nav.mode.light')}
                             </span>
                         </button>
                     </div>

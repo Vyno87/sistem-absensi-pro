@@ -1,28 +1,38 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface ThemeContextType {
-    theme: 'dark' | 'light' | 'emerald' | 'neon' | 'ocean' | 'sunset';
+    mode: 'dark' | 'light';
+    vibe: 'standard' | 'emerald' | 'neon' | 'ocean' | 'sunset';
     uiStyle: 'glass' | 'neumorph';
-    toggleTheme: () => void;
+    toggleMode: () => void;
+    toggleVibe: () => void;
     toggleUIStyle: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [theme, setTheme] = useState<'dark' | 'light' | 'emerald' | 'neon' | 'ocean' | 'sunset'>('dark');
+    const [mode, setMode] = useState<'dark' | 'light'>('dark');
+    const [vibe, setVibe] = useState<'standard' | 'emerald' | 'neon' | 'ocean' | 'sunset'>('standard');
     const [uiStyle, setUiStyle] = useState<'glass' | 'neumorph'>('glass');
 
     useEffect(() => {
-        // Load theme and UI style from localStorage
-        const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | 'emerald' | 'neon' | 'ocean' | 'sunset' | null;
+        const savedMode = localStorage.getItem('theme_mode') as 'dark' | 'light' | null;
+        const savedVibe = localStorage.getItem('theme_vibe') as 'standard' | 'emerald' | 'neon' | 'ocean' | 'sunset' | null;
         const savedUiStyle = localStorage.getItem('uiStyle') as 'glass' | 'neumorph' | null;
 
-        if (savedTheme) {
-            setTheme(savedTheme);
-            document.documentElement.setAttribute('data-theme', savedTheme);
+        if (savedMode) {
+            setMode(savedMode);
+            document.documentElement.setAttribute('data-theme', savedMode);
         } else {
             document.documentElement.setAttribute('data-theme', 'dark');
+        }
+
+        if (savedVibe) {
+            setVibe(savedVibe);
+            document.documentElement.setAttribute('data-vibe', savedVibe);
+        } else {
+            document.documentElement.setAttribute('data-vibe', 'standard');
         }
 
         if (savedUiStyle) {
@@ -33,18 +43,22 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }, []);
 
-    const toggleTheme = () => {
-        let newTheme: 'dark' | 'light' | 'emerald' | 'neon' | 'ocean' | 'sunset';
-        if (theme === 'dark') newTheme = 'light';
-        else if (theme === 'light') newTheme = 'emerald';
-        else if (theme === 'emerald') newTheme = 'neon';
-        else if (theme === 'neon') newTheme = 'ocean';
-        else if (theme === 'ocean') newTheme = 'sunset';
-        else newTheme = 'dark';
+    const toggleMode = () => {
+        const newMode = mode === 'dark' ? 'light' : 'dark';
+        setMode(newMode);
+        localStorage.setItem('theme_mode', newMode);
+        document.documentElement.setAttribute('data-theme', newMode);
+    };
 
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-        document.documentElement.setAttribute('data-theme', newTheme);
+    const toggleVibe = () => {
+        const vibes: ('standard' | 'emerald' | 'neon' | 'ocean' | 'sunset')[] = ['standard', 'emerald', 'neon', 'ocean', 'sunset'];
+        const currentIndex = vibes.indexOf(vibe);
+        const nextIndex = (currentIndex + 1) % vibes.length;
+        const newVibe = vibes[nextIndex];
+
+        setVibe(newVibe);
+        localStorage.setItem('theme_vibe', newVibe);
+        document.documentElement.setAttribute('data-vibe', newVibe);
     };
 
     const toggleUIStyle = () => {
@@ -55,7 +69,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     return (
-        <ThemeContext.Provider value={{ theme, uiStyle, toggleTheme, toggleUIStyle }}>
+        <ThemeContext.Provider value={{ mode, vibe, uiStyle, toggleMode, toggleVibe, toggleUIStyle }}>
             {children}
         </ThemeContext.Provider>
     );
